@@ -2,11 +2,12 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Common Docker Escape Techniques](#common-docker-escape-techniques)
-3. [Security Best Practices - What TO DO](#security-best-practices---what-to-do)
-4. [Security Anti-Patterns - What NOT TO DO](#security-anti-patterns---what-not-to-do)
-5. [Detection and Monitoring](#detection-and-monitoring)
-6. [Incident Response](#incident-response)
+2. [Automated Security Tools](#automated-security-tools)
+3. [Common Docker Escape Techniques](#common-docker-escape-techniques)
+4. [Security Best Practices - What TO DO](#security-best-practices---what-to-do)
+5. [Security Anti-Patterns - What NOT TO DO](#security-anti-patterns---what-not-to-do)
+6. [Detection and Monitoring](#detection-and-monitoring)
+7. [Incident Response](#incident-response)
 
 ---
 
@@ -15,6 +16,250 @@
 Docker containers provide isolation through Linux namespaces, cgroups, and capabilities. However, misconfigurations and vulnerabilities can allow attackers to escape containers and compromise the host system. This guide covers common exploitation techniques and defensive measures.
 
 **Target Audience**: DevOps engineers, security teams, and developers deploying containerized applications.
+
+---
+
+## Automated Security Tools
+
+This guide includes automated security tools located in the `SECURITY-DOCKER/` directory to help you implement and verify security best practices.
+
+### 1. Docker Security Audit Script
+
+**`docker-security-audit.sh`** - Comprehensive security auditing tool that checks running containers and Docker daemon configuration.
+
+#### Features:
+- ✅ Audits all security checklist items automatically
+- ✅ Checks container configurations (user, capabilities, privileges, etc.)
+- ✅ Validates Docker daemon security settings
+- ✅ Scans images for vulnerabilities (if Trivy is installed)
+- ✅ Provides detailed remediation guidance
+- ✅ Calculates overall security score
+
+#### Usage:
+
+```bash
+# Navigate to tools directory
+cd SECURITY-DOCKER/
+
+# Audit all running containers
+./docker-security-audit.sh
+
+# Audit specific container
+./docker-security-audit.sh --container my-container
+
+# Show daemon configuration fixes
+./docker-security-audit.sh --fix-daemon
+```
+
+#### Example Output:
+
+```
+============================================
+Docker Security Audit
+============================================
+Date: Mon Nov 24 12:00:00 UTC 2025
+Docker Version: 24.0.7
+
+[PASS] User namespace remapping is configured
+[FAIL] Container web-app is running as root
+         Fix: Add 'USER <non-root-user>' to Dockerfile
+[PASS] Container web-app is not privileged
+[WARN] Container web-app has not dropped any capabilities
+         Recommendation: Use --cap-drop=ALL
+
+============================================
+Audit Summary
+============================================
+Passed:  15
+Failed:  3
+Warnings: 7
+Info:    2
+
+Security Score: 68%
+Status: NEEDS IMPROVEMENT
+```
+
+---
+
+### 2. Docker Secure Run Script
+
+**`docker-secure-run.sh`** - Helper script to run containers with security best practices automatically applied.
+
+#### Features:
+- ✅ Enforces non-root user requirement
+- ✅ Automatically drops all capabilities
+- ✅ Applies resource limits (memory, CPU, PIDs)
+- ✅ Enables read-only root filesystem by default
+- ✅ Configures security options (AppArmor, Seccomp, no-new-privileges)
+- ✅ Creates isolated network
+- ✅ Blocks dangerous configurations (sensitive host mounts, :latest tags)
+- ✅ Validates image security before running
+
+#### Usage:
+
+```bash
+# Navigate to tools directory
+cd SECURITY-DOCKER/
+
+# Run container with security defaults
+./docker-secure-run.sh nginx:1.25
+
+# Run with custom memory limit
+./docker-secure-run.sh --memory 1g nginx:1.25
+
+# Run detached with port mapping
+./docker-secure-run.sh -d -p 8080:80 --name web nginx:1.25
+
+# Run with writable filesystem (when needed)
+./docker-secure-run.sh --writable myapp:1.0
+
+# Run with additional capability
+./docker-secure-run.sh --cap-add NET_BIND_SERVICE myapp:1.0
+
+# Show all options
+./docker-secure-run.sh --help
+```
+
+#### What Gets Applied Automatically:
+
+| Security Control | Default Setting | Override Flag |
+|-----------------|----------------|---------------|
+| Drop capabilities | `--cap-drop=ALL` | `--cap-add <cap>` |
+| Read-only filesystem | `--read-only` | `--writable` |
+| Memory limit | `512m` | `--memory <size>` |
+| CPU limit | `1.0` | `--cpus <number>` |
+| PID limit | `100` | `--pids-limit <n>` |
+| No new privileges | `yes` | `--allow-new-privs` |
+| AppArmor | `docker-default` | N/A |
+| Network isolation | `secure-isolated` | `--host-network` |
+| Non-root check | `enforced` | `--allow-root` |
+
+#### Example Output:
+
+```
+================================
+Docker Secure Run
+================================
+
+[INFO] Checking if image exists: nginx:1.25
+[INFO] Image runs as user: nginx
+[INFO] Dropping all capabilities
+[INFO] Enabling read-only root filesystem
+[INFO] Applying resource limits: memory=512m, cpus=1.0, pids=100
+[INFO] Enabling security options: no-new-privileges, apparmor
+[INFO] Creating isolated network: secure-isolated
+
+Executing secure container:
+docker run --cap-drop=ALL --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m --tmpfs /var/tmp:rw,noexec,nosuid,size=64m --memory=512m --memory-swap=512m --cpus=1.0 --pids-limit=100 --security-opt=no-new-privileges:true --security-opt=apparmor=docker-default --network=secure-isolated nginx:1.25
+
+a1b2c3d4e5f6...
+```
+
+---
+
+### Quick Start with Tools
+
+**Step 1**: Audit your current containers
+```bash
+cd SECURITY-DOCKER/
+./docker-security-audit.sh
+```
+
+**Step 2**: Review the audit results and security score
+
+**Step 3**: Use the secure-run script for new deployments
+```bash
+./docker-secure-run.sh your-image:version
+```
+
+**Step 4**: Integrate into your workflow
+```bash
+# Add to your deployment scripts
+alias docker-run='./SECURITY-DOCKER/docker-secure-run.sh'
+
+# Add audit to CI/CD pipeline
+./SECURITY-DOCKER/docker-security-audit.sh || exit 1
+```
+
+---
+
+### CI/CD Integration
+
+#### GitLab CI Example:
+```yaml
+security-audit:
+  stage: test
+  script:
+    - ./SECURITY-DOCKER/docker-security-audit.sh
+  allow_failure: false
+
+deploy:
+  stage: deploy
+  script:
+    - ./SECURITY-DOCKER/docker-secure-run.sh -d myapp:${CI_COMMIT_TAG}
+```
+
+#### GitHub Actions Example:
+```yaml
+name: Docker Security Audit
+
+on: [push, pull_request]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Security Audit
+        run: |
+          chmod +x SECURITY-DOCKER/docker-security-audit.sh
+          ./SECURITY-DOCKER/docker-security-audit.sh
+```
+
+#### Jenkins Pipeline Example:
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Security Audit') {
+            steps {
+                sh './SECURITY-DOCKER/docker-security-audit.sh'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh './SECURITY-DOCKER/docker-secure-run.sh -d myapp:${BUILD_TAG}'
+            }
+        }
+    }
+}
+```
+
+---
+
+### Tool Requirements
+
+**Both scripts require:**
+- Docker installed and running
+- Bash 4.0 or higher
+- Sufficient permissions to run Docker commands
+
+**Optional but recommended:**
+- [Trivy](https://github.com/aquasecurity/trivy) for vulnerability scanning
+- Root/sudo access for daemon configuration checks
+
+**Installation:**
+```bash
+# Install Trivy (for vulnerability scanning)
+# macOS
+brew install trivy
+
+# Linux
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+# Make scripts executable (if needed)
+chmod +x SECURITY-DOCKER/*.sh
+```
 
 ---
 
@@ -802,26 +1047,86 @@ docker inspect <container_id> > container-inspect.json
 
 ## Quick Security Checklist
 
+> **💡 TIP**: Use `SECURITY-DOCKER/docker-security-audit.sh` to automatically verify these items!
+
+### Container Configuration
 - [ ] Containers run as non-root users
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script*
 - [ ] Read-only root filesystem enabled where possible
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script (default)*
 - [ ] Unnecessary capabilities dropped
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script (--cap-drop=ALL)*
 - [ ] Resource limits configured
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script (memory, CPU, PIDs)*
 - [ ] No privileged containers in production
+  - *Verified by: audit script*
+  - *Blocked by: secure-run script*
 - [ ] Docker socket not mounted in containers
-- [ ] Images scanned for vulnerabilities
-- [ ] Using specific image tags (not :latest)
-- [ ] Secrets not stored in images
+  - *Verified by: audit script*
+  - *Blocked by: secure-run script*
 - [ ] Security profiles (AppArmor/Seccomp) enabled
-- [ ] User namespace remapping enabled
-- [ ] Docker daemon properly secured
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script*
 - [ ] Network segmentation implemented
-- [ ] Runtime security monitoring active
-- [ ] Regular security updates and patching
-- [ ] Audit logging enabled
+  - *Verified by: audit script*
+  - *Enforced by: secure-run script (isolated network)*
+
+### Image Security
+- [ ] Images scanned for vulnerabilities
+  - *Verified by: audit script (with Trivy)*
+- [ ] Using specific image tags (not :latest)
+  - *Verified by: audit script*
+  - *Warned by: secure-run script*
+- [ ] Secrets not stored in images
+  - *Manual review required*
 - [ ] Minimal base images used
+  - *Manual review required*
 - [ ] Multi-stage builds for production images
+  - *Manual review required*
 - [ ] Content trust and image signing enabled
+  - *Manual configuration required*
+
+### Daemon & System
+- [ ] User namespace remapping enabled
+  - *Verified by: audit script*
+  - *Configuration help: audit script --fix-daemon*
+- [ ] Docker daemon properly secured
+  - *Verified by: audit script*
+  - *Configuration help: audit script --fix-daemon*
+- [ ] Audit logging enabled
+  - *Manual configuration required*
+
+### Operations
+- [ ] Runtime security monitoring active
+  - *Use: Falco, Sysdig, or similar tools*
+- [ ] Regular security updates and patching
+  - *Manual process + automation*
 - [ ] Pod Security Standards enforced (Kubernetes)
+  - *Kubernetes-specific configuration*
+
+### Using the Automated Tools
+
+**Run full audit:**
+```bash
+cd SECURITY-DOCKER/
+./docker-security-audit.sh
+```
+
+**Deploy containers securely:**
+```bash
+cd SECURITY-DOCKER/
+./docker-secure-run.sh -d -p 8080:80 myapp:1.0
+```
+
+**Get daemon fixes:**
+```bash
+cd SECURITY-DOCKER/
+./docker-security-audit.sh --fix-daemon
+```
 
 ---
 
@@ -860,6 +1165,17 @@ Container security requires a defense-in-depth approach combining:
 
 ---
 
-**Document Version**: 1.0
+**Document Version**: 2.0
 **Last Updated**: 2025-11-24
 **Maintained By**: Security Team
+
+---
+
+## Tools Directory
+
+All automated security tools are located in `SECURITY-DOCKER/`:
+- `docker-security-audit.sh` - Comprehensive security audit script
+- `docker-secure-run.sh` - Secure container deployment wrapper
+- `README.md` - Detailed tools documentation
+
+For complete tool documentation, see [SECURITY-DOCKER/README.md](SECURITY-DOCKER/README.md)
