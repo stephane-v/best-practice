@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Practice Repository</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        header p {
+            color: #a0a0a0;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-header .icon {
+            font-size: 1.8rem;
+        }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        .section-description {
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .resource-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .resource-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .resource-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .resource-card p {
+            color: #888;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .resource-card .file-type {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .highlight-card {
+            border-color: rgba(118, 75, 162, 0.4);
+        }
+
+        .highlight-card:hover {
+            border-color: #764ba2;
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.2);
+        }
+
+        .highlight-card h3 {
+            color: #764ba2;
+        }
+
+        .highlight-card .file-type {
+            background: rgba(118, 75, 162, 0.2);
+            color: #a855f7;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a0a0a0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list .check {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .stats {
+                gap: 30px;
+            }
+
+            .section-content {
+                padding: 20px;
+            }
+
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Best Practice Repository</h1>
+            <p>A comprehensive collection of resources for AI prompts, IT system health consulting, and Docker security best practices.</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">397+</div>
+                    <div class="stat-label">AI Prompts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Security Templates</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Automation Scripts</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- AI Prompt Library Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2><span class="icon">&#128172;</span> AI Prompt Library</h2>
+            </div>
+            <div class="section-content">
+                <p class="section-description">
+                    An interactive web application featuring a curated collection of 397+ AI prompts organized across 11 categories.
+                    Search, filter, and use prompts with interactive placeholder fields for customization.
+                </p>
+                <div class="resource-grid">
+                    <a href="PROMPT/index.html" class="resource-card highlight-card">
+                        <h3>Open Prompt Library</h3>
+                        <p>Browse and search through 397+ AI prompts with real-time filtering by category and tags. Features copy-to-clipboard and interactive placeholder filling.</p>
+                        <div class="tag-list">
+                            <span class="tag">Business</span>
+                            <span class="tag">Productivity</span>
+                            <span class="tag">AI Strategy</span>
+                            <span class="tag">Content</span>
+                            <span class="tag">+7 more</span>
+                        </div>
+                        <span class="file-type">Interactive App</span>
+                    </a>
+                    <div class="resource-card">
+                        <h3>Key Features</h3>
+                        <ul class="feature-list">
+                            <li><span class="check">&#10003;</span> Real-time search across all prompts</li>
+                            <li><span class="check">&#10003;</span> Category and tag filtering</li>
+                            <li><span class="check">&#10003;</span> Interactive placeholder inputs</li>
+                            <li><span class="check">&#10003;</span> Copy to clipboard functionality</li>
+                            <li><span class="check">&#10003;</span> Mobile-responsive design</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- IT System Health Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2><span class="icon">&#128200;</span> IT System Health Consulting</h2>
+            </div>
+            <div class="section-content">
+                <p class="section-description">
+                    Strategic frameworks and assessment tools for evaluating organizational IT system health.
+                    Designed for management consultants, business analysts, and organizational advisors.
+                </p>
+                <div class="resource-grid">
+                    <a href="HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card">
+                        <h3>System Health Assessment Guide</h3>
+                        <p>Comprehensive framework covering the Five Pillars of System Health, maturity models, governance, risk management, and improvement roadmaps.</p>
+                        <div class="tag-list">
+                            <span class="tag">Strategic Alignment</span>
+                            <span class="tag">Governance</span>
+                            <span class="tag">Risk Management</span>
+                        </div>
+                        <span class="file-type">Markdown Guide</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Docker Security Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2><span class="icon">&#128274;</span> Docker Security</h2>
+            </div>
+            <div class="section-content">
+                <p class="section-description">
+                    Enterprise-grade Docker security resources including comprehensive guides and automated tools
+                    for container security auditing and secure deployment practices.
+                </p>
+                <div class="resource-grid">
+                    <a href="SECURITY-DOCKER.md" class="resource-card">
+                        <h3>Docker Security Guide</h3>
+                        <p>Complete guide covering security tools, common escape techniques (educational), best practices, anti-patterns, detection, and incident response.</p>
+                        <div class="tag-list">
+                            <span class="tag">Best Practices</span>
+                            <span class="tag">Detection</span>
+                            <span class="tag">Incident Response</span>
+                        </div>
+                        <span class="file-type">Markdown Guide</span>
+                    </a>
+                    <a href="SECURITY-DOCKER/docker-security-audit.sh" class="resource-card">
+                        <h3>Security Audit Script</h3>
+                        <p>Automated tool that audits running containers for security misconfigurations, checks Docker daemon settings, and provides remediation guidance with security scoring.</p>
+                        <div class="tag-list">
+                            <span class="tag">Automation</span>
+                            <span class="tag">Audit</span>
+                            <span class="tag">Remediation</span>
+                        </div>
+                        <span class="file-type">Bash Script</span>
+                    </a>
+                    <a href="SECURITY-DOCKER/docker-secure-run.sh" class="resource-card">
+                        <h3>Secure Run Helper</h3>
+                        <p>Helper script for launching containers with security hardening including non-root users, dropped capabilities, resource limits, and security profiles.</p>
+                        <div class="tag-list">
+                            <span class="tag">Hardening</span>
+                            <span class="tag">Resource Limits</span>
+                            <span class="tag">AppArmor</span>
+                        </div>
+                        <span class="file-type">Bash Script</span>
+                    </a>
+                    <a href="SECURITY-DOCKER/README.md" class="resource-card">
+                        <h3>Tools Documentation</h3>
+                        <p>Quick start guide, usage examples, and CI/CD integration instructions for the Docker security automation scripts.</p>
+                        <span class="file-type">Readme</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security & Cyber Health Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2><span class="icon">&#128737;</span> Security & Cyber Health Consulting</h2>
+            </div>
+            <div class="section-content">
+                <p class="section-description">
+                    Advanced templates and checklists for organizational security assessment, incident response planning,
+                    risk management, and vendor security evaluation.
+                </p>
+                <div class="resource-grid">
+                    <a href="SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card">
+                        <h3>Security Consulting Guide</h3>
+                        <p>Comprehensive framework for evaluating organizational security posture and cyber health. Strategic guidance for consultants and advisors.</p>
+                        <div class="tag-list">
+                            <span class="tag">Assessment</span>
+                            <span class="tag">Strategy</span>
+                            <span class="tag">Consulting</span>
+                        </div>
+                        <span class="file-type">Markdown Guide</span>
+                    </a>
+                    <a href="SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/incident-response-plan-template.md" class="resource-card">
+                        <h3>Incident Response Plan Template</h3>
+                        <p>Ready-to-use template for creating comprehensive incident response procedures including workflows and recovery processes.</p>
+                        <div class="tag-list">
+                            <span class="tag">Template</span>
+                            <span class="tag">Incident Response</span>
+                        </div>
+                        <span class="file-type">Template</span>
+                    </a>
+                    <a href="SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/risk-assessment-template.md" class="resource-card">
+                        <h3>Risk Assessment Template</h3>
+                        <p>Framework for identifying, analyzing, and prioritizing security risks. Helps organizations evaluate their risk exposure systematically.</p>
+                        <div class="tag-list">
+                            <span class="tag">Template</span>
+                            <span class="tag">Risk Management</span>
+                        </div>
+                        <span class="file-type">Template</span>
+                    </a>
+                    <a href="SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/security-assessment-checklist.md" class="resource-card">
+                        <h3>Security Assessment Checklist</h3>
+                        <p>Detailed checklist covering technical, operational, and management security controls for comprehensive assessments.</p>
+                        <div class="tag-list">
+                            <span class="tag">Checklist</span>
+                            <span class="tag">Controls</span>
+                        </div>
+                        <span class="file-type">Checklist</span>
+                    </a>
+                    <a href="SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/vendor-security-questionnaire.md" class="resource-card">
+                        <h3>Vendor Security Questionnaire</h3>
+                        <p>Template questionnaire for evaluating third-party vendor security practices during due diligence and procurement processes.</p>
+                        <div class="tag-list">
+                            <span class="tag">Template</span>
+                            <span class="tag">Vendor Management</span>
+                        </div>
+                        <span class="file-type">Questionnaire</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>
+                View source on <a href="https://github.com/stephane-v/best-practice" target="_blank">GitHub</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
