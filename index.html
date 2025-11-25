@@ -13,9 +13,9 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
             min-height: 100vh;
-            color: #e0e0e0;
+            color: #2d3748;
         }
 
         .container {
@@ -26,35 +26,36 @@
 
         header {
             text-align: center;
-            padding: 50px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 24px;
             margin-bottom: 40px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         header h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 3rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 15px;
+            font-weight: 700;
         }
 
         header p {
-            color: #a0a0a0;
+            color: #64748b;
             font-size: 1.2rem;
             max-width: 700px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 50px;
-            margin-top: 30px;
+            gap: 60px;
+            margin-top: 35px;
             flex-wrap: wrap;
         }
 
@@ -63,42 +64,47 @@
         }
 
         .stat-number {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: #888;
+            color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 500;
         }
 
         .section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
+            background: white;
+            border-radius: 20px;
             margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             overflow: hidden;
         }
 
         .section-header {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             padding: 25px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .section-header h2 {
-            font-size: 1.5rem;
-            color: #fff;
+            font-size: 1.4rem;
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 12px;
+            font-weight: 600;
         }
 
         .section-header .icon {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
 
         .section-content {
@@ -106,21 +112,22 @@
         }
 
         .section-description {
-            color: #a0a0a0;
-            margin-bottom: 20px;
-            line-height: 1.7;
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 1.05rem;
         }
 
         .resource-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
         .resource-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 12px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
             padding: 25px;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -129,51 +136,56 @@
         }
 
         .resource-card:hover {
-            border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            border-color: #8b5cf6;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15);
+            background: white;
         }
 
         .resource-card h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            color: #6366f1;
+            margin-bottom: 12px;
+            font-size: 1.15rem;
+            font-weight: 600;
         }
 
         .resource-card p {
-            color: #888;
+            color: #64748b;
             font-size: 0.95rem;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .resource-card .file-type {
             display: inline-block;
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            padding: 4px 10px;
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            color: #7c3aed;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             margin-top: 15px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .highlight-card {
-            border-color: rgba(118, 75, 162, 0.4);
+            border-color: #c4b5fd;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
         }
 
         .highlight-card:hover {
-            border-color: #764ba2;
-            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.2);
+            border-color: #a855f7;
+            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
+            background: white;
         }
 
         .highlight-card h3 {
-            color: #764ba2;
+            color: #7c3aed;
         }
 
         .highlight-card .file-type {
-            background: rgba(118, 75, 162, 0.2);
-            color: #a855f7;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
         }
 
         .tag-list {
@@ -184,11 +196,12 @@
         }
 
         .tag {
-            background: rgba(255, 255, 255, 0.1);
-            color: #a0a0a0;
-            padding: 4px 12px;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .feature-list {
@@ -197,10 +210,10 @@
         }
 
         .feature-list li {
-            padding: 8px 0;
-            color: #a0a0a0;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+            color: #64748b;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -211,29 +224,36 @@
         }
 
         .feature-list .check {
-            color: #22c55e;
+            color: #10b981;
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
         footer {
             text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-size: 0.9rem;
+            padding: 50px 20px;
+            color: #94a3b8;
+            font-size: 0.95rem;
         }
 
         footer a {
-            color: #667eea;
+            color: #6366f1;
             text-decoration: none;
+            font-weight: 500;
         }
 
         footer a:hover {
             text-decoration: underline;
+            color: #8b5cf6;
         }
 
         @media (max-width: 768px) {
             header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+
+            header {
+                padding: 40px 20px;
             }
 
             .stats {
