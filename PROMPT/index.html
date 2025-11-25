@@ -687,11 +687,11 @@
             <p>Curated collection of AI prompts</p>
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-number">397+</div>
+                    <div class="stat-number" id="prompts-count">0</div>
                     <div class="stat-label">Total Prompts</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number" id="categories-count">10</div>
+                    <div class="stat-number" id="categories-count">0</div>
                     <div class="stat-label">Categories</div>
                 </div>
                 <div class="stat">
@@ -1087,12 +1087,22 @@
 
         function populateCategories() {
             const select = document.getElementById('category-select');
-            promptsData.categories.forEach(category => {
+            // Count actual prompts per category
+            const categoryCounts = {};
+            promptsData.prompts.forEach(prompt => {
+                categoryCounts[prompt.category] = (categoryCounts[prompt.category] || 0) + 1;
+            });
+            // Only show categories that have prompts
+            const activeCategories = promptsData.categories.filter(category => categoryCounts[category.name] > 0);
+            activeCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.name;
-                option.textContent = `${category.name} (${category.prompt_count})`;
+                option.textContent = `${category.name} (${categoryCounts[category.name]})`;
                 select.appendChild(option);
             });
+            // Update header stats
+            document.getElementById('prompts-count').textContent = promptsData.prompts.length;
+            document.getElementById('categories-count').textContent = activeCategories.length;
         }
 
         function populateTags() {
