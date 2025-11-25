@@ -1188,7 +1188,10 @@
                 return;
             }
 
-            grid.innerHTML = prompts.map((prompt, index) => `
+            grid.innerHTML = prompts.map((prompt) => {
+                // Find the original index in promptsData.prompts
+                const originalIndex = promptsData.prompts.indexOf(prompt);
+                return `
                 <div class="prompt-card">
                     <div class="prompt-header">
                         <h3 class="prompt-title">${escapeHtml(prompt.title)}</h3>
@@ -1200,14 +1203,14 @@
                     </div>
                     <div class="prompt-content">${escapeHtml(prompt.prompt)}</div>
                     <div class="prompt-actions">
-                        <button class="btn btn-copy" onclick="copyPrompt(${index})">
+                        <button class="btn btn-copy" onclick="copyPrompt(${originalIndex})">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                             </svg>
                             Copy
                         </button>
-                        <button class="btn btn-expand" onclick="openModal(${index})">
+                        <button class="btn btn-expand" onclick="openModal(${originalIndex})">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
                             </svg>
@@ -1215,7 +1218,7 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function escapeHtml(text) {
