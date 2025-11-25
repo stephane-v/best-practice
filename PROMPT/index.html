@@ -777,9 +777,9 @@
         let currentPlaceholders = [];
         let placeholderValues = {};
 
-        // Extract placeholders from prompt text (e.g., [INSERT CONTEXT], [TARGET AUDIENCE])
+        // Extract placeholders from prompt text (e.g., [INSERT CONTEXT], [TARGET AUDIENCE], [industry])
         function extractPlaceholders(text) {
-            const regex = /\[([A-Z][A-Z0-9\s\/\-_']+)\]/g;
+            const regex = /\[([A-Za-z][A-Za-z0-9\s\/\-_']+)\]/g;
             const placeholders = [];
             const seen = new Set();
             let match;
