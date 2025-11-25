@@ -435,6 +435,87 @@
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
+        .placeholder-inputs {
+            margin-bottom: 20px;
+        }
+
+        .placeholder-inputs h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .placeholder-inputs h4::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .placeholder-field {
+            margin-bottom: 12px;
+        }
+
+        .placeholder-field label {
+            display: block;
+            color: #a0a0a0;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .placeholder-field input,
+        .placeholder-field textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .placeholder-field textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .placeholder-field input:focus,
+        .placeholder-field textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .placeholder-field input::placeholder,
+        .placeholder-field textarea::placeholder {
+            color: #555;
+        }
+
+        .modal-prompt .placeholder-highlight {
+            background: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .modal-prompt .placeholder-filled {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
         .toast {
             position: fixed;
             bottom: 30px;
@@ -638,6 +719,7 @@
             <span class="modal-category" id="modal-category"></span>
             <p class="modal-description" id="modal-description"></p>
             <div class="modal-tags" id="modal-tags"></div>
+            <div class="placeholder-inputs" id="placeholder-inputs"></div>
             <div class="modal-prompt" id="modal-prompt"></div>
             <button class="modal-btn" id="modal-copy">Copy Prompt</button>
         </div>
@@ -648,6 +730,85 @@
     <script>
         let promptsData = null;
         let activeTags = new Set();
+        let currentPromptIndex = null;
+        let currentPlaceholders = [];
+        let placeholderValues = {};
+
+        // Extract placeholders from prompt text (e.g., [INSERT CONTEXT], [TARGET AUDIENCE])
+        function extractPlaceholders(text) {
+            const regex = /\[([A-Z][A-Z0-9\s\/\-_']+)\]/g;
+            const placeholders = [];
+            const seen = new Set();
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const placeholder = match[0];
+                if (!seen.has(placeholder)) {
+                    seen.add(placeholder);
+                    placeholders.push({
+                        full: placeholder,
+                        name: match[1],
+                        label: match[1].replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+                    });
+                }
+            }
+            return placeholders;
+        }
+
+        // Generate input fields for placeholders
+        function generatePlaceholderInputs(placeholders) {
+            if (placeholders.length === 0) return '';
+
+            let html = '<h4>Fill in your details</h4>';
+            placeholders.forEach((p, index) => {
+                const inputId = `placeholder-${index}`;
+                const isLongInput = p.name.includes('CONTEXT') || p.name.includes('PROBLEM') || p.name.includes('EXPLAIN') || p.name.includes('DESCRIPTION');
+                html += `
+                    <div class="placeholder-field">
+                        <label for="${inputId}">${escapeHtml(p.label)}</label>
+                        ${isLongInput
+                            ? `<textarea id="${inputId}" data-placeholder="${escapeHtml(p.full)}" placeholder="Enter ${p.label.toLowerCase()}..."></textarea>`
+                            : `<input type="text" id="${inputId}" data-placeholder="${escapeHtml(p.full)}" placeholder="Enter ${p.label.toLowerCase()}...">`
+                        }
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        // Highlight placeholders in prompt text
+        function highlightPlaceholders(text, values) {
+            let result = escapeHtml(text);
+            currentPlaceholders.forEach(p => {
+                const escapedPlaceholder = escapeHtml(p.full);
+                const value = values[p.full];
+                if (value && value.trim()) {
+                    result = result.split(escapedPlaceholder).join(`<span class="placeholder-filled">${escapeHtml(value)}</span>`);
+                } else {
+                    result = result.split(escapedPlaceholder).join(`<span class="placeholder-highlight">${escapedPlaceholder}</span>`);
+                }
+            });
+            return result;
+        }
+
+        // Get the final prompt with filled values
+        function getFinalPrompt(originalPrompt, values) {
+            let result = originalPrompt;
+            currentPlaceholders.forEach(p => {
+                const value = values[p.full];
+                if (value && value.trim()) {
+                    result = result.split(p.full).join(value);
+                }
+            });
+            return result;
+        }
+
+        // Update prompt display when inputs change
+        function updatePromptDisplay() {
+            if (currentPromptIndex === null) return;
+            const prompt = promptsData.prompts[currentPromptIndex];
+            const promptDisplay = document.getElementById('modal-prompt');
+            promptDisplay.innerHTML = highlightPlaceholders(prompt.prompt, placeholderValues);
+        }
 
         async function loadPrompts() {
             try {
@@ -818,19 +979,43 @@
         }
 
         function openModal(index) {
+            currentPromptIndex = index;
+            placeholderValues = {};
             const prompt = promptsData.prompts[index];
+
             document.getElementById('modal-title').textContent = prompt.title;
             document.getElementById('modal-category').textContent = prompt.category;
             document.getElementById('modal-description').textContent = prompt.description;
-            document.getElementById('modal-prompt').textContent = prompt.prompt;
 
             const tagsContainer = document.getElementById('modal-tags');
             tagsContainer.innerHTML = prompt.tags.map(tag =>
                 `<span class="prompt-tag" style="margin-right: 8px; margin-bottom: 8px; display: inline-block;">${escapeHtml(tag)}</span>`
             ).join('');
 
+            // Extract and display placeholder inputs
+            currentPlaceholders = extractPlaceholders(prompt.prompt);
+            const placeholderInputsContainer = document.getElementById('placeholder-inputs');
+            placeholderInputsContainer.innerHTML = generatePlaceholderInputs(currentPlaceholders);
+
+            // Add event listeners to placeholder inputs
+            currentPlaceholders.forEach((p, i) => {
+                const input = document.getElementById(`placeholder-${i}`);
+                if (input) {
+                    input.addEventListener('input', (e) => {
+                        placeholderValues[p.full] = e.target.value;
+                        updatePromptDisplay();
+                    });
+                }
+            });
+
+            // Display prompt with highlighted placeholders
+            const promptDisplay = document.getElementById('modal-prompt');
+            promptDisplay.innerHTML = highlightPlaceholders(prompt.prompt, placeholderValues);
+
+            // Update copy button to use filled values
             document.getElementById('modal-copy').onclick = () => {
-                navigator.clipboard.writeText(prompt.prompt).then(() => {
+                const finalPrompt = getFinalPrompt(prompt.prompt, placeholderValues);
+                navigator.clipboard.writeText(finalPrompt).then(() => {
                     showToast('Prompt copied to clipboard!');
                 });
             };
@@ -842,6 +1027,9 @@
         function closeModal() {
             document.getElementById('prompt-modal').classList.remove('active');
             document.body.style.overflow = '';
+            currentPromptIndex = null;
+            currentPlaceholders = [];
+            placeholderValues = {};
         }
 
         function showToast(message) {
