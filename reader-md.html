@@ -16,6 +16,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
@@ -1072,10 +1076,33 @@
                     loadFromInput();
                 }
             });
+
+            // Handle anchor clicks for smooth scrolling
+            document.addEventListener('click', function(e) {
+                const anchor = e.target.closest('a[href^="#"]');
+                if (anchor) {
+                    e.preventDefault();
+                    const targetId = anchor.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Update URL hash without triggering popstate
+                        history.pushState(null, null, anchor.getAttribute('href'));
+                    }
+                }
+            });
         });
 
         // Handle browser back/forward
         window.addEventListener('popstate', function() {
+            // Ignore hash-only changes
+            if (window.location.hash) {
+                const targetElement = document.getElementById(window.location.hash.substring(1));
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                return;
+            }
             const fileUrl = getUrlParam('file');
             loadMarkdown(fileUrl);
         });
