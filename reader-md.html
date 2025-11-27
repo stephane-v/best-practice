@@ -780,6 +780,9 @@
                 width: 45px;
                 height: 45px;
                 font-size: 1.3rem;
+                /* Improve touch handling on mobile */
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
             }
         }
     </style>
@@ -1135,15 +1138,23 @@
         // Show/hide scroll to top button based on scroll position
         function handleScrollButton() {
             const scrollBtn = document.getElementById('scroll-to-top');
-            if (window.scrollY > 300) {
+            if (!scrollBtn) return;
+
+            // Use scrollY with fallback for better mobile compatibility
+            const scrollPosition = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollPosition > 300) {
                 scrollBtn.classList.add('visible');
             } else {
                 scrollBtn.classList.remove('visible');
             }
         }
 
-        // Add scroll event listener
-        window.addEventListener('scroll', handleScrollButton);
+        // Add scroll event listener with passive option for better mobile performance
+        window.addEventListener('scroll', handleScrollButton, { passive: true });
+
+        // Check initial scroll position on page load
+        document.addEventListener('DOMContentLoaded', handleScrollButton);
 
         // Handle Enter key in input
         document.addEventListener('DOMContentLoaded', function() {
