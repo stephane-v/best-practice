@@ -1246,15 +1246,24 @@
             }
 
             savePersonas(personas);
-            cancelEdit();
+
+            // Reset form state
+            currentPersonaId = null;
+            personaTags = [];
+            clearForm();
+            document.getElementById('persona-form-section').style.display = 'none';
+
+            // Update the personas list
+            loadPersonas();
+
             showToast(t('saveSuccess'), 'success');
         }
 
         function cancelEdit() {
             currentPersonaId = null;
+            personaTags = [];
             clearForm();
             document.getElementById('persona-form-section').style.display = 'none';
-            loadPersonas();
         }
 
         function clearForm() {
