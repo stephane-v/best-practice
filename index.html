@@ -1,10 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Practice Repository</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-3: #a855f7;
+            --accent-4: #ec4899;
+            --success: #10b981;
+            --card-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 20px 40px -4px rgba(0, 0, 0, 0.12);
+            --gradient-primary: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 50%, var(--accent-3) 100%);
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-glass: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+            --card-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 20px 40px -4px rgba(0, 0, 0, 0.5);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,211 +48,446 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            color: #2d3748;
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
 
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: var(--gradient-bg);
+            opacity: 0.03;
+            z-index: -2;
+        }
+
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(var(--accent-1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.03;
+            z-index: -1;
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--accent-1);
+            top: -200px;
+            right: -200px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--accent-3);
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -10s;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-4);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 30px) scale(1.02); }
+        }
+
+        /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
         }
 
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--card-shadow);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Header */
         header {
             text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 24px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 80px 40px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .header-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         header h1 {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 15px;
-            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            animation: fadeInUp 0.6s ease 0.1s backwards;
         }
 
         header p {
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto;
+            max-width: 600px;
+            margin: 0 auto 40px;
             line-height: 1.7;
+            font-weight: 400;
+            animation: fadeInUp 0.6s ease 0.2s backwards;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats */
         .stats {
             display: flex;
             justify-content: center;
-            gap: 60px;
-            margin-top: 35px;
+            gap: 48px;
             flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease 0.3s backwards;
         }
 
         .stat {
             text-align: center;
+            padding: 24px 32px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
         }
 
         .stat-number {
             font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            font-weight: 800;
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1;
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: #94a3b8;
+            font-size: 0.8rem;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            font-weight: 500;
+            font-weight: 600;
+            margin-top: 8px;
         }
 
+        /* Section */
         .section {
-            background: white;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            margin-bottom: 32px;
             overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+        .section:nth-child(6) { animation-delay: 0.5s; }
+
+        .section:hover {
+            box-shadow: var(--card-shadow);
         }
 
         .section-header {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 25px 30px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 28px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .section-header h2 {
-            font-size: 1.4rem;
-            color: #1e293b;
+            font-size: 1.3rem;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 600;
+            gap: 14px;
+            font-weight: 700;
         }
 
         .section-header .icon {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+        }
+
+        .section-count {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         .section-content {
-            padding: 30px;
+            padding: 32px;
         }
 
         .section-description {
-            color: #64748b;
-            margin-bottom: 25px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
             line-height: 1.8;
-            font-size: 1.05rem;
+            font-size: 1rem;
         }
 
+        /* Resource Grid */
         .resource-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
         }
 
+        /* Cards */
         .resource-card {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 25px;
-            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: inherit;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .resource-card:hover::before {
+            transform: scaleX(1);
         }
 
         .resource-card:hover {
-            border-color: #8b5cf6;
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15);
-            background: white;
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--accent-2);
         }
 
         .resource-card h3 {
-            color: #6366f1;
+            color: var(--text-primary);
             margin-bottom: 12px;
-            font-size: 1.15rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        .resource-card:hover h3 {
+            color: var(--accent-2);
         }
 
         .resource-card p {
-            color: #64748b;
+            color: var(--text-secondary);
             font-size: 0.95rem;
             line-height: 1.7;
+            flex-grow: 1;
         }
 
         .resource-card .file-type {
-            display: inline-block;
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            color: #7c3aed;
-            padding: 5px 12px;
-            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 100px;
             font-size: 0.75rem;
-            margin-top: 15px;
+            margin-top: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-weight: 600;
+            width: fit-content;
+            transition: all 0.3s ease;
         }
 
-        .highlight-card {
-            border-color: #c4b5fd;
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-        }
-
-        .highlight-card:hover {
-            border-color: #a855f7;
-            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
-            background: white;
-        }
-
-        .highlight-card h3 {
-            color: #7c3aed;
-        }
-
-        .highlight-card .file-type {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        .resource-card:hover .file-type {
+            background: var(--gradient-primary);
             color: white;
         }
 
+        /* Highlight Card */
+        .highlight-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .highlight-card::before {
+            transform: scaleX(1);
+        }
+
+        .highlight-card:hover {
+            border-color: var(--accent-2);
+        }
+
+        /* Tags */
         .tag-list {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 15px;
+            margin-top: 16px;
         }
 
         .tag {
-            background: #e2e8f0;
-            color: #475569;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
             font-weight: 500;
+            transition: all 0.3s ease;
         }
 
+        .resource-card:hover .tag {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-2);
+        }
+
+        /* Feature List */
         .feature-list {
             list-style: none;
-            margin-top: 15px;
+            margin-top: 16px;
         }
 
         .feature-list li {
-            padding: 10px 0;
-            color: #64748b;
+            padding: 14px 0;
+            color: var(--text-secondary);
             font-size: 0.95rem;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .feature-list li:last-child {
@@ -224,57 +495,152 @@
         }
 
         .feature-list .check {
-            color: #10b981;
-            font-weight: bold;
-            font-size: 1.1rem;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
         }
 
+        /* Footer */
         footer {
             text-align: center;
-            padding: 50px 20px;
-            color: #94a3b8;
+            padding: 60px 20px;
+            color: var(--text-muted);
             font-size: 0.95rem;
         }
 
         footer a {
-            color: #6366f1;
+            color: var(--accent-2);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            transition: color 0.3s ease;
         }
 
         footer a:hover {
-            text-decoration: underline;
-            color: #8b5cf6;
+            color: var(--accent-3);
         }
 
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 16px;
+        }
+
+        /* Scroll to top */
+        .scroll-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 99;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.2rem;
+            header {
+                padding: 60px 20px;
             }
 
-            header {
-                padding: 40px 20px;
+            header p {
+                font-size: 1rem;
             }
 
             .stats {
-                gap: 30px;
+                gap: 16px;
+            }
+
+            .stat {
+                padding: 20px 24px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
             }
 
             .section-content {
-                padding: 20px;
+                padding: 24px;
             }
 
             .resource-grid {
                 grid-template-columns: 1fr;
             }
+
+            .theme-toggle {
+                top: 16px;
+                right: 16px;
+                padding: 10px;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+
+            .orb {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+        <span>Theme</span>
+    </button>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" onclick="scrollToTop()" aria-label="Scroll to top">
+        &#8593;
+    </button>
+
     <div class="container">
         <header>
+            <div class="header-badge">
+                <span class="dot"></span>
+                Open Source Resources
+            </div>
             <h1>Best Practice Repository</h1>
-            <p>A comprehensive collection of resources for AI prompts, IT system health consulting, and Docker security best practices.</p>
+            <p>A comprehensive collection of resources for AI prompts, IT system health consulting, marketing strategy, and security best practices.</p>
             <div class="stats">
                 <div class="stat">
                     <div class="stat-number">26</div>
@@ -285,16 +651,83 @@
                     <div class="stat-label">Security Templates</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">2</div>
-                    <div class="stat-label">Automation Scripts</div>
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Interactive Tools</div>
                 </div>
             </div>
         </header>
+
+        <!-- Marketing Strategy Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2><span class="icon">&#128200;</span> Marketing Strategy</h2>
+                <span class="section-count">5 resources</span>
+            </div>
+            <div class="section-content">
+                <p class="section-description">
+                    Comprehensive marketing best practices covering the complete customer journey from acquisition through conversion to sales.
+                    Includes interactive tools to manage your marketing campaigns.
+                </p>
+                <div class="resource-grid">
+                    <a href="MARKETING-STRATEGY/marketing-tracker.html" class="resource-card highlight-card">
+                        <h3>Marketing Process Tracker</h3>
+                        <p>Interactive web app to track your marketing progress. Features checklist for all stages, notes, progress indicators, and export/import functionality.</p>
+                        <div class="tag-list">
+                            <span class="tag">Interactive</span>
+                            <span class="tag">Progress Tracking</span>
+                            <span class="tag">Export/Import</span>
+                        </div>
+                        <span class="file-type">Interactive App</span>
+                    </a>
+                    <a href="MARKETING-STRATEGY/persona-builder.html" class="resource-card highlight-card">
+                        <h3>Buyer Persona Builder</h3>
+                        <p>Create and manage detailed buyer personas with demographics, goals, challenges, and behaviors. Supports English and French.</p>
+                        <div class="tag-list">
+                            <span class="tag">Personas</span>
+                            <span class="tag">EN/FR</span>
+                            <span class="tag">Export/Import</span>
+                        </div>
+                        <span class="file-type">Interactive App</span>
+                    </a>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/customer-acquisition-strategies.md" class="resource-card">
+                        <h3>Customer Acquisition Strategies</h3>
+                        <p>Complete guide to SEO, content marketing, paid advertising, social media, email marketing, and partnership strategies.</p>
+                        <div class="tag-list">
+                            <span class="tag">SEO</span>
+                            <span class="tag">Content</span>
+                            <span class="tag">Paid Ads</span>
+                        </div>
+                        <span class="file-type">Guide</span>
+                    </a>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/conversion-optimization-guide.md" class="resource-card">
+                        <h3>Conversion Optimization Guide</h3>
+                        <p>Landing page optimization, A/B testing frameworks, email conversion, checkout optimization, and psychological principles.</p>
+                        <div class="tag-list">
+                            <span class="tag">Landing Pages</span>
+                            <span class="tag">A/B Testing</span>
+                            <span class="tag">CRO</span>
+                        </div>
+                        <span class="file-type">Guide</span>
+                    </a>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/sales-process-best-practices.md" class="resource-card">
+                        <h3>Sales Process Best Practices</h3>
+                        <p>Lead qualification, prospecting, discovery calls, presentations, objection handling, closing techniques, and pipeline management.</p>
+                        <div class="tag-list">
+                            <span class="tag">Sales</span>
+                            <span class="tag">Closing</span>
+                            <span class="tag">Pipeline</span>
+                        </div>
+                        <span class="file-type">Guide</span>
+                    </a>
+                </div>
+            </div>
+        </section>
 
         <!-- IT System Health Section -->
         <section class="section">
             <div class="section-header">
                 <h2><span class="icon">&#128200;</span> IT System Health Consulting</h2>
+                <span class="section-count">1 resource</span>
             </div>
             <div class="section-content">
                 <p class="section-description">
@@ -310,7 +743,7 @@
                             <span class="tag">Governance</span>
                             <span class="tag">Risk Management</span>
                         </div>
-                        <span class="file-type">Markdown Guide</span>
+                        <span class="file-type">Guide</span>
                     </a>
                 </div>
             </div>
@@ -320,6 +753,7 @@
         <section class="section">
             <div class="section-header">
                 <h2><span class="icon">&#128274;</span> Docker Security</h2>
+                <span class="section-count">5 resources</span>
             </div>
             <div class="section-content">
                 <p class="section-description">
@@ -335,22 +769,21 @@
                             <span class="tag">Detection</span>
                             <span class="tag">Incident Response</span>
                         </div>
-                        <span class="file-type">Markdown Guide</span>
+                        <span class="file-type">Guide</span>
                     </a>
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/DOCKER-VS-PODMAN.md" class="resource-card highlight-card">
                         <h3>Docker vs Podman Comparison</h3>
-                        <p>Comprehensive comparison of Docker and Podman covering security, performance, architecture, enterprise features, and Kubernetes integration with migration guide.</p>
+                        <p>Comprehensive comparison covering security, performance, architecture, enterprise features, and Kubernetes integration with migration guide.</p>
                         <div class="tag-list">
                             <span class="tag">Security</span>
                             <span class="tag">Performance</span>
-                            <span class="tag">Comparison</span>
                             <span class="tag">Migration</span>
                         </div>
-                        <span class="file-type">Comparison Guide</span>
+                        <span class="file-type">Comparison</span>
                     </a>
                     <a href="SECURITY-DOCKER/docker-security-audit.sh" class="resource-card">
                         <h3>Security Audit Script</h3>
-                        <p>Automated tool that audits running containers for security misconfigurations, checks Docker daemon settings, and provides remediation guidance with security scoring.</p>
+                        <p>Automated tool that audits running containers for security misconfigurations, checks Docker daemon settings, and provides remediation guidance.</p>
                         <div class="tag-list">
                             <span class="tag">Automation</span>
                             <span class="tag">Audit</span>
@@ -380,7 +813,8 @@
         <!-- Security & Cyber Health Section -->
         <section class="section">
             <div class="section-header">
-                <h2><span class="icon">&#128737;</span> Security & Cyber Health Consulting</h2>
+                <h2><span class="icon">&#128737;</span> Security & Cyber Health</h2>
+                <span class="section-count">6 resources</span>
             </div>
             <div class="section-content">
                 <p class="section-description">
@@ -390,13 +824,13 @@
                 <div class="resource-grid">
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card">
                         <h3>Security Consulting Guide</h3>
-                        <p>Comprehensive framework for evaluating organizational security posture and cyber health. Strategic guidance for consultants and advisors.</p>
+                        <p>Comprehensive framework for evaluating organizational security posture and cyber health. Strategic guidance for consultants.</p>
                         <div class="tag-list">
                             <span class="tag">Assessment</span>
                             <span class="tag">Strategy</span>
                             <span class="tag">Consulting</span>
                         </div>
-                        <span class="file-type">Markdown Guide</span>
+                        <span class="file-type">Guide</span>
                     </a>
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/incident-response-plan-template.md" class="resource-card">
                         <h3>Incident Response Plan Template</h3>
@@ -409,7 +843,7 @@
                     </a>
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/risk-assessment-template.md" class="resource-card">
                         <h3>Risk Assessment Template</h3>
-                        <p>Framework for identifying, analyzing, and prioritizing security risks. Helps organizations evaluate their risk exposure systematically.</p>
+                        <p>Framework for identifying, analyzing, and prioritizing security risks. Evaluate risk exposure systematically.</p>
                         <div class="tag-list">
                             <span class="tag">Template</span>
                             <span class="tag">Risk Management</span>
@@ -427,7 +861,7 @@
                     </a>
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/vendor-security-questionnaire.md" class="resource-card">
                         <h3>Vendor Security Questionnaire</h3>
-                        <p>Template questionnaire for evaluating third-party vendor security practices during due diligence and procurement processes.</p>
+                        <p>Template questionnaire for evaluating third-party vendor security practices during due diligence and procurement.</p>
                         <div class="tag-list">
                             <span class="tag">Template</span>
                             <span class="tag">Vendor Management</span>
@@ -436,79 +870,13 @@
                     </a>
                     <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/enterprise-mobile-security-guide.md" class="resource-card highlight-card">
                         <h3>Enterprise Mobile Security Guide</h3>
-                        <p>Comprehensive framework for securing mobile devices in enterprise environments. Includes TODO/NOTTODO practices, MDM guidelines, BYOD strategies, and user awareness training for neophytes.</p>
+                        <p>Comprehensive framework for securing mobile devices. Includes MDM guidelines, BYOD strategies, and user awareness training.</p>
                         <div class="tag-list">
                             <span class="tag">Mobile Security</span>
                             <span class="tag">MDM</span>
                             <span class="tag">BYOD</span>
-                            <span class="tag">Awareness</span>
                         </div>
-                        <span class="file-type">Comprehensive Guide</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Marketing Strategy Section -->
-        <section class="section">
-            <div class="section-header">
-                <h2><span class="icon">&#128200;</span> Marketing Strategy</h2>
-            </div>
-            <div class="section-content">
-                <p class="section-description">
-                    Comprehensive marketing best practices covering the complete customer journey from acquisition through conversion to sales.
-                    Includes an interactive process tracker to manage your marketing campaigns.
-                </p>
-                <div class="resource-grid">
-                    <a href="MARKETING-STRATEGY/marketing-tracker.html" class="resource-card highlight-card">
-                        <h3>Marketing Process Tracker</h3>
-                        <p>Interactive web app to track your marketing progress. Features checklist for all stages, notes, progress indicators, and export/import functionality. Data saved locally in your browser.</p>
-                        <div class="tag-list">
-                            <span class="tag">Interactive</span>
-                            <span class="tag">Progress Tracking</span>
-                            <span class="tag">Export/Import</span>
-                        </div>
-                        <span class="file-type">Interactive App</span>
-                    </a>
-                    <a href="MARKETING-STRATEGY/persona-builder.html" class="resource-card highlight-card">
-                        <h3>Buyer Persona Builder</h3>
-                        <p>Create and manage detailed buyer personas with demographics, goals, challenges, and behaviors. Supports English and French. Store multiple personas locally with export/import.</p>
-                        <div class="tag-list">
-                            <span class="tag">Personas</span>
-                            <span class="tag">EN/FR</span>
-                            <span class="tag">Export/Import</span>
-                        </div>
-                        <span class="file-type">Interactive App</span>
-                    </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/customer-acquisition-strategies.md" class="resource-card">
-                        <h3>Customer Acquisition Strategies</h3>
-                        <p>Complete guide to SEO, content marketing, paid advertising, social media, email marketing, and partnership strategies for acquiring customers.</p>
-                        <div class="tag-list">
-                            <span class="tag">SEO</span>
-                            <span class="tag">Content</span>
-                            <span class="tag">Paid Ads</span>
-                        </div>
-                        <span class="file-type">Markdown Guide</span>
-                    </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/conversion-optimization-guide.md" class="resource-card">
-                        <h3>Conversion Optimization Guide</h3>
-                        <p>Landing page optimization, A/B testing frameworks, email conversion, checkout optimization, and psychological principles for increasing conversions.</p>
-                        <div class="tag-list">
-                            <span class="tag">Landing Pages</span>
-                            <span class="tag">A/B Testing</span>
-                            <span class="tag">CRO</span>
-                        </div>
-                        <span class="file-type">Markdown Guide</span>
-                    </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/sales-process-best-practices.md" class="resource-card">
-                        <h3>Sales Process Best Practices</h3>
-                        <p>Lead qualification (BANT, MEDDIC), prospecting, discovery calls, presentations, objection handling, closing techniques, and pipeline management.</p>
-                        <div class="tag-list">
-                            <span class="tag">Sales</span>
-                            <span class="tag">Closing</span>
-                            <span class="tag">Pipeline</span>
-                        </div>
-                        <span class="file-type">Markdown Guide</span>
+                        <span class="file-type">Guide</span>
                     </a>
                 </div>
             </div>
@@ -518,6 +886,7 @@
         <section class="section">
             <div class="section-header">
                 <h2><span class="icon">&#128172;</span> AI Prompt Library</h2>
+                <span class="section-count">26 prompts</span>
             </div>
             <div class="section-content">
                 <p class="section-description">
@@ -532,8 +901,7 @@
                             <span class="tag">Business</span>
                             <span class="tag">Productivity</span>
                             <span class="tag">AI Strategy</span>
-                            <span class="tag">Content</span>
-                            <span class="tag">+7 more</span>
+                            <span class="tag">+8 more</span>
                         </div>
                         <span class="file-type">Interactive App</span>
                     </a>
@@ -552,10 +920,40 @@
         </section>
 
         <footer>
-            <p>
-                View source on <a href="https://github.com/stephane-v/best-practice" target="_blank">GitHub</a>
-            </p>
+            <p>Built with care for the developer community</p>
+            <div class="footer-links">
+                <a href="https://github.com/stephane-v/best-practice" target="_blank">GitHub</a>
+            </div>
         </footer>
     </div>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Scroll to top button
+        const scrollTopBtn = document.querySelector('.scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
