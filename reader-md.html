@@ -4,12 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Reader - Best Practice</title>
-    <!-- Marked.js for Markdown parsing -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -18,16 +48,15 @@
 
         html {
             scroll-behavior: smooth;
-            overflow-x: hidden;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
-            color: #2d3748;
+            color: var(--text-primary);
             line-height: 1.7;
-            overflow-x: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .container {
@@ -36,13 +65,13 @@
             padding: 20px;
         }
 
-        /* Header */
         header {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
         }
 
         .header-top {
@@ -54,9 +83,9 @@
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -73,47 +102,47 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            border-radius: 12px;
+            padding: 10px 18px;
+            border-radius: 10px;
             font-size: 0.9rem;
             font-weight: 500;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
             border: none;
+            font-family: inherit;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: var(--gradient-primary);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #e2e8f0;
+            background: var(--border-color);
         }
 
-        /* URL Input Form */
         .url-form {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid var(--border-color);
         }
 
         .url-form label {
             display: block;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: #64748b;
+            font-weight: 600;
+            color: var(--text-secondary);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -127,26 +156,28 @@
         .url-input {
             flex: 1;
             padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             font-family: 'Monaco', 'Menlo', monospace;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
         .url-input:focus {
             outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        /* File Info */
         .file-info {
-            margin-top: 20px;
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 12px;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
             display: none;
+            border: 1px solid var(--border-color);
         }
 
         .file-info.visible {
@@ -155,26 +186,22 @@
 
         .file-name {
             font-weight: 600;
-            color: #1e293b;
-            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .file-name .icon {
-            font-size: 1.3rem;
+            gap: 8px;
         }
 
         .file-source {
             font-size: 0.85rem;
-            color: #64748b;
-            margin-top: 5px;
+            color: var(--text-secondary);
+            margin-top: 4px;
             word-break: break-all;
         }
 
         .file-source a {
-            color: #6366f1;
+            color: var(--accent-1);
             text-decoration: none;
         }
 
@@ -182,81 +209,77 @@
             text-decoration: underline;
         }
 
-        /* Content Area */
         .content {
-            background: white;
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
             min-height: 400px;
-            max-width: 100%;
+            border: 1px solid var(--border-color);
         }
 
-        /* Loading State */
         .loading {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 80px 20px;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e2e8f0;
-            border-top-color: #8b5cf6;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-1);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Error State */
         .error {
             text-align: center;
             padding: 60px 20px;
         }
 
         .error-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
 
         .error h2 {
-            color: #dc2626;
-            margin-bottom: 10px;
+            color: var(--danger);
+            margin-bottom: 8px;
         }
 
         .error p {
-            color: #64748b;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
 
-        /* Welcome State */
         .welcome {
             text-align: center;
             padding: 60px 20px;
         }
 
         .welcome-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
 
         .welcome h2 {
-            color: #1e293b;
-            margin-bottom: 15px;
-            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 1.6rem;
         }
 
         .welcome p {
-            color: #64748b;
-            margin-bottom: 30px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
             max-width: 500px;
             margin-left: auto;
             margin-right: auto;
@@ -264,38 +287,38 @@
 
         .example-urls {
             text-align: left;
-            background: #f8fafc;
+            background: var(--bg-tertiary);
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
             max-width: 600px;
             margin: 0 auto;
+            border: 1px solid var(--border-color);
         }
 
         .example-urls h3 {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .example-url {
             display: block;
-            padding: 12px 15px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            color: #6366f1;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: var(--accent-1);
             text-decoration: none;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
-            word-break: break-all;
+            transition: all 0.2s ease;
         }
 
         .example-url:hover {
-            border-color: #8b5cf6;
-            transform: translateX(5px);
+            border-color: var(--accent-1);
+            transform: translateX(4px);
         }
 
         .example-url:last-child {
@@ -304,93 +327,83 @@
 
         /* Markdown Styles */
         .markdown-body {
-            font-size: 1.05rem;
+            font-size: 1rem;
         }
 
         .markdown-body h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #e2e8f0;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .markdown-body h2 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            color: #1e293b;
-            margin-top: 40px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f1f5f9;
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .markdown-body h3 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            color: #334155;
-            margin-top: 30px;
-            margin-bottom: 12px;
-        }
-
-        .markdown-body h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #475569;
-            margin-top: 25px;
+            color: var(--text-primary);
+            margin-top: 24px;
             margin-bottom: 10px;
         }
 
-        .markdown-body h5, .markdown-body h6 {
+        .markdown-body h4, .markdown-body h5, .markdown-body h6 {
             font-size: 1rem;
             font-weight: 600;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-top: 20px;
             margin-bottom: 8px;
         }
 
         .markdown-body p {
-            margin-bottom: 16px;
-            color: #334155;
+            margin-bottom: 14px;
+            color: var(--text-primary);
         }
 
         .markdown-body a {
-            color: #6366f1;
+            color: var(--accent-1);
             text-decoration: none;
             font-weight: 500;
         }
 
         .markdown-body a:hover {
             text-decoration: underline;
-            color: #8b5cf6;
         }
 
         .markdown-body ul, .markdown-body ol {
-            margin-bottom: 16px;
-            padding-left: 25px;
+            margin-bottom: 14px;
+            padding-left: 24px;
         }
 
         .markdown-body li {
-            margin-bottom: 8px;
-            color: #334155;
+            margin-bottom: 6px;
+            color: var(--text-primary);
         }
 
         .markdown-body li::marker {
-            color: #8b5cf6;
+            color: var(--accent-1);
         }
 
         .markdown-body blockquote {
-            border-left: 4px solid #8b5cf6;
-            padding: 15px 20px;
-            margin: 20px 0;
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-            border-radius: 0 12px 12px 0;
-            color: #5b21b6;
+            border-left: 3px solid var(--accent-1);
+            padding: 12px 16px;
+            margin: 16px 0;
+            background: var(--bg-tertiary);
+            border-radius: 0 8px 8px 0;
+            color: var(--text-secondary);
         }
 
         .markdown-body blockquote p {
@@ -399,21 +412,20 @@
         }
 
         .markdown-body code {
-            background: #f1f5f9;
-            padding: 3px 8px;
-            border-radius: 6px;
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9em;
-            color: #7c3aed;
+            color: var(--accent-2);
         }
 
         .markdown-body pre {
             background: #1e293b;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
             overflow-x: auto;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .markdown-body pre code {
@@ -424,108 +436,69 @@
             line-height: 1.6;
         }
 
-        /* Table wrapper for horizontal scroll on mobile */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
-            margin: 20px 0;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            -webkit-overflow-scrolling: touch;
+            margin: 16px 0;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
         }
 
         .markdown-body table {
             width: 100%;
             border-collapse: collapse;
             margin: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            min-width: max-content;
         }
 
         .markdown-body th {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: var(--gradient-primary);
             color: white;
-            padding: 15px;
+            padding: 12px;
             text-align: left;
             font-weight: 600;
         }
 
         .markdown-body td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .markdown-body tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        .markdown-body tr:hover {
-            background: #f1f5f9;
+            background: var(--bg-tertiary);
         }
 
         .markdown-body img {
             max-width: 100%;
-            border-radius: 12px;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 16px 0;
         }
 
         .markdown-body hr {
             border: none;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-            margin: 40px 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 32px 0;
         }
 
         .markdown-body strong {
             font-weight: 600;
-            color: #1e293b;
-        }
-
-        .markdown-body em {
-            color: #64748b;
-        }
-
-        /* Task Lists */
-        .markdown-body input[type="checkbox"] {
-            margin-right: 8px;
-            accent-color: #8b5cf6;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        footer a {
-            color: #6366f1;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-            color: #8b5cf6;
+            color: var(--text-primary);
         }
 
         /* Table of Contents */
         .toc {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin-bottom: 30px;
-            border: 2px solid #e2e8f0;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
 
         .toc-title {
             font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 12px;
-            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -538,237 +511,75 @@
         }
 
         .toc-list li {
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .toc-list a {
-            color: #64748b;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
         }
 
         .toc-list a:hover {
-            color: #8b5cf6;
-            padding-left: 5px;
+            color: var(--accent-1);
+            padding-left: 4px;
         }
 
-        .toc-list .toc-h3 {
-            padding-left: 15px;
+        .toc-list .toc-h3 { padding-left: 12px; }
+        .toc-list .toc-h4 { padding-left: 24px; }
+
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        .toc-list .toc-h4 {
-            padding-left: 30px;
+        footer a {
+            color: var(--accent-1);
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-            }
-
-            header, footer, .btn {
-                display: none;
-            }
-
-            .content {
-                box-shadow: none;
-                padding: 0;
-            }
+        footer a:hover {
+            text-decoration: underline;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            header {
-                padding: 20px;
-            }
-
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .url-input-group {
-                flex-direction: column;
-            }
-
-            .content {
-                padding: 25px;
-            }
-
-            .markdown-body h1 {
-                font-size: 1.8rem;
-            }
-
-            .markdown-body h2 {
-                font-size: 1.4rem;
-            }
-
-            .markdown-body pre {
-                padding: 15px;
-                font-size: 0.85rem;
-            }
-        }
-
-        /* Dark mode toggle */
-        .dark-mode-toggle {
-            background: none;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 8px 12px;
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
         }
 
-        .dark-mode-toggle:hover {
-            background: #f1f5f9;
+        .theme-toggle:hover {
+            background: var(--border-color);
         }
 
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: #e2e8f0;
-        }
-
-        body.dark-mode header,
-        body.dark-mode .content {
-            background: #1e293b;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        body.dark-mode .url-input {
-            background: #0f172a;
-            border-color: #334155;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .url-input:focus {
-            border-color: #8b5cf6;
-        }
-
-        body.dark-mode .file-info {
-            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-        }
-
-        body.dark-mode .file-name {
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .btn-secondary {
-            background: #334155;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .btn-secondary:hover {
-            background: #475569;
-        }
-
-        body.dark-mode .markdown-body h1 {
-            border-bottom-color: #334155;
-        }
-
-        body.dark-mode .markdown-body h2 {
-            color: #e2e8f0;
-            border-bottom-color: #334155;
-        }
-
-        body.dark-mode .markdown-body h3,
-        body.dark-mode .markdown-body h4 {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .markdown-body p,
-        body.dark-mode .markdown-body li {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .markdown-body code {
-            background: #334155;
-            color: #a78bfa;
-        }
-
-        body.dark-mode .markdown-body blockquote {
-            background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
-            color: #c4b5fd;
-        }
-
-        body.dark-mode .markdown-body td {
-            border-bottom-color: #334155;
-        }
-
-        body.dark-mode .markdown-body tr:nth-child(even) {
-            background: #0f172a;
-        }
-
-        body.dark-mode .markdown-body tr:hover {
-            background: #334155;
-        }
-
-        body.dark-mode .table-wrapper {
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        body.dark-mode .markdown-body strong {
-            color: #f1f5f9;
-        }
-
-        body.dark-mode .toc {
-            background: #0f172a;
-            border-color: #334155;
-        }
-
-        body.dark-mode .toc-title {
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .example-urls {
-            background: #0f172a;
-        }
-
-        body.dark-mode .example-url {
-            background: #1e293b;
-            border-color: #334155;
-        }
-
-        body.dark-mode .dark-mode-toggle {
-            border-color: #334155;
-        }
-
-        body.dark-mode .dark-mode-toggle:hover {
-            background: #334155;
-        }
-
-        body.dark-mode .welcome h2 {
-            color: #e2e8f0;
-        }
-
-        /* Scroll to top button */
         .scroll-to-top {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            bottom: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--gradient-primary);
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
             opacity: 0;
             visibility: hidden;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-md);
         }
 
         .scroll-to-top.visible {
@@ -778,29 +589,24 @@
         }
 
         .scroll-to-top:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
 
-        .scroll-to-top:active {
-            transform: translateY(0);
-        }
-
-        body.dark-mode .scroll-to-top {
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
+        @media print {
+            body { background: white; }
+            header, footer, .btn, .scroll-to-top { display: none; }
+            .content { box-shadow: none; padding: 0; border: none; }
         }
 
         @media (max-width: 768px) {
-            .scroll-to-top {
-                bottom: 20px;
-                right: 20px;
-                width: 45px;
-                height: 45px;
-                font-size: 1.3rem;
-                /* Improve touch handling on mobile */
-                touch-action: manipulation;
-                -webkit-tap-highlight-color: transparent;
-            }
+            .container { padding: 12px; }
+            header { padding: 16px; }
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .url-input-group { flex-direction: column; }
+            .content { padding: 20px; }
+            .markdown-body h1 { font-size: 1.6rem; }
+            .markdown-body h2 { font-size: 1.3rem; }
+            .scroll-to-top { bottom: 16px; right: 16px; }
         }
     </style>
 </head>
@@ -810,8 +616,8 @@
             <div class="header-top">
                 <a href="index.html" class="logo">Best Practice</a>
                 <div class="header-actions">
-                    <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">
-                        <span id="dark-mode-icon">&#127769;</span>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <span id="theme-icon">&#127769;</span>
                     </button>
                     <button class="btn btn-secondary" onclick="copyLink()">
                         <span>&#128279;</span> Copy Link
@@ -832,7 +638,7 @@
 
             <div class="file-info" id="file-info">
                 <div class="file-name">
-                    <span class="icon">&#128196;</span>
+                    <span>&#128196;</span>
                     <span id="file-name-text">Loading...</span>
                 </div>
                 <div class="file-source">
@@ -842,9 +648,7 @@
         </header>
 
         <div class="content">
-            <div id="markdown-content">
-                <!-- Content will be loaded here -->
-            </div>
+            <div id="markdown-content"></div>
         </div>
 
         <footer>
@@ -855,34 +659,30 @@
         </footer>
     </div>
 
-    <!-- Scroll to top button -->
     <button id="scroll-to-top" class="scroll-to-top" onclick="scrollToTop()" title="Back to top">
         <span>&#8593;</span>
     </button>
 
     <script>
-        // Whitelist of allowed URL patterns
         const ALLOWED_URL_PREFIXES = [
             'https://raw.githubusercontent.com/stephane-v/best-practice'
         ];
 
-        // Check if URL is allowed
         function isUrlAllowed(url) {
             if (!url) return false;
             const rawUrl = toRawUrl(url);
             return ALLOWED_URL_PREFIXES.some(prefix => rawUrl && rawUrl.startsWith(prefix));
         }
 
-        // Show blocked URL error
         function showBlockedError(url) {
             document.getElementById('markdown-content').innerHTML = `
                 <div class="error">
                     <div class="error-icon">&#128683;</div>
                     <h2>URL Not Allowed</h2>
                     <p>This markdown viewer only accepts files from authorized sources.</p>
-                    <div style="background: #f8fafc; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: left;">
-                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 10px;"><strong>Allowed sources:</strong></p>
-                        <ul style="font-size: 0.85rem; color: #475569; margin: 0; padding-left: 20px;">
+                    <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px; margin: 16px 0; text-align: left; border: 1px solid var(--border-color);">
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;"><strong>Allowed sources:</strong></p>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; padding-left: 20px;">
                             ${ALLOWED_URL_PREFIXES.map(p => `<li><code>${p}</code></li>`).join('')}
                         </ul>
                     </div>
@@ -892,7 +692,6 @@
             document.getElementById('file-info').classList.remove('visible');
         }
 
-        // Configure marked
         marked.setOptions({
             gfm: true,
             breaks: true,
@@ -906,40 +705,25 @@
             }
         });
 
-        // Get URL parameter
         function getUrlParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        // Convert GitHub URL to raw URL
         function toRawUrl(url) {
             if (!url) return null;
-
-            // Already a raw URL
-            if (url.includes('raw.githubusercontent.com')) {
-                return url;
-            }
-
-            // Convert github.com blob URL to raw
+            if (url.includes('raw.githubusercontent.com')) return url;
             if (url.includes('github.com') && url.includes('/blob/')) {
-                return url
-                    .replace('github.com', 'raw.githubusercontent.com')
-                    .replace('/blob/', '/');
+                return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }
-
-            // Handle gist URLs
             if (url.includes('gist.github.com')) {
                 return url.replace('gist.github.com', 'gist.githubusercontent.com') + '/raw';
             }
-
             return url;
         }
 
-        // Convert raw URL to GitHub page URL
         function toGitHubUrl(url) {
             if (!url) return null;
-
             if (url.includes('raw.githubusercontent.com')) {
                 const parts = url.replace('https://raw.githubusercontent.com/', '').split('/');
                 if (parts.length >= 3) {
@@ -950,39 +734,32 @@
                     return `https://github.com/${user}/${repo}/blob/${branch}/${path}`;
                 }
             }
-
             return url;
         }
 
-        // Extract filename from URL
         function getFileName(url) {
             if (!url) return 'Unknown';
             const parts = url.split('/');
             return decodeURIComponent(parts[parts.length - 1]) || 'README.md';
         }
 
-        // Generate Table of Contents
         function generateTOC(content) {
             const headings = content.match(/^#{1,4}\s+.+$/gm);
             if (!headings || headings.length < 3) return '';
 
             let toc = '<div class="toc"><div class="toc-title">&#128203; Table of Contents</div><ul class="toc-list">';
-
             headings.forEach(heading => {
                 const level = heading.match(/^#+/)[0].length;
                 const text = heading.replace(/^#+\s+/, '');
                 const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
-
                 if (level <= 4) {
                     toc += `<li><a href="#${id}" class="toc-h${level}">${text}</a></li>`;
                 }
             });
-
             toc += '</ul></div>';
             return toc;
         }
 
-        // Add IDs to headings
         function addHeadingIds(html) {
             return html.replace(/<h([1-6])>(.+?)<\/h[1-6]>/g, (match, level, text) => {
                 const id = text.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
@@ -990,7 +767,6 @@
             });
         }
 
-        // Show loading state
         function showLoading() {
             document.getElementById('markdown-content').innerHTML = `
                 <div class="loading">
@@ -1000,7 +776,6 @@
             `;
         }
 
-        // Show error state
         function showError(message) {
             document.getElementById('markdown-content').innerHTML = `
                 <div class="error">
@@ -1012,7 +787,6 @@
             `;
         }
 
-        // Show welcome state
         function showWelcome() {
             const baseUrl = window.location.origin + window.location.pathname;
             document.getElementById('markdown-content').innerHTML = `
@@ -1036,14 +810,12 @@
             `;
         }
 
-        // Load markdown from URL
         async function loadMarkdown(url) {
             if (!url) {
                 showWelcome();
                 return;
             }
 
-            // Check whitelist before loading
             if (!isUrlAllowed(url)) {
                 showBlockedError(url);
                 return;
@@ -1055,35 +827,27 @@
             const githubUrl = toGitHubUrl(rawUrl);
             const fileName = getFileName(rawUrl);
 
-            // Update URL input
             document.getElementById('file-url').value = url;
-
-            // Update file info
             document.getElementById('file-info').classList.add('visible');
             document.getElementById('file-name-text').textContent = fileName;
             document.getElementById('source-link').href = githubUrl || rawUrl;
             document.getElementById('source-link').textContent = githubUrl || rawUrl;
 
-            // Update GitHub link
             const githubLink = document.getElementById('github-link');
             if (githubUrl) {
                 githubLink.href = githubUrl;
                 githubLink.style.display = 'inline-flex';
             }
 
-            // Update page title
             document.title = `${fileName} - Markdown Reader`;
 
             try {
                 const response = await fetch(rawUrl);
-
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
 
                 const markdown = await response.text();
-
-                // Generate TOC and render markdown
                 const toc = generateTOC(markdown);
                 let html = marked.parse(markdown);
                 html = addHeadingIds(html);
@@ -1095,12 +859,10 @@
                     </div>
                 `;
 
-                // Apply syntax highlighting to code blocks
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightElement(block);
                 });
 
-                // Wrap tables in scrollable container for mobile
                 document.querySelectorAll('.markdown-body table').forEach((table) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'table-wrapper';
@@ -1114,82 +876,60 @@
             }
         }
 
-        // Load from input field
         function loadFromInput() {
             const url = document.getElementById('file-url').value.trim();
             if (url) {
-                // Update URL without reloading
                 const newUrl = window.location.pathname + '?file=' + encodeURIComponent(url);
                 window.history.pushState({}, '', newUrl);
                 loadMarkdown(url);
             }
         }
 
-        // Copy current link to clipboard
         function copyLink() {
             const url = window.location.href;
             navigator.clipboard.writeText(url).then(() => {
                 const btn = event.target.closest('.btn');
                 const originalHtml = btn.innerHTML;
                 btn.innerHTML = '<span>&#10003;</span> Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                }, 2000);
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
             });
         }
 
-        // Dark mode toggle
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            document.getElementById('dark-mode-icon').innerHTML = isDark ? '&#9728;' : '&#127769;';
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            document.getElementById('theme-icon').innerHTML = isDark ? '&#127769;' : '&#9728;';
         }
 
-        // Initialize dark mode from localStorage
-        function initDarkMode() {
-            const isDark = localStorage.getItem('darkMode') === 'true';
-            if (isDark) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('dark-mode-icon').innerHTML = '&#9728;';
-            }
+        function initTheme() {
+            const saved = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('theme-icon').innerHTML = theme === 'dark' ? '&#9728;' : '&#127769;';
         }
 
-        // Scroll to top function
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Show/hide scroll to top button based on scroll position
         function handleScrollButton() {
             const scrollBtn = document.getElementById('scroll-to-top');
             if (!scrollBtn) return;
-
-            // Use scrollY with fallback for better mobile compatibility
-            const scrollPosition = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollPosition > 300) {
-                scrollBtn.classList.add('visible');
-            } else {
-                scrollBtn.classList.remove('visible');
-            }
+            const scrollPosition = window.scrollY || window.pageYOffset;
+            scrollBtn.classList.toggle('visible', scrollPosition > 300);
         }
 
-        // Add scroll event listener with passive option for better mobile performance
         window.addEventListener('scroll', handleScrollButton, { passive: true });
-
-        // Check initial scroll position on page load
         document.addEventListener('DOMContentLoaded', handleScrollButton);
 
-        // Handle Enter key in input
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('file-url').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    loadFromInput();
-                }
+                if (e.key === 'Enter') loadFromInput();
             });
 
-            // Handle anchor clicks for smooth scrolling
             document.addEventListener('click', function(e) {
                 const anchor = e.target.closest('a[href^="#"]');
                 if (anchor) {
@@ -1198,16 +938,13 @@
                     const targetElement = document.getElementById(targetId);
                     if (targetElement) {
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        // Update URL hash without triggering popstate
                         history.pushState(null, null, anchor.getAttribute('href'));
                     }
                 }
             });
         });
 
-        // Handle browser back/forward
         window.addEventListener('popstate', function() {
-            // Ignore hash-only changes
             if (window.location.hash) {
                 const targetElement = document.getElementById(window.location.hash.substring(1));
                 if (targetElement) {
@@ -1219,8 +956,7 @@
             loadMarkdown(fileUrl);
         });
 
-        // Initialize
-        initDarkMode();
+        initTheme();
         const fileUrl = getUrlParam('file');
         loadMarkdown(fileUrl);
     </script>
