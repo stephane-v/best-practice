@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Process Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Progress Overview */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .progress-card h3 {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .progress-card .percentage {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-card .bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-card .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-card.acquisition .bar-fill { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .progress-card.conversion .bar-fill { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .progress-card.sales .bar-fill { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .progress-card.overall .bar-fill { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            background: #f8fafc;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        /* Sections */
+        .section {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .section-header .icon {
+            font-size: 1.5rem;
+        }
+
+        .section-header .progress-badge {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            color: #7c3aed;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .section-header .toggle-icon {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            transition: transform 0.3s ease;
+        }
+
+        .section.collapsed .section-content {
+            display: none;
+        }
+
+        .section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        /* Subsections */
+        .subsection {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .subsection:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .subsection-title {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subsection-title .sub-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Checklist Items */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .checklist-item:hover {
+            background: #f1f5f9;
+        }
+
+        .checklist-item.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .checklist-item.completed .item-text {
+            color: #16a34a;
+            text-decoration: line-through;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #6366f1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-text {
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .item-notes {
+            margin-top: 8px;
+        }
+
+        .item-notes textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.2s;
+        }
+
+        .item-notes textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .item-notes textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Project Info Form */
+        .project-info {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .project-info h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .modal h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .modal textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* File input styling */
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            .progress-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-content {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">&#8592; Back to Repository</a>
+
+        <header>
+            <h1>Marketing Process Tracker</h1>
+            <p>Track your marketing journey from acquisition through conversion to sales. All data is stored locally in your browser.</p>
+        </header>
+
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <div class="progress-card acquisition">
+                <h3>Acquisition</h3>
+                <div class="percentage" id="acquisition-percent">0%</div>
+                <div class="bar"><div class="bar-fill" id="acquisition-bar" style="width: 0%"></div></div>
+            </div>
+            <div class="progress-card conversion">
+                <h3>Conversion</h3>
+                <div class="percentage" id="conversion-percent">0%</div>
+                <div class="bar"><div class="bar-fill" id="conversion-bar" style="width: 0%"></div></div>
+            </div>
+            <div class="progress-card sales">
+                <h3>Sales</h3>
+                <div class="percentage" id="sales-percent">0%</div>
+                <div class="bar"><div class="bar-fill" id="sales-bar" style="width: 0%"></div></div>
+            </div>
+            <div class="progress-card overall">
+                <h3>Overall</h3>
+                <div class="percentage" id="overall-percent">0%</div>
+                <div class="bar"><div class="bar-fill" id="overall-bar" style="width: 0%"></div></div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="exportData()">
+                <span>&#128190;</span> Export Data
+            </button>
+            <label class="btn btn-secondary file-input-wrapper">
+                <span>&#128194;</span> Import Data
+                <input type="file" accept=".json" onchange="importData(event)">
+            </label>
+            <button class="btn btn-danger" onclick="confirmReset()">
+                <span>&#128465;</span> Reset All
+            </button>
+        </div>
+
+        <!-- Project Information -->
+        <div class="project-info">
+            <h2><span>&#128203;</span> Project Information</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="project-name">Project/Campaign Name</label>
+                    <input type="text" id="project-name" placeholder="e.g., Q1 Product Launch">
+                </div>
+                <div class="form-group">
+                    <label for="start-date">Start Date</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="form-group">
+                    <label for="target-date">Target Completion</label>
+                    <input type="date" id="target-date">
+                </div>
+                <div class="form-group">
+                    <label for="budget">Budget</label>
+                    <input type="text" id="budget" placeholder="e.g., $10,000">
+                </div>
+                <div class="form-group">
+                    <label for="target-audience">Target Audience</label>
+                    <input type="text" id="target-audience" placeholder="e.g., B2B SaaS companies">
+                </div>
+                <div class="form-group">
+                    <label for="primary-goal">Primary Goal</label>
+                    <select id="primary-goal">
+                        <option value="">Select a goal</option>
+                        <option value="leads">Generate Leads</option>
+                        <option value="sales">Increase Sales</option>
+                        <option value="awareness">Brand Awareness</option>
+                        <option value="retention">Customer Retention</option>
+                        <option value="launch">Product Launch</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACQUISITION SECTION -->
+        <section class="section" id="section-acquisition">
+            <div class="section-header" onclick="toggleSection('section-acquisition')">
+                <h2><span class="icon">&#127919;</span> Customer Acquisition</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="progress-badge" id="acquisition-badge">0/24</span>
+                    <span class="toggle-icon">&#9660;</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <!-- SEO -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128269;</span> SEO Strategy</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-seo-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Conduct keyword research for target pages</div>
+                                <div class="item-notes"><textarea placeholder="Notes: tools used, keywords found..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-seo-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Optimize title tags and meta descriptions</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-seo-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Ensure mobile-friendly design (responsive)</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-seo-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Improve page load speed (target &lt;3 seconds)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: current speed, optimizations made..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-seo-5">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build internal linking structure</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-seo-6">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up Google Search Console</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Content Marketing -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128221;</span> Content Marketing</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-content-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Define buyer personas</div>
+                                <div class="item-notes"><textarea placeholder="Notes: persona details..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-content-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create content pillars (3-5 main topics)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: pillars defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-content-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build content calendar</div>
+                                <div class="item-notes"><textarea placeholder="Notes: calendar link, schedule..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-content-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create lead magnets (ebooks, guides, templates)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: lead magnets created..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-content-5">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up content distribution channels</div>
+                                <div class="item-notes"><textarea placeholder="Notes: channels, automation tools..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Paid Advertising -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128176;</span> Paid Advertising</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-paid-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up Google Ads account and campaigns</div>
+                                <div class="item-notes"><textarea placeholder="Notes: campaign structure, budget..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-paid-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create social media ad campaigns</div>
+                                <div class="item-notes"><textarea placeholder="Notes: platforms, targeting..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-paid-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up conversion tracking</div>
+                                <div class="item-notes"><textarea placeholder="Notes: pixels, events tracked..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-paid-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create remarketing audiences</div>
+                                <div class="item-notes"><textarea placeholder="Notes: audience segments..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128241;</span> Social Media Marketing</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-social-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Audit and optimize social profiles</div>
+                                <div class="item-notes"><textarea placeholder="Notes: platforms audited..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-social-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create social media content calendar</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-social-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up social listening/monitoring</div>
+                                <div class="item-notes"><textarea placeholder="Notes: tools used..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Email List Building -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128231;</span> Email List Building</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-email-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up email marketing platform</div>
+                                <div class="item-notes"><textarea placeholder="Notes: platform chosen..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-email-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create opt-in forms and landing pages</div>
+                                <div class="item-notes"><textarea placeholder="Notes: forms created..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-email-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build welcome email sequence</div>
+                                <div class="item-notes"><textarea placeholder="Notes: sequence structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Partnerships -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#129309;</span> Partnerships & Referrals</h3>
+                    <ul class="checklist" data-category="acquisition">
+                        <li class="checklist-item" data-id="acq-partner-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Design referral program structure</div>
+                                <div class="item-notes"><textarea placeholder="Notes: incentives, structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-partner-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Identify potential partnership opportunities</div>
+                                <div class="item-notes"><textarea placeholder="Notes: partners identified..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="acq-partner-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up affiliate program (if applicable)</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONVERSION SECTION -->
+        <section class="section" id="section-conversion">
+            <div class="section-header" onclick="toggleSection('section-conversion')">
+                <h2><span class="icon">&#128200;</span> Conversion Optimization</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="progress-badge" id="conversion-badge">0/20</span>
+                    <span class="toggle-icon">&#9660;</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <!-- Landing Pages -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#127968;</span> Landing Page Optimization</h3>
+                    <ul class="checklist" data-category="conversion">
+                        <li class="checklist-item" data-id="conv-lp-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create clear, benefit-focused headlines</div>
+                                <div class="item-notes"><textarea placeholder="Notes: headlines tested..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-lp-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Design compelling CTAs above the fold</div>
+                                <div class="item-notes"><textarea placeholder="Notes: CTA copy, colors..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-lp-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Add social proof (testimonials, logos, reviews)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: proof elements added..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-lp-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Optimize forms (minimal fields, clear labels)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: fields reduced to..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-lp-5">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Ensure mobile responsiveness</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-lp-6">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Add trust badges and security indicators</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- A/B Testing -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128202;</span> A/B Testing</h3>
+                    <ul class="checklist" data-category="conversion">
+                        <li class="checklist-item" data-id="conv-ab-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up A/B testing tool</div>
+                                <div class="item-notes"><textarea placeholder="Notes: tool selected..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-ab-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create test hypotheses document</div>
+                                <div class="item-notes"><textarea placeholder="Notes: hypotheses to test..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-ab-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Run headline/CTA tests</div>
+                                <div class="item-notes"><textarea placeholder="Notes: test results..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-ab-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Document and implement winning variations</div>
+                                <div class="item-notes"><textarea placeholder="Notes: winners implemented..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Email Nurturing -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128140;</span> Lead Nurturing</h3>
+                    <ul class="checklist" data-category="conversion">
+                        <li class="checklist-item" data-id="conv-nurture-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create lead nurture email sequence</div>
+                                <div class="item-notes"><textarea placeholder="Notes: sequence emails..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-nurture-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up lead scoring system</div>
+                                <div class="item-notes"><textarea placeholder="Notes: scoring criteria..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-nurture-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create segmentation rules</div>
+                                <div class="item-notes"><textarea placeholder="Notes: segments defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-nurture-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build cart abandonment recovery sequence</div>
+                                <div class="item-notes"><textarea placeholder="Notes: sequence structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Checkout/Forms -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128722;</span> Checkout & Form Optimization</h3>
+                    <ul class="checklist" data-category="conversion">
+                        <li class="checklist-item" data-id="conv-checkout-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Enable guest checkout option</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-checkout-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Add progress indicator to multi-step forms</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-checkout-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Display total cost upfront (no surprises)</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-checkout-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Add multiple payment options</div>
+                                <div class="item-notes"><textarea placeholder="Notes: payment methods..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Analytics -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128208;</span> Analytics & Tracking</h3>
+                    <ul class="checklist" data-category="conversion">
+                        <li class="checklist-item" data-id="conv-analytics-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up heatmap and session recording tools</div>
+                                <div class="item-notes"><textarea placeholder="Notes: tools installed..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="conv-analytics-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Configure conversion goal tracking</div>
+                                <div class="item-notes"><textarea placeholder="Notes: goals defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SALES SECTION -->
+        <section class="section" id="section-sales">
+            <div class="section-header" onclick="toggleSection('section-sales')">
+                <h2><span class="icon">&#128181;</span> Sales Process</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="progress-badge" id="sales-badge">0/22</span>
+                    <span class="toggle-icon">&#9660;</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <!-- Lead Qualification -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#9989;</span> Lead Qualification</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-qual-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Define qualification criteria (BANT/MEDDIC)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: criteria defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-qual-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create lead scoring model</div>
+                                <div class="item-notes"><textarea placeholder="Notes: scoring model..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-qual-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up CRM and pipeline stages</div>
+                                <div class="item-notes"><textarea placeholder="Notes: CRM chosen, stages..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-qual-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Define MQL to SQL handoff process</div>
+                                <div class="item-notes"><textarea placeholder="Notes: process defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Outreach -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128222;</span> Prospecting & Outreach</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-outreach-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create outreach cadence (email, phone, LinkedIn)</div>
+                                <div class="item-notes"><textarea placeholder="Notes: cadence structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-outreach-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Write cold email templates</div>
+                                <div class="item-notes"><textarea placeholder="Notes: templates created..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-outreach-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create call scripts</div>
+                                <div class="item-notes"><textarea placeholder="Notes: scripts for different scenarios..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-outreach-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up LinkedIn outreach templates</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Discovery -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128270;</span> Discovery Process</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-disc-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create discovery call framework</div>
+                                <div class="item-notes"><textarea placeholder="Notes: call structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-disc-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build discovery question bank</div>
+                                <div class="item-notes"><textarea placeholder="Notes: key questions..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-disc-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create note-taking template</div>
+                                <div class="item-notes"><textarea placeholder="Notes..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Presentation -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#127916;</span> Presentation & Demo</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-pres-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create sales presentation deck</div>
+                                <div class="item-notes"><textarea placeholder="Notes: deck structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-pres-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Build demo script and flow</div>
+                                <div class="item-notes"><textarea placeholder="Notes: demo flow..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-pres-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Prepare case studies and social proof</div>
+                                <div class="item-notes"><textarea placeholder="Notes: case studies..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-pres-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create proposal templates</div>
+                                <div class="item-notes"><textarea placeholder="Notes: template structure..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Objection Handling -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#128172;</span> Objection Handling</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-obj-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Document common objections</div>
+                                <div class="item-notes"><textarea placeholder="Notes: objections list..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-obj-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create objection response frameworks</div>
+                                <div class="item-notes"><textarea placeholder="Notes: responses for each objection..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-obj-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Prepare competitive positioning</div>
+                                <div class="item-notes"><textarea placeholder="Notes: differentiators..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Closing -->
+                <div class="subsection">
+                    <h3 class="subsection-title"><span class="sub-icon">&#127942;</span> Closing & Follow-up</h3>
+                    <ul class="checklist" data-category="sales">
+                        <li class="checklist-item" data-id="sales-close-1">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Define closing techniques for team</div>
+                                <div class="item-notes"><textarea placeholder="Notes: techniques documented..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-close-2">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create contract and sign-off process</div>
+                                <div class="item-notes"><textarea placeholder="Notes: process defined..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-close-3">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Set up customer onboarding handoff</div>
+                                <div class="item-notes"><textarea placeholder="Notes: handoff process..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" data-id="sales-close-4">
+                            <input type="checkbox" onchange="saveProgress()">
+                            <div class="item-content">
+                                <div class="item-text">Create win/loss analysis process</div>
+                                <div class="item-notes"><textarea placeholder="Notes: analysis framework..." onchange="saveProgress()"></textarea></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal-overlay" id="import-modal">
+        <div class="modal">
+            <h2>Import Data</h2>
+            <textarea id="import-data" placeholder="Paste your exported JSON data here..."></textarea>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('import-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmImport()">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="reset-modal">
+        <div class="modal">
+            <h2>Reset All Data?</h2>
+            <p style="margin-bottom: 20px; color: #64748b;">This will permanently delete all your progress and notes. This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('reset-modal')">Cancel</button>
+                <button class="btn btn-danger" onclick="resetAllData()">Reset Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'marketing-tracker-data';
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            updateAllProgress();
+
+            // Add event listeners for project info fields
+            document.querySelectorAll('.project-info input, .project-info select').forEach(input => {
+                input.addEventListener('change', saveProgress);
+                input.addEventListener('input', saveProgress);
+            });
+        });
+
+        // Toggle section collapse
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+
+        // Save all progress to localStorage
+        function saveProgress() {
+            const data = {
+                projectInfo: {
+                    name: document.getElementById('project-name').value,
+                    startDate: document.getElementById('start-date').value,
+                    targetDate: document.getElementById('target-date').value,
+                    budget: document.getElementById('budget').value,
+                    targetAudience: document.getElementById('target-audience').value,
+                    primaryGoal: document.getElementById('primary-goal').value
+                },
+                checklist: {},
+                savedAt: new Date().toISOString()
+            };
+
+            // Save all checklist items
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const id = item.dataset.id;
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                const textarea = item.querySelector('textarea');
+
+                data.checklist[id] = {
+                    checked: checkbox.checked,
+                    notes: textarea ? textarea.value : ''
+                };
+
+                // Update visual state
+                if (checkbox.checked) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            updateAllProgress();
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return;
+
+            try {
+                const data = JSON.parse(saved);
+
+                // Load project info
+                if (data.projectInfo) {
+                    document.getElementById('project-name').value = data.projectInfo.name || '';
+                    document.getElementById('start-date').value = data.projectInfo.startDate || '';
+                    document.getElementById('target-date').value = data.projectInfo.targetDate || '';
+                    document.getElementById('budget').value = data.projectInfo.budget || '';
+                    document.getElementById('target-audience').value = data.projectInfo.targetAudience || '';
+                    document.getElementById('primary-goal').value = data.projectInfo.primaryGoal || '';
+                }
+
+                // Load checklist items
+                if (data.checklist) {
+                    Object.keys(data.checklist).forEach(id => {
+                        const item = document.querySelector(`[data-id="${id}"]`);
+                        if (item) {
+                            const checkbox = item.querySelector('input[type="checkbox"]');
+                            const textarea = item.querySelector('textarea');
+
+                            if (checkbox) {
+                                checkbox.checked = data.checklist[id].checked;
+                                if (data.checklist[id].checked) {
+                                    item.classList.add('completed');
+                                }
+                            }
+                            if (textarea) {
+                                textarea.value = data.checklist[id].notes || '';
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Error loading progress:', e);
+            }
+        }
+
+        // Update all progress indicators
+        function updateAllProgress() {
+            const categories = ['acquisition', 'conversion', 'sales'];
+            let totalChecked = 0;
+            let totalItems = 0;
+
+            categories.forEach(category => {
+                const section = document.getElementById(`section-${category}`);
+                const items = section.querySelectorAll('.checklist-item');
+                const checked = section.querySelectorAll('.checklist-item input[type="checkbox"]:checked');
+
+                const count = items.length;
+                const checkedCount = checked.length;
+                const percentage = count > 0 ? Math.round((checkedCount / count) * 100) : 0;
+
+                // Update badge
+                document.getElementById(`${category}-badge`).textContent = `${checkedCount}/${count}`;
+
+                // Update progress card
+                document.getElementById(`${category}-percent`).textContent = `${percentage}%`;
+                document.getElementById(`${category}-bar`).style.width = `${percentage}%`;
+
+                totalChecked += checkedCount;
+                totalItems += count;
+            });
+
+            // Update overall
+            const overallPercentage = totalItems > 0 ? Math.round((totalChecked / totalItems) * 100) : 0;
+            document.getElementById('overall-percent').textContent = `${overallPercentage}%`;
+            document.getElementById('overall-bar').style.width = `${overallPercentage}%`;
+        }
+
+        // Export data
+        function exportData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) {
+                showToast('No data to export', 'error');
+                return;
+            }
+
+            const data = JSON.parse(saved);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `marketing-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('Data exported successfully!', 'success');
+        }
+
+        // Import data
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    loadProgress();
+                    updateAllProgress();
+                    showToast('Data imported successfully!', 'success');
+                } catch (err) {
+                    showToast('Invalid file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+
+        // Confirm import from modal
+        function confirmImport() {
+            const textarea = document.getElementById('import-data');
+            try {
+                const data = JSON.parse(textarea.value);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                loadProgress();
+                updateAllProgress();
+                closeModal('import-modal');
+                showToast('Data imported successfully!', 'success');
+            } catch (err) {
+                showToast('Invalid JSON format', 'error');
+            }
+        }
+
+        // Confirm reset
+        function confirmReset() {
+            document.getElementById('reset-modal').classList.add('active');
+        }
+
+        // Reset all data
+        function resetAllData() {
+            localStorage.removeItem(STORAGE_KEY);
+
+            // Reset project info
+            document.getElementById('project-name').value = '';
+            document.getElementById('start-date').value = '';
+            document.getElementById('target-date').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('target-audience').value = '';
+            document.getElementById('primary-goal').value = '';
+
+            // Reset all checkboxes and notes
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                const textarea = item.querySelector('textarea');
+                if (checkbox) checkbox.checked = false;
+                if (textarea) textarea.value = '';
+                item.classList.remove('completed');
+            });
+
+            updateAllProgress();
+            closeModal('reset-modal');
+            showToast('All data has been reset', 'success');
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
