@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Persona Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .lang-btn {
+            padding: 8px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .lang-btn:hover:not(.active) {
+            border-color: #8b5cf6;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            background: #f8fafc;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* File input */
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* Personas List */
+        .personas-section {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .personas-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .personas-header h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .personas-count {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            color: #7c3aed;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .personas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .persona-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .persona-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .persona-card.active {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        }
+
+        .persona-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .persona-card h3 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .persona-card .role {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .persona-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .persona-card .tag {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .persona-card-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .persona-card:hover .persona-card-actions {
+            opacity: 1;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .icon-btn.edit {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .icon-btn.delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group small {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            color: #6366f1;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ede9fe;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Tags Input */
+        .tags-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            min-height: 50px;
+            transition: border-color 0.2s;
+        }
+
+        .tags-input-container:focus-within {
+            border-color: #8b5cf6;
+        }
+
+        .tags-input-container .tag {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            color: #7c3aed;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tags-input-container .tag button {
+            background: none;
+            border: none;
+            color: #7c3aed;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .tags-input-container input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            font-size: 0.95rem;
+            padding: 5px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .modal h2 {
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .modal textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .personas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="marketing-tracker.html" class="back-link">&#8592; <span data-i18n="backToTracker">Back to Marketing Tracker</span></a>
+
+        <header>
+            <h1 data-i18n="title">Buyer Persona Builder</h1>
+            <p data-i18n="subtitle">Create detailed buyer personas to better understand your target audience. Define demographics, goals, challenges, and behaviors to guide your marketing strategy.</p>
+            <div class="language-toggle">
+                <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+                <button class="lang-btn" onclick="setLanguage('fr')">Francais</button>
+            </div>
+        </header>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="createNewPersona()">
+                <span>&#43;</span> <span data-i18n="newPersona">New Persona</span>
+            </button>
+            <button class="btn btn-primary" onclick="exportAllPersonas()">
+                <span>&#128190;</span> <span data-i18n="exportAll">Export All</span>
+            </button>
+            <label class="btn btn-secondary file-input-wrapper">
+                <span>&#128194;</span> <span data-i18n="importPersonas">Import</span>
+                <input type="file" accept=".json" onchange="importPersonas(event)">
+            </label>
+            <button class="btn btn-danger" onclick="confirmDeleteAll()">
+                <span>&#128465;</span> <span data-i18n="deleteAll">Delete All</span>
+            </button>
+        </div>
+
+        <!-- Personas List -->
+        <div class="personas-section">
+            <div class="personas-header">
+                <h2><span>&#128101;</span> <span data-i18n="yourPersonas">Your Personas</span></h2>
+                <span class="personas-count" id="personas-count">0</span>
+            </div>
+            <div class="personas-grid" id="personas-grid">
+                <div class="empty-state" id="empty-state">
+                    <div class="icon">&#128100;</div>
+                    <p data-i18n="emptyState">No personas yet. Click "New Persona" to create your first one.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Persona Form -->
+        <div class="form-section" id="persona-form-section" style="display: none;">
+            <div class="form-header">
+                <h2><span>&#9998;</span> <span data-i18n="editPersona" id="form-title">Edit Persona</span></h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary btn-small" onclick="cancelEdit()">
+                        <span data-i18n="cancel">Cancel</span>
+                    </button>
+                    <button class="btn btn-success btn-small" onclick="savePersona()">
+                        <span>&#10003;</span> <span data-i18n="save">Save</span>
+                    </button>
+                </div>
+            </div>
+            <div class="form-content">
+                <input type="hidden" id="persona-id">
+
+                <!-- Basic Information -->
+                <h3 class="form-section-title"><span>&#128100;</span> <span data-i18n="basicInfo">Basic Information</span></h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="persona-name" data-i18n="personaName">Persona Name</label>
+                        <input type="text" id="persona-name" data-placeholder-i18n="personaNamePlaceholder" placeholder="e.g., Marketing Mary">
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-role" data-i18n="jobTitle">Job Title / Role</label>
+                        <input type="text" id="persona-role" data-placeholder-i18n="jobTitlePlaceholder" placeholder="e.g., Marketing Manager">
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-age" data-i18n="ageRange">Age Range</label>
+                        <select id="persona-age">
+                            <option value="">--</option>
+                            <option value="18-24">18-24</option>
+                            <option value="25-34">25-34</option>
+                            <option value="35-44">35-44</option>
+                            <option value="45-54">45-54</option>
+                            <option value="55-64">55-64</option>
+                            <option value="65+">65+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-gender" data-i18n="gender">Gender</label>
+                        <select id="persona-gender">
+                            <option value="">--</option>
+                            <option value="male" data-i18n-option="male">Male</option>
+                            <option value="female" data-i18n-option="female">Female</option>
+                            <option value="other" data-i18n-option="other">Other</option>
+                            <option value="prefer-not" data-i18n-option="preferNot">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-location" data-i18n="location">Location</label>
+                        <input type="text" id="persona-location" data-placeholder-i18n="locationPlaceholder" placeholder="e.g., Urban areas, France">
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-education" data-i18n="education">Education Level</label>
+                        <select id="persona-education">
+                            <option value="">--</option>
+                            <option value="high-school" data-i18n-option="highSchool">High School</option>
+                            <option value="bachelor" data-i18n-option="bachelor">Bachelor's Degree</option>
+                            <option value="master" data-i18n-option="master">Master's Degree</option>
+                            <option value="phd" data-i18n-option="phd">PhD / Doctorate</option>
+                            <option value="other" data-i18n-option="otherEdu">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-income" data-i18n="incomeRange">Income Range</label>
+                        <input type="text" id="persona-income" data-placeholder-i18n="incomePlaceholder" placeholder="e.g., $50,000 - $80,000">
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-company-size" data-i18n="companySize">Company Size (B2B)</label>
+                        <select id="persona-company-size">
+                            <option value="">--</option>
+                            <option value="1-10">1-10</option>
+                            <option value="11-50">11-50</option>
+                            <option value="51-200">51-200</option>
+                            <option value="201-500">201-500</option>
+                            <option value="501-1000">501-1000</option>
+                            <option value="1000+">1000+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-industry" data-i18n="industry">Industry</label>
+                        <input type="text" id="persona-industry" data-placeholder-i18n="industryPlaceholder" placeholder="e.g., Technology, Healthcare">
+                    </div>
+                </div>
+
+                <!-- Goals & Motivations -->
+                <h3 class="form-section-title"><span>&#127919;</span> <span data-i18n="goalsMotivations">Goals & Motivations</span></h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="persona-goals" data-i18n="primaryGoals">Primary Goals</label>
+                        <textarea id="persona-goals" data-placeholder-i18n="goalsPlaceholder" placeholder="What are they trying to achieve? What does success look like for them?"></textarea>
+                        <small data-i18n="goalsHint">List 3-5 main goals this persona wants to achieve</small>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-motivations" data-i18n="motivations">Motivations</label>
+                        <textarea id="persona-motivations" data-placeholder-i18n="motivationsPlaceholder" placeholder="What drives them? What are their values and priorities?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Pain Points & Challenges -->
+                <h3 class="form-section-title"><span>&#128293;</span> <span data-i18n="painPoints">Pain Points & Challenges</span></h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="persona-challenges" data-i18n="mainChallenges">Main Challenges</label>
+                        <textarea id="persona-challenges" data-placeholder-i18n="challengesPlaceholder" placeholder="What problems do they face? What frustrates them?"></textarea>
+                        <small data-i18n="challengesHint">List the obstacles preventing them from reaching their goals</small>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-fears" data-i18n="fearsObjections">Fears & Objections</label>
+                        <textarea id="persona-fears" data-placeholder-i18n="fearsPlaceholder" placeholder="What concerns do they have? What might prevent them from buying?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Behavior & Preferences -->
+                <h3 class="form-section-title"><span>&#128187;</span> <span data-i18n="behaviorPreferences">Behavior & Preferences</span></h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="persona-channels" data-i18n="preferredChannels">Preferred Communication Channels</label>
+                        <textarea id="persona-channels" data-placeholder-i18n="channelsPlaceholder" placeholder="e.g., Email, LinkedIn, Industry blogs, Podcasts, Conferences"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-content" data-i18n="contentPreferences">Content Preferences</label>
+                        <textarea id="persona-content" data-placeholder-i18n="contentPlaceholder" placeholder="What type of content do they consume? (videos, articles, case studies, webinars)"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-tools" data-i18n="toolsTechnology">Tools & Technology Used</label>
+                        <textarea id="persona-tools" data-placeholder-i18n="toolsPlaceholder" placeholder="What software, platforms, or tools do they use daily?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Decision Making -->
+                <h3 class="form-section-title"><span>&#9878;</span> <span data-i18n="decisionMaking">Decision Making Process</span></h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="persona-decision-role" data-i18n="roleInDecision">Role in Buying Decision</label>
+                        <select id="persona-decision-role">
+                            <option value="">--</option>
+                            <option value="decision-maker" data-i18n-option="decisionMaker">Decision Maker</option>
+                            <option value="influencer" data-i18n-option="influencer">Influencer</option>
+                            <option value="user" data-i18n-option="endUser">End User</option>
+                            <option value="gatekeeper" data-i18n-option="gatekeeper">Gatekeeper</option>
+                            <option value="champion" data-i18n-option="champion">Champion/Advocate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="persona-buying-cycle" data-i18n="buyingCycle">Typical Buying Cycle</label>
+                        <select id="persona-buying-cycle">
+                            <option value="">--</option>
+                            <option value="immediate" data-i18n-option="immediate">Immediate (same day)</option>
+                            <option value="short" data-i18n-option="shortTerm">Short (1-2 weeks)</option>
+                            <option value="medium" data-i18n-option="mediumTerm">Medium (1-3 months)</option>
+                            <option value="long" data-i18n-option="longTerm">Long (3-12 months)</option>
+                            <option value="very-long" data-i18n-option="veryLong">Very Long (12+ months)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-decision-factors" data-i18n="keyDecisionFactors">Key Decision Factors</label>
+                        <textarea id="persona-decision-factors" data-placeholder-i18n="decisionFactorsPlaceholder" placeholder="What factors influence their purchasing decisions? (price, features, support, reputation)"></textarea>
+                    </div>
+                </div>
+
+                <!-- Quote & Story -->
+                <h3 class="form-section-title"><span>&#128172;</span> <span data-i18n="quoteStory">Quote & Story</span></h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="persona-quote" data-i18n="representativeQuote">Representative Quote</label>
+                        <textarea id="persona-quote" data-placeholder-i18n="quotePlaceholder" placeholder="A quote that captures this persona's mindset..."></textarea>
+                        <small data-i18n="quoteHint">Something this persona might say that captures their perspective</small>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="persona-story" data-i18n="backgroundStory">Background Story</label>
+                        <textarea id="persona-story" data-placeholder-i18n="storyPlaceholder" placeholder="A brief narrative about this persona's typical day, career path, or how they discovered your product category..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <h3 class="form-section-title"><span>&#127991;</span> <span data-i18n="tags">Tags</span></h3>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label data-i18n="personaTags">Persona Tags</label>
+                        <div class="tags-input-container" id="tags-container">
+                            <input type="text" id="tags-input" data-placeholder-i18n="tagsPlaceholder" placeholder="Type and press Enter to add tags...">
+                        </div>
+                        <small data-i18n="tagsHint">Add tags to categorize and filter personas (e.g., B2B, Enterprise, Early Adopter)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Confirmation Modal -->
+    <div class="modal-overlay" id="delete-all-modal">
+        <div class="modal">
+            <h2 data-i18n="confirmDeleteAll">Delete All Personas?</h2>
+            <p style="margin-bottom: 20px; color: #64748b;" data-i18n="deleteAllWarning">This will permanently delete all your personas. This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('delete-all-modal')" data-i18n="cancel">Cancel</button>
+                <button class="btn btn-danger" onclick="deleteAllPersonas()" data-i18n="deleteAll">Delete All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Single Confirmation Modal -->
+    <div class="modal-overlay" id="delete-single-modal">
+        <div class="modal">
+            <h2 data-i18n="confirmDelete">Delete Persona?</h2>
+            <p style="margin-bottom: 20px; color: #64748b;" data-i18n="deleteWarning">This will permanently delete this persona. This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('delete-single-modal')" data-i18n="cancel">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDeletePersona()" data-i18n="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Storage key
+        const STORAGE_KEY = 'marketing-personas';
+        let currentPersonaId = null;
+        let personaToDelete = null;
+        let personaTags = [];
+        let currentLang = 'en';
+
+        // Translations
+        const translations = {
+            en: {
+                title: 'Buyer Persona Builder',
+                subtitle: 'Create detailed buyer personas to better understand your target audience. Define demographics, goals, challenges, and behaviors to guide your marketing strategy.',
+                backToTracker: 'Back to Marketing Tracker',
+                newPersona: 'New Persona',
+                exportAll: 'Export All',
+                importPersonas: 'Import',
+                deleteAll: 'Delete All',
+                yourPersonas: 'Your Personas',
+                emptyState: 'No personas yet. Click "New Persona" to create your first one.',
+                editPersona: 'Edit Persona',
+                createPersona: 'Create New Persona',
+                cancel: 'Cancel',
+                save: 'Save',
+                delete: 'Delete',
+                basicInfo: 'Basic Information',
+                personaName: 'Persona Name',
+                personaNamePlaceholder: 'e.g., Marketing Mary',
+                jobTitle: 'Job Title / Role',
+                jobTitlePlaceholder: 'e.g., Marketing Manager',
+                ageRange: 'Age Range',
+                gender: 'Gender',
+                male: 'Male',
+                female: 'Female',
+                other: 'Other',
+                preferNot: 'Prefer not to say',
+                location: 'Location',
+                locationPlaceholder: 'e.g., Urban areas, France',
+                education: 'Education Level',
+                highSchool: 'High School',
+                bachelor: "Bachelor's Degree",
+                master: "Master's Degree",
+                phd: 'PhD / Doctorate',
+                otherEdu: 'Other',
+                incomeRange: 'Income Range',
+                incomePlaceholder: 'e.g., $50,000 - $80,000',
+                companySize: 'Company Size (B2B)',
+                industry: 'Industry',
+                industryPlaceholder: 'e.g., Technology, Healthcare',
+                goalsMotivations: 'Goals & Motivations',
+                primaryGoals: 'Primary Goals',
+                goalsPlaceholder: 'What are they trying to achieve? What does success look like for them?',
+                goalsHint: 'List 3-5 main goals this persona wants to achieve',
+                motivations: 'Motivations',
+                motivationsPlaceholder: 'What drives them? What are their values and priorities?',
+                painPoints: 'Pain Points & Challenges',
+                mainChallenges: 'Main Challenges',
+                challengesPlaceholder: 'What problems do they face? What frustrates them?',
+                challengesHint: 'List the obstacles preventing them from reaching their goals',
+                fearsObjections: 'Fears & Objections',
+                fearsPlaceholder: 'What concerns do they have? What might prevent them from buying?',
+                behaviorPreferences: 'Behavior & Preferences',
+                preferredChannels: 'Preferred Communication Channels',
+                channelsPlaceholder: 'e.g., Email, LinkedIn, Industry blogs, Podcasts, Conferences',
+                contentPreferences: 'Content Preferences',
+                contentPlaceholder: 'What type of content do they consume? (videos, articles, case studies, webinars)',
+                toolsTechnology: 'Tools & Technology Used',
+                toolsPlaceholder: 'What software, platforms, or tools do they use daily?',
+                decisionMaking: 'Decision Making Process',
+                roleInDecision: 'Role in Buying Decision',
+                decisionMaker: 'Decision Maker',
+                influencer: 'Influencer',
+                endUser: 'End User',
+                gatekeeper: 'Gatekeeper',
+                champion: 'Champion/Advocate',
+                buyingCycle: 'Typical Buying Cycle',
+                immediate: 'Immediate (same day)',
+                shortTerm: 'Short (1-2 weeks)',
+                mediumTerm: 'Medium (1-3 months)',
+                longTerm: 'Long (3-12 months)',
+                veryLong: 'Very Long (12+ months)',
+                keyDecisionFactors: 'Key Decision Factors',
+                decisionFactorsPlaceholder: 'What factors influence their purchasing decisions? (price, features, support, reputation)',
+                quoteStory: 'Quote & Story',
+                representativeQuote: 'Representative Quote',
+                quotePlaceholder: 'A quote that captures this persona\'s mindset...',
+                quoteHint: 'Something this persona might say that captures their perspective',
+                backgroundStory: 'Background Story',
+                storyPlaceholder: 'A brief narrative about this persona\'s typical day, career path, or how they discovered your product category...',
+                tags: 'Tags',
+                personaTags: 'Persona Tags',
+                tagsPlaceholder: 'Type and press Enter to add tags...',
+                tagsHint: 'Add tags to categorize and filter personas (e.g., B2B, Enterprise, Early Adopter)',
+                confirmDeleteAll: 'Delete All Personas?',
+                deleteAllWarning: 'This will permanently delete all your personas. This action cannot be undone.',
+                confirmDelete: 'Delete Persona?',
+                deleteWarning: 'This will permanently delete this persona. This action cannot be undone.',
+                exportSuccess: 'Personas exported successfully!',
+                importSuccess: 'Personas imported successfully!',
+                importError: 'Invalid file format',
+                saveSuccess: 'Persona saved successfully!',
+                deleteSuccess: 'Persona deleted!',
+                deleteAllSuccess: 'All personas deleted!',
+                noPersonas: 'No personas to export'
+            },
+            fr: {
+                title: 'Generateur de Personas',
+                subtitle: 'Creez des personas detailles pour mieux comprendre votre audience cible. Definissez les donnees demographiques, objectifs, defis et comportements pour guider votre strategie marketing.',
+                backToTracker: 'Retour au Suivi Marketing',
+                newPersona: 'Nouveau Persona',
+                exportAll: 'Tout Exporter',
+                importPersonas: 'Importer',
+                deleteAll: 'Tout Supprimer',
+                yourPersonas: 'Vos Personas',
+                emptyState: 'Aucun persona pour le moment. Cliquez sur "Nouveau Persona" pour creer le premier.',
+                editPersona: 'Modifier le Persona',
+                createPersona: 'Creer un Nouveau Persona',
+                cancel: 'Annuler',
+                save: 'Enregistrer',
+                delete: 'Supprimer',
+                basicInfo: 'Informations de Base',
+                personaName: 'Nom du Persona',
+                personaNamePlaceholder: 'ex: Marie Marketing',
+                jobTitle: 'Poste / Role',
+                jobTitlePlaceholder: 'ex: Responsable Marketing',
+                ageRange: 'Tranche d\'Age',
+                gender: 'Genre',
+                male: 'Homme',
+                female: 'Femme',
+                other: 'Autre',
+                preferNot: 'Prefere ne pas dire',
+                location: 'Localisation',
+                locationPlaceholder: 'ex: Zones urbaines, France',
+                education: 'Niveau d\'Education',
+                highSchool: 'Baccalaureat',
+                bachelor: 'Licence',
+                master: 'Master',
+                phd: 'Doctorat',
+                otherEdu: 'Autre',
+                incomeRange: 'Tranche de Revenus',
+                incomePlaceholder: 'ex: 35 000 EUR - 55 000 EUR',
+                companySize: 'Taille de l\'Entreprise (B2B)',
+                industry: 'Secteur d\'Activite',
+                industryPlaceholder: 'ex: Technologie, Sante',
+                goalsMotivations: 'Objectifs & Motivations',
+                primaryGoals: 'Objectifs Principaux',
+                goalsPlaceholder: 'Qu\'essaient-ils d\'accomplir ? A quoi ressemble le succes pour eux ?',
+                goalsHint: 'Listez 3 a 5 objectifs principaux de ce persona',
+                motivations: 'Motivations',
+                motivationsPlaceholder: 'Qu\'est-ce qui les motive ? Quelles sont leurs valeurs et priorites ?',
+                painPoints: 'Points de Douleur & Defis',
+                mainChallenges: 'Defis Principaux',
+                challengesPlaceholder: 'Quels problemes rencontrent-ils ? Qu\'est-ce qui les frustre ?',
+                challengesHint: 'Listez les obstacles qui les empechent d\'atteindre leurs objectifs',
+                fearsObjections: 'Craintes & Objections',
+                fearsPlaceholder: 'Quelles sont leurs preoccupations ? Qu\'est-ce qui pourrait les empecher d\'acheter ?',
+                behaviorPreferences: 'Comportement & Preferences',
+                preferredChannels: 'Canaux de Communication Preferes',
+                channelsPlaceholder: 'ex: Email, LinkedIn, Blogs specialises, Podcasts, Conferences',
+                contentPreferences: 'Preferences de Contenu',
+                contentPlaceholder: 'Quel type de contenu consomment-ils ? (videos, articles, etudes de cas, webinaires)',
+                toolsTechnology: 'Outils & Technologies Utilises',
+                toolsPlaceholder: 'Quels logiciels, plateformes ou outils utilisent-ils quotidiennement ?',
+                decisionMaking: 'Processus de Decision',
+                roleInDecision: 'Role dans la Decision d\'Achat',
+                decisionMaker: 'Decideur',
+                influencer: 'Influenceur',
+                endUser: 'Utilisateur Final',
+                gatekeeper: 'Gardien',
+                champion: 'Champion/Avocat',
+                buyingCycle: 'Cycle d\'Achat Typique',
+                immediate: 'Immediat (meme jour)',
+                shortTerm: 'Court (1-2 semaines)',
+                mediumTerm: 'Moyen (1-3 mois)',
+                longTerm: 'Long (3-12 mois)',
+                veryLong: 'Tres Long (12+ mois)',
+                keyDecisionFactors: 'Facteurs Cles de Decision',
+                decisionFactorsPlaceholder: 'Quels facteurs influencent leurs decisions d\'achat ? (prix, fonctionnalites, support, reputation)',
+                quoteStory: 'Citation & Histoire',
+                representativeQuote: 'Citation Representative',
+                quotePlaceholder: 'Une citation qui capture l\'etat d\'esprit de ce persona...',
+                quoteHint: 'Quelque chose que ce persona pourrait dire qui capture sa perspective',
+                backgroundStory: 'Histoire de Fond',
+                storyPlaceholder: 'Un bref recit sur la journee typique de ce persona, son parcours professionnel, ou comment il a decouvert votre categorie de produit...',
+                tags: 'Etiquettes',
+                personaTags: 'Etiquettes du Persona',
+                tagsPlaceholder: 'Tapez et appuyez sur Entree pour ajouter des etiquettes...',
+                tagsHint: 'Ajoutez des etiquettes pour categoriser et filtrer les personas (ex: B2B, Enterprise, Early Adopter)',
+                confirmDeleteAll: 'Supprimer Tous les Personas ?',
+                deleteAllWarning: 'Ceci supprimera definitivement tous vos personas. Cette action est irreversible.',
+                confirmDelete: 'Supprimer le Persona ?',
+                deleteWarning: 'Ceci supprimera definitivement ce persona. Cette action est irreversible.',
+                exportSuccess: 'Personas exportes avec succes !',
+                importSuccess: 'Personas importes avec succes !',
+                importError: 'Format de fichier invalide',
+                saveSuccess: 'Persona enregistre avec succes !',
+                deleteSuccess: 'Persona supprime !',
+                deleteAllSuccess: 'Tous les personas supprimes !',
+                noPersonas: 'Aucun persona a exporter'
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPersonas();
+            setupTagsInput();
+
+            // Load saved language preference
+            const savedLang = localStorage.getItem('persona-builder-lang') || 'en';
+            setLanguage(savedLang);
+        });
+
+        // Language functions
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('persona-builder-lang', lang);
+
+            // Update language buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(lang === 'en' ? 'english' : 'francais') ||
+                    btn.textContent.toLowerCase().includes(lang === 'en' ? 'english' : 'français')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            // Update placeholders
+            document.querySelectorAll('[data-placeholder-i18n]').forEach(el => {
+                const key = el.getAttribute('data-placeholder-i18n');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            // Update select options
+            document.querySelectorAll('[data-i18n-option]').forEach(el => {
+                const key = el.getAttribute('data-i18n-option');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // Persona management functions
+        function getPersonas() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function savePersonas(personas) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(personas));
+        }
+
+        function loadPersonas() {
+            const personas = getPersonas();
+            renderPersonas(personas);
+        }
+
+        function renderPersonas(personas) {
+            const grid = document.getElementById('personas-grid');
+            const emptyState = document.getElementById('empty-state');
+            const count = document.getElementById('personas-count');
+
+            count.textContent = personas.length;
+
+            if (personas.length === 0) {
+                grid.innerHTML = '';
+                grid.appendChild(emptyState);
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            grid.innerHTML = personas.map(persona => `
+                <div class="persona-card ${currentPersonaId === persona.id ? 'active' : ''}" onclick="editPersona('${persona.id}')">
+                    <div class="persona-card-actions">
+                        <button class="icon-btn edit" onclick="event.stopPropagation(); editPersona('${persona.id}')">&#9998;</button>
+                        <button class="icon-btn delete" onclick="event.stopPropagation(); deletePersona('${persona.id}')">&#128465;</button>
+                    </div>
+                    <div class="persona-avatar">${getInitials(persona.name)}</div>
+                    <h3>${persona.name || 'Unnamed Persona'}</h3>
+                    <div class="role">${persona.role || 'No role defined'}</div>
+                    <div class="tags">
+                        ${(persona.tags || []).slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        ${(persona.tags || []).length > 3 ? `<span class="tag">+${persona.tags.length - 3}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function createNewPersona() {
+            currentPersonaId = null;
+            personaTags = [];
+            clearForm();
+            document.getElementById('form-title').textContent = t('createPersona');
+            document.getElementById('persona-form-section').style.display = 'block';
+            document.getElementById('persona-form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function editPersona(id) {
+            const personas = getPersonas();
+            const persona = personas.find(p => p.id === id);
+            if (!persona) return;
+
+            currentPersonaId = id;
+            document.getElementById('form-title').textContent = t('editPersona');
+
+            // Fill form
+            document.getElementById('persona-id').value = persona.id;
+            document.getElementById('persona-name').value = persona.name || '';
+            document.getElementById('persona-role').value = persona.role || '';
+            document.getElementById('persona-age').value = persona.age || '';
+            document.getElementById('persona-gender').value = persona.gender || '';
+            document.getElementById('persona-location').value = persona.location || '';
+            document.getElementById('persona-education').value = persona.education || '';
+            document.getElementById('persona-income').value = persona.income || '';
+            document.getElementById('persona-company-size').value = persona.companySize || '';
+            document.getElementById('persona-industry').value = persona.industry || '';
+            document.getElementById('persona-goals').value = persona.goals || '';
+            document.getElementById('persona-motivations').value = persona.motivations || '';
+            document.getElementById('persona-challenges').value = persona.challenges || '';
+            document.getElementById('persona-fears').value = persona.fears || '';
+            document.getElementById('persona-channels').value = persona.channels || '';
+            document.getElementById('persona-content').value = persona.content || '';
+            document.getElementById('persona-tools').value = persona.tools || '';
+            document.getElementById('persona-decision-role').value = persona.decisionRole || '';
+            document.getElementById('persona-buying-cycle').value = persona.buyingCycle || '';
+            document.getElementById('persona-decision-factors').value = persona.decisionFactors || '';
+            document.getElementById('persona-quote').value = persona.quote || '';
+            document.getElementById('persona-story').value = persona.story || '';
+
+            // Load tags
+            personaTags = persona.tags || [];
+            renderTags();
+
+            document.getElementById('persona-form-section').style.display = 'block';
+            document.getElementById('persona-form-section').scrollIntoView({ behavior: 'smooth' });
+
+            // Update cards to show active
+            loadPersonas();
+        }
+
+        function savePersona() {
+            const personas = getPersonas();
+
+            const personaData = {
+                id: currentPersonaId || generateId(),
+                name: document.getElementById('persona-name').value,
+                role: document.getElementById('persona-role').value,
+                age: document.getElementById('persona-age').value,
+                gender: document.getElementById('persona-gender').value,
+                location: document.getElementById('persona-location').value,
+                education: document.getElementById('persona-education').value,
+                income: document.getElementById('persona-income').value,
+                companySize: document.getElementById('persona-company-size').value,
+                industry: document.getElementById('persona-industry').value,
+                goals: document.getElementById('persona-goals').value,
+                motivations: document.getElementById('persona-motivations').value,
+                challenges: document.getElementById('persona-challenges').value,
+                fears: document.getElementById('persona-fears').value,
+                channels: document.getElementById('persona-channels').value,
+                content: document.getElementById('persona-content').value,
+                tools: document.getElementById('persona-tools').value,
+                decisionRole: document.getElementById('persona-decision-role').value,
+                buyingCycle: document.getElementById('persona-buying-cycle').value,
+                decisionFactors: document.getElementById('persona-decision-factors').value,
+                quote: document.getElementById('persona-quote').value,
+                story: document.getElementById('persona-story').value,
+                tags: personaTags,
+                updatedAt: new Date().toISOString()
+            };
+
+            if (currentPersonaId) {
+                // Update existing
+                const index = personas.findIndex(p => p.id === currentPersonaId);
+                if (index !== -1) {
+                    personaData.createdAt = personas[index].createdAt;
+                    personas[index] = personaData;
+                }
+            } else {
+                // Create new
+                personaData.createdAt = new Date().toISOString();
+                personas.push(personaData);
+            }
+
+            savePersonas(personas);
+            loadPersonas();
+            cancelEdit();
+            showToast(t('saveSuccess'), 'success');
+        }
+
+        function cancelEdit() {
+            currentPersonaId = null;
+            clearForm();
+            document.getElementById('persona-form-section').style.display = 'none';
+            loadPersonas();
+        }
+
+        function clearForm() {
+            document.getElementById('persona-id').value = '';
+            document.getElementById('persona-name').value = '';
+            document.getElementById('persona-role').value = '';
+            document.getElementById('persona-age').value = '';
+            document.getElementById('persona-gender').value = '';
+            document.getElementById('persona-location').value = '';
+            document.getElementById('persona-education').value = '';
+            document.getElementById('persona-income').value = '';
+            document.getElementById('persona-company-size').value = '';
+            document.getElementById('persona-industry').value = '';
+            document.getElementById('persona-goals').value = '';
+            document.getElementById('persona-motivations').value = '';
+            document.getElementById('persona-challenges').value = '';
+            document.getElementById('persona-fears').value = '';
+            document.getElementById('persona-channels').value = '';
+            document.getElementById('persona-content').value = '';
+            document.getElementById('persona-tools').value = '';
+            document.getElementById('persona-decision-role').value = '';
+            document.getElementById('persona-buying-cycle').value = '';
+            document.getElementById('persona-decision-factors').value = '';
+            document.getElementById('persona-quote').value = '';
+            document.getElementById('persona-story').value = '';
+            personaTags = [];
+            renderTags();
+        }
+
+        function deletePersona(id) {
+            personaToDelete = id;
+            document.getElementById('delete-single-modal').classList.add('active');
+        }
+
+        function confirmDeletePersona() {
+            if (!personaToDelete) return;
+
+            const personas = getPersonas();
+            const filtered = personas.filter(p => p.id !== personaToDelete);
+            savePersonas(filtered);
+
+            if (currentPersonaId === personaToDelete) {
+                cancelEdit();
+            }
+
+            loadPersonas();
+            closeModal('delete-single-modal');
+            personaToDelete = null;
+            showToast(t('deleteSuccess'), 'success');
+        }
+
+        function confirmDeleteAll() {
+            document.getElementById('delete-all-modal').classList.add('active');
+        }
+
+        function deleteAllPersonas() {
+            localStorage.removeItem(STORAGE_KEY);
+            cancelEdit();
+            loadPersonas();
+            closeModal('delete-all-modal');
+            showToast(t('deleteAllSuccess'), 'success');
+        }
+
+        // Tags functionality
+        function setupTagsInput() {
+            const input = document.getElementById('tags-input');
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = this.value.trim();
+                    if (tag && !personaTags.includes(tag)) {
+                        personaTags.push(tag);
+                        renderTags();
+                    }
+                    this.value = '';
+                }
+            });
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tags-container');
+            const input = document.getElementById('tags-input');
+
+            // Remove existing tags
+            container.querySelectorAll('.tag').forEach(t => t.remove());
+
+            // Add tags before input
+            personaTags.forEach((tag, index) => {
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.innerHTML = `${tag} <button onclick="removeTag(${index})">&times;</button>`;
+                container.insertBefore(tagEl, input);
+            });
+        }
+
+        function removeTag(index) {
+            personaTags.splice(index, 1);
+            renderTags();
+        }
+
+        // Export/Import
+        function exportAllPersonas() {
+            const personas = getPersonas();
+            if (personas.length === 0) {
+                showToast(t('noPersonas'), 'error');
+                return;
+            }
+
+            const data = {
+                personas: personas,
+                exportedAt: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `buyer-personas-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(t('exportSuccess'), 'success');
+        }
+
+        function importPersonas(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    let imported = [];
+
+                    // Handle both formats (with or without wrapper)
+                    if (data.personas && Array.isArray(data.personas)) {
+                        imported = data.personas;
+                    } else if (Array.isArray(data)) {
+                        imported = data;
+                    } else {
+                        throw new Error('Invalid format');
+                    }
+
+                    // Merge with existing (avoid duplicates by ID)
+                    const existing = getPersonas();
+                    const existingIds = new Set(existing.map(p => p.id));
+
+                    imported.forEach(persona => {
+                        if (!existingIds.has(persona.id)) {
+                            existing.push(persona);
+                        } else {
+                            // Update existing
+                            const index = existing.findIndex(p => p.id === persona.id);
+                            if (index !== -1) {
+                                existing[index] = persona;
+                            }
+                        }
+                    });
+
+                    savePersonas(existing);
+                    loadPersonas();
+                    showToast(t('importSuccess'), 'success');
+                } catch (err) {
+                    showToast(t('importError'), 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Utility functions
+        function generateId() {
+            return 'persona_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

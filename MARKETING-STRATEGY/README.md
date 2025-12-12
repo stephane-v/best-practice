@@ -4,13 +4,22 @@
 
 This folder contains comprehensive documentation on marketing best practices covering the complete customer journey from acquisition to conversion and sales. These strategies are designed to help businesses optimize their marketing funnel and maximize ROI.
 
-## Interactive Process Tracker
+## Interactive Tools
 
-**[Open Marketing Process Tracker](./marketing-tracker.html)** - An interactive web application to track your marketing progress from acquisition to sales. Features:
+### Marketing Process Tracker
+**[Open Marketing Process Tracker](./marketing-tracker.html)** - Track your marketing progress from acquisition to sales. Features:
 - Progress tracking for all marketing stages
 - Notes for each task
 - Data saved locally in your browser
 - Export/Import functionality for backup and sharing
+
+### Buyer Persona Builder
+**[Open Persona Builder](./persona-builder.html)** - Create and manage detailed buyer personas. Features:
+- Create multiple personas with comprehensive profiles
+- Demographics, goals, challenges, and behavior data
+- English and French language support
+- Store all personas locally in browser
+- Export/Import all personas as JSON
 
 ## Documentation
 
