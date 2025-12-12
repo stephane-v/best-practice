@@ -1,18 +1,10 @@
 # Best Practice - Base de Connaissances Professionnelle
 
+**Version Web** : [https://stephane-v.github.io/best-practice/](https://stephane-v.github.io/best-practice/)
+
 ## Présentation
 
 **Best Practice** est une base de connaissances complète conçue pour les professionnels : consultants, entrepreneurs, managers et passionnés de technologie. Ce dépôt rassemble des bonnes pratiques, des guides détaillés et des outils interactifs couvrant plusieurs domaines essentiels du monde professionnel moderne.
-
-## L'Histoire du Créateur
-
-Ce projet est né de l'esprit de **Stéphane**, un passionné de technologie et d'organisation qui a toujours cru au pouvoir du partage de connaissances.
-
-Après des années à accumuler des notes, des frameworks et des méthodologies dans des carnets éparpillés et des fichiers oubliés sur son disque dur, Stéphane a eu une révélation : pourquoi garder tout ce savoir pour soi alors qu'il pourrait servir à d'autres ?
-
-C'est ainsi qu'est né **Best Practice** — un projet personnel devenu une ressource ouverte, construite brique par brique, avec l'aide de l'intelligence artificielle pour structurer et enrichir le contenu. Chaque guide, chaque outil interactif reflète une expérience concrète, un problème résolu, ou une méthode éprouvée sur le terrain.
-
-> *« La meilleure façon d'apprendre, c'est d'enseigner. Et la meilleure façon de progresser, c'est de partager. »* — Stéphane
 
 ## Contenu du Dépôt
 
@@ -78,5 +70,3 @@ Les contributions sont les bienvenues ! Que ce soit pour corriger une erreur, pr
 Ce projet est partagé dans un esprit d'ouverture et de partage de connaissances.
 
 ---
-
-*Créé avec passion par Stéphane, enrichi avec l'aide de l'IA.*
