@@ -23,6 +23,7 @@
 - **Prompt Library** — Bibliothèque de 26+ prompts IA organisés par catégories
 - **Persona Builder** — Créez des personas marketing détaillés
 - **Marketing Tracker** — Suivez vos métriques d'acquisition et de conversion
+- **Ishikawa Editor** — Créez des diagrammes causes-effets (fishbone) avec la méthode 6M
 
 ### Scripts & Automatisation
 
