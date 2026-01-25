@@ -1016,7 +1016,7 @@
             const width = 900;
             const height = 600;
             const spineY = height / 2;
-            const spineStartX = 80;
+            const spineStartX = 120;  // Start spine after tail
             const spineEndX = width - 120;
             const headWidth = 100;
             const headHeight = 80;
@@ -1025,24 +1025,19 @@
             const topCategories = diagram.categories.filter(c => c.position === 'top');
             const bottomCategories = diagram.categories.filter(c => c.position === 'bottom');
 
-            const categorySpacing = (spineEndX - spineStartX - 100) / 3;
+            const categorySpacing = (spineEndX - spineStartX - 60) / 3;
 
             let svgContent = '';
 
-            // Draw main spine
-            svgContent += `
-                <line x1="${spineStartX}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}"
-                      stroke="${textMuted}" stroke-width="3" class="spine"/>
-            `;
-
-            // Draw fish tail (left side)
+            // Draw fish tail (left side) - moved further left
+            const tailBaseX = 70;
             const tailPoints = [
-                [spineStartX, spineY],
-                [30, spineY - 60],
-                [10, spineY - 40],
-                [30, spineY],
-                [10, spineY + 40],
-                [30, spineY + 60]
+                [tailBaseX + 50, spineY],
+                [tailBaseX, spineY - 70],
+                [tailBaseX - 20, spineY - 45],
+                [tailBaseX, spineY],
+                [tailBaseX - 20, spineY + 45],
+                [tailBaseX, spineY + 70]
             ];
             svgContent += `
                 <polygon points="${tailPoints.map(p => p.join(',')).join(' ')}"
@@ -1051,12 +1046,18 @@
 
             // Tail label (Causes)
             svgContent += `
-                <text x="45" y="${spineY + 5}" text-anchor="middle"
+                <text x="${tailBaseX}" y="${spineY + 5}" text-anchor="middle"
                       fill="${textSecondary}" font-size="14" font-weight="600"
                       class="cause-label-text" style="cursor: pointer;"
                       ondblclick="editCauseLabel()">
                     ${escapeHtml(diagram.causeLabel)}
                 </text>
+            `;
+
+            // Draw main spine (from tail to head)
+            svgContent += `
+                <line x1="${tailBaseX + 50}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}"
+                      stroke="${textMuted}" stroke-width="3" class="spine"/>
             `;
 
             // Draw fish head (right side) - ellipse
@@ -1089,19 +1090,23 @@
 
             // Draw categories and causes
             function renderCategory(category, index, isTop) {
-                const baseX = spineStartX + 80 + index * categorySpacing;
-                const branchEndY = isTop ? spineY - 120 : spineY + 120;
+                const baseX = spineStartX + 30 + index * categorySpacing;
+                const branchLength = 130;
+                const branchEndX = baseX + 70;
+                const branchEndY = isTop ? spineY - branchLength : spineY + branchLength;
                 const direction = isTop ? -1 : 1;
 
-                // Branch line
+                // Branch line (diagonal from spine)
                 svgContent += `
-                    <line x1="${baseX}" y1="${spineY}" x2="${baseX + 60}" y2="${branchEndY}"
-                          stroke="${category.color}" stroke-width="2" class="branch-line"/>
+                    <line x1="${baseX}" y1="${spineY}" x2="${branchEndX}" y2="${branchEndY}"
+                          stroke="${category.color}" stroke-width="2.5" class="branch-line"/>
                 `;
 
-                // Category label
+                // Category label at end of branch
+                const labelX = branchEndX + 5;
+                const labelY = branchEndY + direction * 20;
                 svgContent += `
-                    <text x="${baseX + 65}" y="${branchEndY + direction * 5}"
+                    <text x="${labelX}" y="${labelY}"
                           text-anchor="start" fill="${category.color}"
                           font-size="14" font-weight="600" class="category-label"
                           ondblclick="editCategory('${category.id}')">
@@ -1110,40 +1115,41 @@
                 `;
 
                 // Add cause button
-                const addBtnY = branchEndY + direction * 25;
+                const addBtnX = labelX + 5;
+                const addBtnY = labelY + direction * 18;
                 svgContent += `
                     <g onclick="addCause('${category.id}')" style="cursor: pointer;">
-                        <circle cx="${baseX + 70}" cy="${addBtnY}" r="10"
+                        <circle cx="${addBtnX}" cy="${addBtnY}" r="10"
                                 fill="${bgTertiary}" stroke="${borderColor}" stroke-width="1" class="add-cause-btn"/>
-                        <text x="${baseX + 70}" y="${addBtnY + 4}" text-anchor="middle"
+                        <text x="${addBtnX}" y="${addBtnY + 4}" text-anchor="middle"
                               fill="${textMuted}" font-size="14" class="add-cause-plus">+</text>
                     </g>
                 `;
 
-                // Causes
+                // Causes - positioned along the branch as sub-branches pointing left
                 category.causes.forEach((cause, causeIndex) => {
-                    const causeOffset = (causeIndex + 1) * 35;
-                    const t = causeOffset / 150; // Parameter along the branch
-                    const causeX = baseX + t * 60;
-                    const causeY = spineY + t * (branchEndY - spineY);
+                    // Position along the branch (from spine towards category label)
+                    const t = (causeIndex + 1) / (category.causes.length + 1);
+                    const causeAnchorX = baseX + t * (branchEndX - baseX);
+                    const causeAnchorY = spineY + t * (branchEndY - spineY);
 
-                    // Cause line (perpendicular to branch)
-                    const lineLength = 60;
-                    const causeEndX = causeX - lineLength;
+                    // Cause line pointing left (horizontal)
+                    const causeLineLength = 70;
+                    const causeEndX = causeAnchorX - causeLineLength;
 
                     svgContent += `
                         <g class="cause-group">
-                            <line x1="${causeX}" y1="${causeY}" x2="${causeEndX}" y2="${causeY}"
-                                  stroke="${category.color}" stroke-width="1.5" opacity="0.6" class="cause-line"/>
-                            <text x="${causeEndX - 5}" y="${causeY + 4}" text-anchor="end"
+                            <line x1="${causeAnchorX}" y1="${causeAnchorY}" x2="${causeEndX}" y2="${causeAnchorY}"
+                                  stroke="${category.color}" stroke-width="1.5" opacity="0.7" class="cause-line"/>
+                            <text x="${causeEndX - 5}" y="${causeAnchorY + 4}" text-anchor="end"
                                   fill="${textSecondary}" font-size="12" class="cause-text"
                                   ondblclick="editCause('${category.id}', ${causeIndex})">
                                 ${escapeHtml(cause)}
                             </text>
-                            <circle cx="${causeEndX - 10 - cause.length * 4}" cy="${causeY}" r="8"
+                            <circle cx="${causeEndX - 8 - cause.length * 5}" cy="${causeAnchorY}" r="8"
                                     fill="#EF4444" class="delete-cause-btn"
                                     onclick="deleteCause('${category.id}', ${causeIndex})" style="cursor: pointer;"/>
-                            <text x="${causeEndX - 10 - cause.length * 4}" y="${causeY + 4}" text-anchor="middle"
+                            <text x="${causeEndX - 8 - cause.length * 5}" y="${causeAnchorY + 4}" text-anchor="middle"
                                   fill="white" font-size="12" font-weight="bold"
                                   class="delete-cause-btn" style="pointer-events: none;">×</text>
                         </g>
