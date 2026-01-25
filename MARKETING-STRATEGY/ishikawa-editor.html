@@ -953,7 +953,15 @@
         // Handle export PNG
         function handleExportPNG() {
             const svg = document.getElementById('diagram-svg');
+
+            // Hide UI elements (+ and X buttons) before export
+            const uiElements = svg.querySelectorAll('.add-cause-btn, .add-cause-plus, .delete-cause-btn');
+            uiElements.forEach(el => el.style.display = 'none');
+
             const svgData = new XMLSerializer().serializeToString(svg);
+
+            // Restore UI elements
+            uiElements.forEach(el => el.style.display = '');
 
             // Get computed styles
             const styles = getComputedStyle(document.documentElement);
@@ -1027,10 +1035,10 @@
             const topCategories = diagram.categories.filter(c => c.position === 'top');
             const bottomCategories = diagram.categories.filter(c => c.position === 'bottom');
 
-            // Categories should be spread from 25% to 85% of spine length
+            // Categories should be spread from 35% to 90% of spine length (closer to head)
             const spineLength = spineEndX - spineStartX;
-            const categoryStartX = spineStartX + spineLength * 0.20;  // Start at 20% from tail
-            const categoryEndX = spineStartX + spineLength * 0.85;    // End at 85% (before head)
+            const categoryStartX = spineStartX + spineLength * 0.35;  // Start at 35% from tail
+            const categoryEndX = spineStartX + spineLength * 0.92;    // End at 92% (near head)
             const categorySpacing = (categoryEndX - categoryStartX) / 2;  // 3 categories = 2 gaps
 
             let svgContent = '';
