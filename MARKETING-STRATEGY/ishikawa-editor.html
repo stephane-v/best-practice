@@ -1016,23 +1016,27 @@
             const width = 900;
             const height = 600;
             const spineY = height / 2;
-            const spineStartX = 120;  // Start spine after tail
-            const spineEndX = width - 120;
+            const tailBaseX = 50;  // Tail position (left)
+            const spineStartX = tailBaseX + 50;  // Spine starts at tail tip
+            const spineEndX = width - 120;  // Spine ends at head
             const headWidth = 100;
             const headHeight = 80;
 
-            // Category positions
+            // Category positions - centered between tail and head
             const topCategories = diagram.categories.filter(c => c.position === 'top');
             const bottomCategories = diagram.categories.filter(c => c.position === 'bottom');
 
-            const categorySpacing = (spineEndX - spineStartX - 60) / 3;
+            // Categories should be spread from 25% to 85% of spine length
+            const spineLength = spineEndX - spineStartX;
+            const categoryStartX = spineStartX + spineLength * 0.20;  // Start at 20% from tail
+            const categoryEndX = spineStartX + spineLength * 0.85;    // End at 85% (before head)
+            const categorySpacing = (categoryEndX - categoryStartX) / 2;  // 3 categories = 2 gaps
 
             let svgContent = '';
 
-            // Draw fish tail (left side) - moved further left
-            const tailBaseX = 70;
+            // Draw fish tail (left side)
             const tailPoints = [
-                [tailBaseX + 50, spineY],
+                [spineStartX, spineY],
                 [tailBaseX, spineY - 70],
                 [tailBaseX - 20, spineY - 45],
                 [tailBaseX, spineY],
@@ -1046,7 +1050,7 @@
 
             // Tail label (Causes)
             svgContent += `
-                <text x="${tailBaseX}" y="${spineY + 5}" text-anchor="middle"
+                <text x="${tailBaseX + 5}" y="${spineY + 5}" text-anchor="middle"
                       fill="${textSecondary}" font-size="14" font-weight="600"
                       class="cause-label-text" style="cursor: pointer;"
                       ondblclick="editCauseLabel()">
@@ -1056,7 +1060,7 @@
 
             // Draw main spine (from tail to head)
             svgContent += `
-                <line x1="${tailBaseX + 50}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}"
+                <line x1="${spineStartX}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}"
                       stroke="${textMuted}" stroke-width="3" class="spine"/>
             `;
 
@@ -1090,7 +1094,7 @@
 
             // Draw categories and causes
             function renderCategory(category, index, isTop) {
-                const baseX = spineStartX + 30 + index * categorySpacing;
+                const baseX = categoryStartX + index * categorySpacing;
                 const branchLength = 130;
                 const branchEndX = baseX + 70;
                 const branchEndY = isTop ? spineY - branchLength : spineY + branchLength;
