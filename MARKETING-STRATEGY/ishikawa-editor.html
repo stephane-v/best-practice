@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur Diagramme Ishikawa - Analyse Causes-Effets 6M</title>
+    <meta name="description" content="Outil gratuit pour créer et éditer des diagrammes d'Ishikawa (fishbone) basés sur la méthode des 6M. Export PNG et JSON.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables - Design System */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+
+            /* Ishikawa 6M Colors */
+            --color-maindoeuvre: #3B82F6;
+            --color-matiere: #10B981;
+            --color-methode: #F59E0B;
+            --color-milieu: #EF4444;
+            --color-materiel: #8B5CF6;
+            --color-mesure: #EC4899;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+
+        .diagram-title-input {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            min-width: 200px;
+        }
+
+        .diagram-title-input:hover {
+            border-color: var(--border-color);
+        }
+
+        .diagram-title-input:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            background: var(--bg-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+        }
+
+        .save-status.saving {
+            color: var(--warning);
+        }
+
+        .save-status.saved {
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Diagram Container */
+        .diagram-container {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .diagram-wrapper {
+            width: 100%;
+            min-height: 600px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .diagram-svg {
+            display: block;
+            width: 100%;
+            min-width: 900px;
+            height: 600px;
+        }
+
+        /* SVG Styles */
+        .spine {
+            stroke: var(--text-muted);
+            stroke-width: 3;
+        }
+
+        .branch-line {
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .cause-line {
+            stroke-width: 1.5;
+            stroke-dasharray: none;
+        }
+
+        .fish-head {
+            fill: var(--bg-tertiary);
+            stroke: var(--accent-1);
+            stroke-width: 2;
+        }
+
+        .fish-tail {
+            fill: var(--bg-tertiary);
+            stroke: var(--text-muted);
+            stroke-width: 2;
+        }
+
+        .category-label {
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .category-label:hover {
+            opacity: 0.8;
+        }
+
+        .cause-text {
+            font-size: 12px;
+            fill: var(--text-secondary);
+            cursor: pointer;
+            transition: fill 0.2s ease;
+        }
+
+        .cause-text:hover {
+            fill: var(--text-primary);
+        }
+
+        .problem-text {
+            font-weight: 600;
+            font-size: 14px;
+            fill: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .cause-label-text {
+            font-weight: 600;
+            font-size: 14px;
+            fill: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .add-cause-btn {
+            fill: var(--bg-tertiary);
+            stroke: var(--border-color);
+            stroke-width: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-cause-btn:hover {
+            fill: var(--accent-1);
+            stroke: var(--accent-1);
+        }
+
+        .add-cause-plus {
+            fill: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .add-cause-btn:hover + .add-cause-plus,
+        .add-cause-btn:hover ~ .add-cause-plus {
+            fill: white;
+        }
+
+        .delete-cause-btn {
+            fill: var(--danger);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .cause-group:hover .delete-cause-btn {
+            opacity: 1;
+        }
+
+        /* Instructions Footer */
+        .instructions {
+            text-align: center;
+            padding: 16px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .instructions span {
+            display: inline-block;
+            margin: 0 16px;
+        }
+
+        .instructions kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-family: monospace;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 0 2px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+            font-size: 14px;
+            z-index: 1001;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--accent-1);
+        }
+
+        /* Hidden file input */
+        .hidden-input {
+            display: none;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-content {
+                gap: 12px;
+            }
+
+            .title-section {
+                width: 100%;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .diagram-title-input {
+                font-size: 14px;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-container {
+                padding: 16px;
+            }
+
+            .btn span {
+                display: none;
+            }
+
+            .btn {
+                padding: 8px 10px;
+            }
+
+            .instructions span {
+                display: block;
+                margin: 4px 0;
+            }
+        }
+
+        /* Edit mode for text elements */
+        .editing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 999;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 12px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* SVG text input overlay */
+        .svg-input-overlay {
+            position: absolute;
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-1);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            z-index: 1000;
+            min-width: 100px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .svg-input-overlay:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="title-section">
+                <span class="logo">Ishikawa 6M</span>
+                <input type="text"
+                       id="diagram-title"
+                       class="diagram-title-input"
+                       value="Mon analyse Ishikawa"
+                       placeholder="Titre du diagramme..."
+                       onchange="handleTitleChange(this.value)">
+            </div>
+            <div class="header-actions">
+                <div class="save-status saved" id="save-status">
+                    <span class="status-dot"></span>
+                    <span id="save-status-text">Sauvegardé</span>
+                </div>
+                <button class="btn btn-secondary" onclick="handleNew()" title="Nouveau diagramme">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    <span>Nouveau</span>
+                </button>
+                <button class="btn btn-secondary" onclick="handleImport()" title="Importer JSON">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Importer</span>
+                </button>
+                <button class="btn btn-secondary" onclick="handleExportJSON()" title="Exporter JSON">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                    </svg>
+                    <span>JSON</span>
+                </button>
+                <button class="btn btn-primary" onclick="handleExportPNG()" title="Exporter PNG">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>PNG</span>
+                </button>
+                <button class="btn-icon theme-toggle" onclick="toggleTheme()" title="Changer le thème">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="diagram-container">
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-maindoeuvre)"></span>
+                    Main d'œuvre
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-matiere)"></span>
+                    Matière
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-methode)"></span>
+                    Méthode
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-milieu)"></span>
+                    Milieu
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-materiel)"></span>
+                    Matériel
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: var(--color-mesure)"></span>
+                    Mesure
+                </div>
+            </div>
+            <div class="diagram-wrapper" id="diagram-wrapper">
+                <svg id="diagram-svg" class="diagram-svg" viewBox="0 0 900 600">
+                    <!-- SVG content will be generated by JavaScript -->
+                </svg>
+            </div>
+            <div class="instructions">
+                <span><kbd>Double-clic</kbd> sur un texte pour l'éditer</span>
+                <span><kbd>Clic</kbd> sur <strong>+</strong> pour ajouter une cause</span>
+                <span><kbd>Survol</kbd> d'une cause pour la supprimer</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title" id="confirm-title">Confirmation</h3>
+            <p class="modal-text" id="confirm-text">Êtes-vous sûr ?</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('confirm-modal')">Annuler</button>
+                <button class="btn btn-primary" id="confirm-action-btn">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title" id="edit-title">Modifier</h3>
+            <input type="text" id="edit-input" class="modal-input" placeholder="Entrez le texte...">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('edit-modal')">Annuler</button>
+                <button class="btn btn-primary" onclick="confirmEdit()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="import-input" class="hidden-input" accept=".json" onchange="processImport(event)">
+
+    <script>
+        // Constants
+        const STORAGE_KEY = 'ishikawa_current';
+        const THEME_KEY = 'ishikawa-editor-theme';
+
+        const DEFAULT_CATEGORIES = [
+            { id: 'maindoeuvre', name: "Main d'œuvre", color: '#3B82F6', position: 'top', causes: ['Compétences', 'Formation', 'Motivation'] },
+            { id: 'matiere', name: 'Matière', color: '#10B981', position: 'top', causes: ['Qualité', 'Disponibilité'] },
+            { id: 'methode', name: 'Méthode', color: '#F59E0B', position: 'top', causes: ['Procédure', 'Instructions'] },
+            { id: 'milieu', name: 'Milieu', color: '#EF4444', position: 'bottom', causes: ['Environnement', 'Conditions'] },
+            { id: 'materiel', name: 'Matériel', color: '#8B5CF6', position: 'bottom', causes: ['Équipement', 'Maintenance'] },
+            { id: 'mesure', name: 'Mesure', color: '#EC4899', position: 'bottom', causes: ['Indicateurs', 'Contrôle'] }
+        ];
+
+        // State
+        let diagram = null;
+        let saveTimeout = null;
+        let editContext = null;
+
+        // Generate unique ID
+        function generateId() {
+            return 'ishikawa_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Create new diagram
+        function createNewDiagram() {
+            return {
+                id: generateId(),
+                title: 'Mon analyse Ishikawa',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                causeLabel: 'Causes',
+                problem: 'Problème à analyser',
+                categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES))
+            };
+        }
+
+        // Theme functions
+        function initTheme() {
+            const saved = localStorage.getItem(THEME_KEY);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = saved || (prefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem(THEME_KEY, newTheme);
+            updateThemeIcon(newTheme);
+            renderDiagram();
+        }
+
+        function updateThemeIcon(theme) {
+            document.getElementById('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Save functions
+        function setSaveStatus(status) {
+            const statusEl = document.getElementById('save-status');
+            const textEl = document.getElementById('save-status-text');
+            statusEl.className = 'save-status ' + status;
+            textEl.textContent = status === 'saving' ? 'Sauvegarde...' : 'Sauvegardé';
+        }
+
+        function saveDiagram() {
+            if (!diagram) return;
+            diagram.updatedAt = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(diagram));
+            setSaveStatus('saved');
+        }
+
+        function scheduleSave() {
+            setSaveStatus('saving');
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveDiagram, 500);
+        }
+
+        // Load diagram
+        function loadDiagram() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    diagram = JSON.parse(saved);
+                    // Validate structure
+                    if (!diagram.id || !diagram.categories) {
+                        throw new Error('Invalid structure');
+                    }
+                } catch (e) {
+                    diagram = createNewDiagram();
+                }
+            } else {
+                diagram = createNewDiagram();
+            }
+            document.getElementById('diagram-title').value = diagram.title;
+            renderDiagram();
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showConfirm(title, text, callback) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-text').textContent = text;
+            const btn = document.getElementById('confirm-action-btn');
+            btn.onclick = () => {
+                closeModal('confirm-modal');
+                callback();
+            };
+            showModal('confirm-modal');
+        }
+
+        // Edit functions
+        function showEditModal(title, currentValue, callback) {
+            document.getElementById('edit-title').textContent = title;
+            const input = document.getElementById('edit-input');
+            input.value = currentValue;
+            editContext = callback;
+            showModal('edit-modal');
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function confirmEdit() {
+            const value = document.getElementById('edit-input').value.trim();
+            if (value && editContext) {
+                editContext(value);
+            }
+            closeModal('edit-modal');
+            editContext = null;
+        }
+
+        // Handle Enter key in edit modal
+        document.getElementById('edit-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                confirmEdit();
+            } else if (e.key === 'Escape') {
+                closeModal('edit-modal');
+            }
+        });
+
+        // Handle title change
+        function handleTitleChange(value) {
+            if (!diagram) return;
+            diagram.title = value || 'Mon analyse Ishikawa';
+            scheduleSave();
+        }
+
+        // Handle new diagram
+        function handleNew() {
+            showConfirm(
+                'Nouveau diagramme',
+                'Voulez-vous créer un nouveau diagramme ? Les modifications non exportées seront perdues.',
+                () => {
+                    diagram = createNewDiagram();
+                    document.getElementById('diagram-title').value = diagram.title;
+                    saveDiagram();
+                    renderDiagram();
+                    showToast('Nouveau diagramme créé', 'success');
+                }
+            );
+        }
+
+        // Handle import
+        function handleImport() {
+            document.getElementById('import-input').click();
+        }
+
+        function processImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    // Validate structure
+                    if (!data.categories || !Array.isArray(data.categories)) {
+                        throw new Error('Structure invalide');
+                    }
+                    // Ensure required fields
+                    diagram = {
+                        id: data.id || generateId(),
+                        title: data.title || 'Diagramme importé',
+                        createdAt: data.createdAt || new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        causeLabel: data.causeLabel || 'Causes',
+                        problem: data.problem || 'Problème à analyser',
+                        categories: data.categories
+                    };
+                    document.getElementById('diagram-title').value = diagram.title;
+                    saveDiagram();
+                    renderDiagram();
+                    showToast('Diagramme importé avec succès', 'success');
+                } catch (err) {
+                    showToast('Erreur: fichier JSON invalide', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Handle export JSON
+        function handleExportJSON() {
+            if (!diagram) return;
+            const exportData = {
+                ...diagram,
+                exportedAt: new Date().toISOString(),
+                version: '1.0'
+            };
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const filename = diagram.title.replace(/[^a-zA-Z0-9àâäéèêëïîôùûüç\s-]/gi, '').replace(/\s+/g, '-').toLowerCase();
+            const date = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `${filename}-ishikawa-${date}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Fichier JSON exporté', 'success');
+        }
+
+        // Handle export PNG
+        function handleExportPNG() {
+            const svg = document.getElementById('diagram-svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+
+            // Get computed styles
+            const styles = getComputedStyle(document.documentElement);
+            const bgColor = styles.getPropertyValue('--bg-secondary').trim() || '#1e293b';
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const scale = 2; // For better quality
+
+            canvas.width = 900 * scale;
+            canvas.height = 600 * scale;
+
+            // Fill background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Create image from SVG
+            const img = new Image();
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const svgUrl = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(svgUrl);
+
+                // Download
+                const a = document.createElement('a');
+                const filename = diagram.title.replace(/[^a-zA-Z0-9àâäéèêëïîôùûüç\s-]/gi, '').replace(/\s+/g, '-').toLowerCase();
+                const date = new Date().toISOString().split('T')[0];
+                a.href = canvas.toDataURL('image/png');
+                a.download = `${filename}-ishikawa-${date}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast('Image PNG exportée', 'success');
+            };
+
+            img.onerror = function() {
+                showToast('Erreur lors de l\'export PNG', 'error');
+            };
+
+            img.src = svgUrl;
+        }
+
+        // Render diagram
+        function renderDiagram() {
+            if (!diagram) return;
+
+            const svg = document.getElementById('diagram-svg');
+            const styles = getComputedStyle(document.documentElement);
+
+            const textPrimary = styles.getPropertyValue('--text-primary').trim() || '#f1f5f9';
+            const textSecondary = styles.getPropertyValue('--text-secondary').trim() || '#94a3b8';
+            const textMuted = styles.getPropertyValue('--text-muted').trim() || '#64748b';
+            const bgTertiary = styles.getPropertyValue('--bg-tertiary').trim() || '#334155';
+            const borderColor = styles.getPropertyValue('--border-color').trim() || '#334155';
+            const accent1 = styles.getPropertyValue('--accent-1').trim() || '#6366f1';
+
+            // Layout constants
+            const width = 900;
+            const height = 600;
+            const spineY = height / 2;
+            const spineStartX = 80;
+            const spineEndX = width - 120;
+            const headWidth = 100;
+            const headHeight = 80;
+
+            // Category positions
+            const topCategories = diagram.categories.filter(c => c.position === 'top');
+            const bottomCategories = diagram.categories.filter(c => c.position === 'bottom');
+
+            const categorySpacing = (spineEndX - spineStartX - 100) / 3;
+
+            let svgContent = '';
+
+            // Draw main spine
+            svgContent += `
+                <line x1="${spineStartX}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}"
+                      stroke="${textMuted}" stroke-width="3" class="spine"/>
+            `;
+
+            // Draw fish tail (left side)
+            const tailPoints = [
+                [spineStartX, spineY],
+                [30, spineY - 60],
+                [10, spineY - 40],
+                [30, spineY],
+                [10, spineY + 40],
+                [30, spineY + 60]
+            ];
+            svgContent += `
+                <polygon points="${tailPoints.map(p => p.join(',')).join(' ')}"
+                         fill="${bgTertiary}" stroke="${textMuted}" stroke-width="2" class="fish-tail"/>
+            `;
+
+            // Tail label (Causes)
+            svgContent += `
+                <text x="45" y="${spineY + 5}" text-anchor="middle"
+                      fill="${textSecondary}" font-size="14" font-weight="600"
+                      class="cause-label-text" style="cursor: pointer;"
+                      ondblclick="editCauseLabel()">
+                    ${escapeHtml(diagram.causeLabel)}
+                </text>
+            `;
+
+            // Draw fish head (right side) - ellipse
+            svgContent += `
+                <ellipse cx="${spineEndX + headWidth/2}" cy="${spineY}" rx="${headWidth/2}" ry="${headHeight/2}"
+                         fill="${bgTertiary}" stroke="${accent1}" stroke-width="3" class="fish-head"/>
+            `;
+
+            // Fish eye
+            svgContent += `
+                <circle cx="${spineEndX + headWidth/2 + 20}" cy="${spineY - 15}" r="8"
+                        fill="${textMuted}" opacity="0.5"/>
+                <circle cx="${spineEndX + headWidth/2 + 22}" cy="${spineY - 17}" r="3"
+                        fill="${bgTertiary}"/>
+            `;
+
+            // Problem text in head
+            const problemLines = wrapText(diagram.problem, 12);
+            problemLines.forEach((line, i) => {
+                const lineY = spineY + (i - (problemLines.length - 1) / 2) * 16;
+                svgContent += `
+                    <text x="${spineEndX + headWidth/2 - 5}" y="${lineY}" text-anchor="middle"
+                          fill="${textPrimary}" font-size="12" font-weight="600"
+                          class="problem-text" style="cursor: pointer;"
+                          ondblclick="editProblem()">
+                        ${escapeHtml(line)}
+                    </text>
+                `;
+            });
+
+            // Draw categories and causes
+            function renderCategory(category, index, isTop) {
+                const baseX = spineStartX + 80 + index * categorySpacing;
+                const branchEndY = isTop ? spineY - 120 : spineY + 120;
+                const direction = isTop ? -1 : 1;
+
+                // Branch line
+                svgContent += `
+                    <line x1="${baseX}" y1="${spineY}" x2="${baseX + 60}" y2="${branchEndY}"
+                          stroke="${category.color}" stroke-width="2" class="branch-line"/>
+                `;
+
+                // Category label
+                svgContent += `
+                    <text x="${baseX + 65}" y="${branchEndY + direction * 5}"
+                          text-anchor="start" fill="${category.color}"
+                          font-size="14" font-weight="600" class="category-label"
+                          ondblclick="editCategory('${category.id}')">
+                        ${escapeHtml(category.name)}
+                    </text>
+                `;
+
+                // Add cause button
+                const addBtnY = branchEndY + direction * 25;
+                svgContent += `
+                    <g onclick="addCause('${category.id}')" style="cursor: pointer;">
+                        <circle cx="${baseX + 70}" cy="${addBtnY}" r="10"
+                                fill="${bgTertiary}" stroke="${borderColor}" stroke-width="1" class="add-cause-btn"/>
+                        <text x="${baseX + 70}" y="${addBtnY + 4}" text-anchor="middle"
+                              fill="${textMuted}" font-size="14" class="add-cause-plus">+</text>
+                    </g>
+                `;
+
+                // Causes
+                category.causes.forEach((cause, causeIndex) => {
+                    const causeOffset = (causeIndex + 1) * 35;
+                    const t = causeOffset / 150; // Parameter along the branch
+                    const causeX = baseX + t * 60;
+                    const causeY = spineY + t * (branchEndY - spineY);
+
+                    // Cause line (perpendicular to branch)
+                    const lineLength = 60;
+                    const causeEndX = causeX - lineLength;
+
+                    svgContent += `
+                        <g class="cause-group">
+                            <line x1="${causeX}" y1="${causeY}" x2="${causeEndX}" y2="${causeY}"
+                                  stroke="${category.color}" stroke-width="1.5" opacity="0.6" class="cause-line"/>
+                            <text x="${causeEndX - 5}" y="${causeY + 4}" text-anchor="end"
+                                  fill="${textSecondary}" font-size="12" class="cause-text"
+                                  ondblclick="editCause('${category.id}', ${causeIndex})">
+                                ${escapeHtml(cause)}
+                            </text>
+                            <circle cx="${causeEndX - 10 - cause.length * 4}" cy="${causeY}" r="8"
+                                    fill="#EF4444" class="delete-cause-btn"
+                                    onclick="deleteCause('${category.id}', ${causeIndex})" style="cursor: pointer;"/>
+                            <text x="${causeEndX - 10 - cause.length * 4}" y="${causeY + 4}" text-anchor="middle"
+                                  fill="white" font-size="12" font-weight="bold"
+                                  class="delete-cause-btn" style="pointer-events: none;">×</text>
+                        </g>
+                    `;
+                });
+            }
+
+            topCategories.forEach((cat, i) => renderCategory(cat, i, true));
+            bottomCategories.forEach((cat, i) => renderCategory(cat, i, false));
+
+            svg.innerHTML = svgContent;
+        }
+
+        // Helper: wrap text
+        function wrapText(text, maxChars) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length <= maxChars) {
+                    currentLine = (currentLine + ' ' + word).trim();
+                } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+
+            return lines.length > 0 ? lines : [text];
+        }
+
+        // Helper: escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Edit functions
+        function editProblem() {
+            showEditModal('Modifier le problème/effet', diagram.problem, (value) => {
+                diagram.problem = value;
+                scheduleSave();
+                renderDiagram();
+            });
+        }
+
+        function editCauseLabel() {
+            showEditModal('Modifier le label des causes', diagram.causeLabel, (value) => {
+                diagram.causeLabel = value;
+                scheduleSave();
+                renderDiagram();
+            });
+        }
+
+        function editCategory(categoryId) {
+            const category = diagram.categories.find(c => c.id === categoryId);
+            if (!category) return;
+            showEditModal('Modifier la catégorie', category.name, (value) => {
+                category.name = value;
+                scheduleSave();
+                renderDiagram();
+            });
+        }
+
+        function editCause(categoryId, causeIndex) {
+            const category = diagram.categories.find(c => c.id === categoryId);
+            if (!category || !category.causes[causeIndex]) return;
+            showEditModal('Modifier la cause', category.causes[causeIndex], (value) => {
+                category.causes[causeIndex] = value;
+                scheduleSave();
+                renderDiagram();
+            });
+        }
+
+        function addCause(categoryId) {
+            const category = diagram.categories.find(c => c.id === categoryId);
+            if (!category) return;
+            showEditModal('Ajouter une cause', '', (value) => {
+                category.causes.push(value);
+                scheduleSave();
+                renderDiagram();
+            });
+        }
+
+        function deleteCause(categoryId, causeIndex) {
+            const category = diagram.categories.find(c => c.id === categoryId);
+            if (!category || !category.causes[causeIndex]) return;
+            category.causes.splice(causeIndex, 1);
+            scheduleSave();
+            renderDiagram();
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            loadDiagram();
+        });
+    </script>
+</body>
+</html>
