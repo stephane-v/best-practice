@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roue Chromatique - Color Wheel</title>
-    <meta name="description" content="Outil interactif de roue chromatique pour sélectionner et explorer les couleurs. Export des valeurs HEX, RGB, HSL.">
+    <meta name="description" content="Outil interactif de roue chromatique pour selectionner et explorer les couleurs. Export des valeurs HEX, RGB, HSL.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -218,114 +218,48 @@
 
         .wheel-wrapper {
             position: relative;
-            width: 320px;
-            height: 320px;
+            width: 400px;
+            height: 400px;
         }
 
         #color-wheel {
             width: 100%;
             height: 100%;
-            cursor: crosshair;
+            cursor: pointer;
         }
 
-        .wheel-center {
+        /* Selected segment highlight */
+        .segment-highlight {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
             pointer-events: none;
-            border: 3px solid var(--bg-secondary);
-            box-shadow: var(--shadow-md);
-        }
-
-        .wheel-indicator {
-            position: absolute;
-            width: 16px;
-            height: 16px;
             border: 3px solid white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Sliders */
-        .slider-group {
-            margin-top: 24px;
-            width: 100%;
-            max-width: 320px;
-        }
-
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .slider-value {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .slider {
-            width: 100%;
-            height: 12px;
-            border-radius: 6px;
-            appearance: none;
-            -webkit-appearance: none;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .slider::-webkit-slider-thumb {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--accent-1);
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid var(--accent-1);
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-        }
-
-        #saturation-slider {
-            background: linear-gradient(to right, #808080, #ff0000);
-        }
-
-        #lightness-slider {
-            background: linear-gradient(to right, #000000, #808080, #ffffff);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
         }
 
         /* Color Preview */
         .color-preview-section {
             margin-top: 24px;
             width: 100%;
-            max-width: 320px;
+            max-width: 400px;
         }
 
         .color-preview {
             width: 100%;
             height: 80px;
             border-radius: 12px;
-            border: 2px solid var(--border-color);
-            transition: background-color 0.1s ease;
+            border: 3px solid var(--border-color);
+            transition: background-color 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-preview-hex {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.3);
+            color: white;
         }
 
         /* Color Info Panel */
@@ -580,13 +514,8 @@
             }
 
             .wheel-wrapper {
-                width: 280px;
-                height: 280px;
-            }
-
-            .wheel-center {
-                width: 150px;
-                height: 150px;
+                width: 320px;
+                height: 320px;
             }
 
             .btn span {
@@ -651,34 +580,18 @@
                 <div class="card-body">
                     <div class="wheel-container">
                         <div class="wheel-wrapper">
-                            <canvas id="color-wheel" width="320" height="320"></canvas>
-                            <div class="wheel-center" id="wheel-center"></div>
-                            <div class="wheel-indicator" id="wheel-indicator"></div>
-                        </div>
-
-                        <div class="slider-group">
-                            <div class="slider-label">
-                                <span>Saturation</span>
-                                <span class="slider-value" id="saturation-value">100%</span>
-                            </div>
-                            <input type="range" id="saturation-slider" class="slider" min="0" max="100" value="100">
-                        </div>
-
-                        <div class="slider-group">
-                            <div class="slider-label">
-                                <span>Luminosite</span>
-                                <span class="slider-value" id="lightness-value">50%</span>
-                            </div>
-                            <input type="range" id="lightness-slider" class="slider" min="0" max="100" value="50">
+                            <canvas id="color-wheel" width="400" height="400"></canvas>
                         </div>
 
                         <div class="color-preview-section">
-                            <div class="color-preview" id="color-preview"></div>
+                            <div class="color-preview" id="color-preview">
+                                <span class="color-preview-hex" id="preview-hex">#FF0000</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="instructions">
-                    Cliquez sur la roue pour selectionner une teinte, puis ajustez la saturation et la luminosite
+                    Cliquez sur un segment de la roue pour selectionner une couleur
                 </div>
             </div>
 
@@ -778,20 +691,22 @@
         const STORAGE_KEY = 'color-wheel-saved';
         const THEME_KEY = 'color-wheel-theme';
 
+        // Wheel configuration
+        const HUE_SEGMENTS = 12;        // Number of hue segments around the wheel
+        const SATURATION_RINGS = 5;     // Number of rings from center to edge
+        const SEGMENT_GAP = 2;          // Gap between segments in pixels
+
         // State
         let currentHue = 0;
         let currentSaturation = 100;
         let currentLightness = 50;
         let savedColors = [];
         let currentHarmony = 'complementary';
+        let selectedSegment = { hue: 0, ring: 4 }; // Start with outer ring (most saturated)
 
         // DOM Elements
         const canvas = document.getElementById('color-wheel');
         const ctx = canvas.getContext('2d');
-        const wheelCenter = document.getElementById('wheel-center');
-        const wheelIndicator = document.getElementById('wheel-indicator');
-        const saturationSlider = document.getElementById('saturation-slider');
-        const lightnessSlider = document.getElementById('lightness-slider');
         const colorPreview = document.getElementById('color-preview');
 
         // Initialize
@@ -827,89 +742,70 @@
             document.getElementById('theme-icon').innerHTML = theme === 'dark' ? '&#9728;' : '&#127769;';
         }
 
-        // Draw color wheel
+        // Draw segmented color wheel
         function drawColorWheel() {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const outerRadius = canvas.width / 2 - 5;
-            const innerRadius = outerRadius - 45;
+            const maxRadius = Math.min(centerX, centerY) - 10;
+            const minRadius = 20; // Small center circle
 
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw hue ring
-            for (let angle = 0; angle < 360; angle += 1) {
-                const startAngle = (angle - 1) * Math.PI / 180;
-                const endAngle = (angle + 1) * Math.PI / 180;
+            const ringWidth = (maxRadius - minRadius) / SATURATION_RINGS;
+            const segmentAngle = (2 * Math.PI) / HUE_SEGMENTS;
+            const gapAngle = SEGMENT_GAP / maxRadius; // Convert pixel gap to radians approximately
 
-                ctx.beginPath();
-                ctx.moveTo(
-                    centerX + Math.cos(startAngle) * innerRadius,
-                    centerY + Math.sin(startAngle) * innerRadius
-                );
-                ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
-                ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
-                ctx.closePath();
+            // Draw each segment
+            for (let h = 0; h < HUE_SEGMENTS; h++) {
+                const hue = (h * 360 / HUE_SEGMENTS);
+                const startAngle = h * segmentAngle - Math.PI / 2 + gapAngle / 2;
+                const endAngle = (h + 1) * segmentAngle - Math.PI / 2 - gapAngle / 2;
 
-                ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
-                ctx.fill();
+                for (let r = 0; r < SATURATION_RINGS; r++) {
+                    const innerRadius = minRadius + r * ringWidth + SEGMENT_GAP / 2;
+                    const outerRadius = minRadius + (r + 1) * ringWidth - SEGMENT_GAP / 2;
+
+                    // Calculate saturation and lightness for this ring
+                    // Outer ring (r = SATURATION_RINGS - 1) = full saturation
+                    // Inner ring (r = 0) = low saturation (pastel/white)
+                    const saturation = 20 + (r / (SATURATION_RINGS - 1)) * 80; // 20% to 100%
+                    const lightness = 90 - (r / (SATURATION_RINGS - 1)) * 40;   // 90% to 50%
+
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+                    ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+                    ctx.closePath();
+
+                    ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                    ctx.fill();
+
+                    // Draw selection highlight if this is the selected segment
+                    if (selectedSegment.hue === h && selectedSegment.ring === r) {
+                        ctx.strokeStyle = 'white';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
             }
+
+            // Draw center circle (white)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, minRadius - SEGMENT_GAP, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
         }
 
         // Setup event listeners
         function setupEventListeners() {
-            // Color wheel click/drag
-            let isDragging = false;
-
-            canvas.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                handleWheelInteraction(e);
-            });
-
-            canvas.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    handleWheelInteraction(e);
-                }
-            });
-
-            canvas.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            canvas.addEventListener('mouseleave', () => {
-                isDragging = false;
-            });
-
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isDragging = true;
-                handleWheelInteraction(e.touches[0]);
-            });
-
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (isDragging) {
-                    handleWheelInteraction(e.touches[0]);
-                }
-            });
-
-            canvas.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-
-            // Sliders
-            saturationSlider.addEventListener('input', (e) => {
-                currentSaturation = parseInt(e.target.value);
-                document.getElementById('saturation-value').textContent = currentSaturation + '%';
-                updateColor();
-            });
-
-            lightnessSlider.addEventListener('input', (e) => {
-                currentLightness = parseInt(e.target.value);
-                document.getElementById('lightness-value').textContent = currentLightness + '%';
-                updateColor();
-            });
+            canvas.addEventListener('click', handleWheelClick);
+            canvas.addEventListener('mousemove', handleWheelHover);
 
             // Harmony tabs
             document.querySelectorAll('.harmony-tab').forEach(tab => {
@@ -922,28 +818,58 @@
             });
         }
 
-        // Handle wheel interaction
-        function handleWheelInteraction(e) {
+        // Handle wheel click
+        function handleWheelClick(e) {
+            const segment = getSegmentAtPosition(e);
+            if (segment) {
+                selectedSegment = segment;
+
+                // Calculate color values
+                currentHue = segment.hue * 360 / HUE_SEGMENTS;
+                currentSaturation = 20 + (segment.ring / (SATURATION_RINGS - 1)) * 80;
+                currentLightness = 90 - (segment.ring / (SATURATION_RINGS - 1)) * 40;
+
+                drawColorWheel();
+                updateColor();
+            }
+        }
+
+        // Handle wheel hover for cursor feedback
+        function handleWheelHover(e) {
+            const segment = getSegmentAtPosition(e);
+            canvas.style.cursor = segment ? 'pointer' : 'default';
+        }
+
+        // Get segment at mouse position
+        function getSegmentAtPosition(e) {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
             const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const outerRadius = canvas.width / 2 - 5;
-            const innerRadius = outerRadius - 45;
+            const maxRadius = Math.min(centerX, centerY) - 10;
+            const minRadius = 20;
 
             const dx = x - centerX;
             const dy = y - centerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // Check if click is within the ring
-            if (distance >= innerRadius && distance <= outerRadius) {
-                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                if (angle < 0) angle += 360;
-                currentHue = Math.round(angle);
-                updateColor();
+            // Check if within wheel bounds
+            if (distance < minRadius || distance > maxRadius) {
+                return null;
             }
+
+            // Calculate which ring
+            const ringWidth = (maxRadius - minRadius) / SATURATION_RINGS;
+            const ring = Math.floor((distance - minRadius) / ringWidth);
+
+            // Calculate which hue segment
+            let angle = Math.atan2(dy, dx) + Math.PI / 2; // Adjust so 0 is at top
+            if (angle < 0) angle += 2 * Math.PI;
+            const hue = Math.floor(angle / (2 * Math.PI) * HUE_SEGMENTS) % HUE_SEGMENTS;
+
+            return { hue, ring: Math.min(ring, SATURATION_RINGS - 1) };
         }
 
         // Update color display
@@ -953,39 +879,22 @@
 
             // Update preview
             colorPreview.style.backgroundColor = hex;
-            wheelCenter.style.backgroundColor = hex;
+            document.getElementById('preview-hex').textContent = hex;
 
-            // Update indicator position
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = (canvas.width / 2 - 5 + canvas.width / 2 - 50) / 2;
-            const angle = currentHue * Math.PI / 180;
-            const indicatorX = centerX + Math.cos(angle) * radius;
-            const indicatorY = centerY + Math.sin(angle) * radius;
-
-            wheelIndicator.style.left = (indicatorX / canvas.width * 100) + '%';
-            wheelIndicator.style.top = (indicatorY / canvas.height * 100) + '%';
-            wheelIndicator.style.backgroundColor = hex;
-
-            // Update slider backgrounds
-            updateSliderBackgrounds();
+            // Adjust text color based on lightness
+            const textColor = currentLightness > 60 ? '#1e293b' : '#ffffff';
+            document.getElementById('preview-hex').style.color = textColor;
+            document.getElementById('preview-hex').style.textShadow = currentLightness > 60
+                ? '0 1px 2px rgba(255,255,255,0.5)'
+                : '0 1px 2px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.3)';
 
             // Update values
             document.getElementById('hex-value').value = hex;
             document.getElementById('rgb-value').value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-            document.getElementById('hsl-value').value = `hsl(${currentHue}, ${currentSaturation}%, ${currentLightness}%)`;
+            document.getElementById('hsl-value').value = `hsl(${Math.round(currentHue)}, ${Math.round(currentSaturation)}%, ${Math.round(currentLightness)}%)`;
 
             // Update harmony colors
             renderHarmonyColors();
-        }
-
-        // Update slider backgrounds based on current hue
-        function updateSliderBackgrounds() {
-            const satGradient = `linear-gradient(to right, hsl(${currentHue}, 0%, ${currentLightness}%), hsl(${currentHue}, 100%, ${currentLightness}%))`;
-            saturationSlider.style.background = satGradient;
-
-            const lightGradient = `linear-gradient(to right, hsl(${currentHue}, ${currentSaturation}%, 0%), hsl(${currentHue}, ${currentSaturation}%, 50%), hsl(${currentHue}, ${currentSaturation}%, 100%))`;
-            lightnessSlider.style.background = lightGradient;
         }
 
         // Color conversion functions
@@ -1016,6 +925,31 @@
                 const hex = x.toString(16);
                 return hex.length === 1 ? '0' + hex : hex;
             }).join('').toUpperCase();
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+
+            return { h: h * 360, s: s * 100, l: l * 100 };
         }
 
         // Copy value to clipboard
@@ -1103,41 +1037,17 @@
             const b = parseInt(hex.slice(5, 7), 16);
 
             const hsl = rgbToHsl(r, g, b);
-            currentHue = Math.round(hsl.h);
-            currentSaturation = Math.round(hsl.s);
-            currentLightness = Math.round(hsl.l);
+            currentHue = hsl.h;
+            currentSaturation = hsl.s;
+            currentLightness = hsl.l;
 
-            saturationSlider.value = currentSaturation;
-            lightnessSlider.value = currentLightness;
-            document.getElementById('saturation-value').textContent = currentSaturation + '%';
-            document.getElementById('lightness-value').textContent = currentLightness + '%';
+            // Find closest segment
+            selectedSegment.hue = Math.round(currentHue / 360 * HUE_SEGMENTS) % HUE_SEGMENTS;
+            selectedSegment.ring = Math.round((currentSaturation - 20) / 80 * (SATURATION_RINGS - 1));
+            selectedSegment.ring = Math.max(0, Math.min(SATURATION_RINGS - 1, selectedSegment.ring));
 
+            drawColorWheel();
             updateColor();
-        }
-
-        function rgbToHsl(r, g, b) {
-            r /= 255;
-            g /= 255;
-            b /= 255;
-
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-
-            if (max === min) {
-                h = s = 0;
-            } else {
-                const d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-                switch (max) {
-                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-                    case g: h = ((b - r) / d + 2) / 6; break;
-                    case b: h = ((r - g) / d + 4) / 6; break;
-                }
-            }
-
-            return { h: h * 360, s: s * 100, l: l * 100 };
         }
 
         // Harmony functions
@@ -1195,12 +1105,9 @@
             currentHue = 0;
             currentSaturation = 100;
             currentLightness = 50;
+            selectedSegment = { hue: 0, ring: SATURATION_RINGS - 1 };
 
-            saturationSlider.value = 100;
-            lightnessSlider.value = 50;
-            document.getElementById('saturation-value').textContent = '100%';
-            document.getElementById('lightness-value').textContent = '50%';
-
+            drawColorWheel();
             updateColor();
             showToast('Couleur reinitialisee');
         }
