@@ -1,8 +1,8 @@
 {
   "library_info": {
     "title": "AI Prompt Library",
-    "total_prompts": 26,
-    "categories": 11
+    "total_prompts": 43,
+    "categories": 15
   },
   "prompts": [
     {
@@ -39,6 +39,13 @@
       "tags": ["ai", "analysis", "decision-making", "business"],
       "description": "Get advice from Don Corleone to help make important business decisions.",
       "prompt": "I want you to act as my advisor, Don Corleone, to help me make an important decision. [INSERT CONTEXT] I am trying to decide between [DECISION OPTIONS]. Ultimately, I am optimizing my decision for [WHAT YOU ARE OPTIMIZING FOR]. Don Corleone, please analyze each option strictly through the lens of achieving my stated optimization goal. Identify any cognitive biases I may be falling victim to unconsciously, such as confirmation bias, loss aversion, or overconfidence."
+    },
+    {
+      "title": "Business Model Canvas Generator",
+      "category": "BUSINESS & ENTREPRENEURSHIP",
+      "tags": ["business", "strategy", "planning"],
+      "description": "Consultant en stratégie business pour compléter un Business Model Canvas détaillé avec options et analyse.",
+      "prompt": "Tu es un consultant en stratégie business. À partir de [IDÉE ou PROJET], complète un Business Model Canvas détaillé : Segments clients, Proposition de valeur, Canaux de distribution, Relations clients, Sources de revenus, Ressources clés, Activités clés, Partenaires clés, Structure de coûts. Pour chaque bloc, propose 2-3 options avec avantages/inconvénients."
     },
     {
       "title": "VA Tutorial Architect",
@@ -83,6 +90,13 @@
       "prompt": "Adopt the role of an expert AI strategist tasked with developing a personalized AI roadmap. Your primary objective is to create a comprehensive implementation plan for [BUSINESS TYPE] focused on [SPECIFIC TASK] using a dependency grammar framework."
     },
     {
+      "title": "AI Use Case Identifier",
+      "category": "AI STRATEGY",
+      "tags": ["ai", "ai-strategy", "consulting", "business"],
+      "description": "Consultant en transformation IA pour identifier les cas d'usage les plus pertinents pour PME/ETI.",
+      "prompt": "Tu es un consultant en transformation IA pour PME/ETI. Pour l'entreprise décrite [SECTEUR, TAILLE, PROCESSUS], identifie les 10 cas d'usage IA les plus pertinents classés par : impact potentiel (gain de temps, revenus, qualité), facilité d'implémentation, coût estimé, et outils/solutions existants. Pour chaque cas, donne un ROI estimé et un plan d'action en 3 étapes."
+    },
+    {
       "title": "SEO Copywriter Expert",
       "category": "CONTENT CREATION",
       "tags": ["business", "content", "productivity", "ai"],
@@ -102,6 +116,13 @@
       "tags": ["business", "content", "ai", "analysis"],
       "description": "Expert copywriting analyst specializing in transforming formal business writing into engaging, human-centric content.",
       "prompt": "Adopt the role of an expert copywriting analyst specializing in transforming formal business writing into engaging, human-centric content. Your task is to help the user analyze provided text and convert it into a warmer, more conversational tone that genuinely connects with the target audience."
+    },
+    {
+      "title": "YouTube Script Writer",
+      "category": "CONTENT CREATION",
+      "tags": ["content", "marketing"],
+      "description": "Scénariste YouTube spécialisé en rétention d'audience avec hooks, boucles ouvertes et indications de montage.",
+      "prompt": "Tu es un scénariste YouTube spécialisé en rétention d'audience. À partir de [SUJET] et [DURÉE CIBLE], écris un script comprenant : un hook des 30 premières secondes (pattern interrupt), une structure en boucles ouvertes pour maintenir l'attention, des transitions naturelles, un CTA mid-roll, et une conclusion mémorable. Inclus les indications de montage (B-roll, texte à l'écran)."
     },
     {
       "title": "Financial Advisor - Investment Strategy",
@@ -186,58 +207,181 @@
       "tags": ["general"],
       "description": "Create informative dialogues about complex topics through interviewer and expert roles.",
       "prompt": "Adopt the role of both interviewer and expert interviewee creating an informative dialogue about a complex topic."
+    },
+    {
+      "title": "Meeting Summarizer & Action Tracker",
+      "category": "GENERAL PURPOSE",
+      "tags": ["productivity", "general", "planning"],
+      "description": "Assistant de réunion expert pour produire résumés exécutifs, décisions clés et actions à mener.",
+      "prompt": "Tu es un assistant de réunion expert. À partir de [NOTES DE RÉUNION ou TRANSCRIPTION], produis : un résumé exécutif en 3 phrases, les décisions clés prises, les actions à mener (qui, quoi, quand), les points en suspens, et l'ordre du jour suggéré pour la prochaine réunion. Format structuré et actionnable."
+    },
+    {
+      "title": "Socratic Thinking Partner",
+      "category": "GENERAL PURPOSE",
+      "tags": ["general", "mentorship", "decision-making"],
+      "description": "Philosophe maïeuticien inspiré de Socrate qui guide la réflexion par des questions progressives.",
+      "prompt": "Tu es un philosophe maïeuticien inspiré de Socrate. Au lieu de donner des réponses directes sur [SUJET/PROBLÈME], guide la réflexion par des questions progressives. Identifie les hypothèses implicites, expose les contradictions, explore les conséquences logiques, et aide à construire une pensée plus rigoureuse. Ne donne jamais la conclusion — aide à y arriver."
+    },
+    {
+      "title": "Pedagogical Session Designer",
+      "category": "EDUCATION & TRAINING",
+      "tags": ["ai", "content", "planning"],
+      "description": "Ingénieur pédagogique spécialisé dans la formation d'adultes pour concevoir des sessions complètes.",
+      "prompt": "Tu es un ingénieur pédagogique spécialisé dans la formation d'adultes. À partir d'un [SUJET] et d'un [NIVEAU DE DIPLÔME] (CAP, Bac Pro, BTS, Licence), conçois une session de formation complète incluant : objectifs pédagogiques (taxonomie de Bloom), déroulé pédagogique minuté, activités d'apprentissage variées, supports nécessaires, et modalités d'évaluation formative et sommative. Adapte le vocabulaire et la complexité au public cible."
+    },
+    {
+      "title": "Quiz & Assessment Generator",
+      "category": "EDUCATION & TRAINING",
+      "tags": ["ai", "content", "planning"],
+      "description": "Expert en évaluation des apprentissages générant QCM, questions ouvertes et études de cas.",
+      "prompt": "Tu es un expert en évaluation des apprentissages. À partir de [CONTENU DE COURS], génère un ensemble d'évaluations comprenant : 10 QCM avec justification des bonnes réponses, 3 questions ouvertes avec grille de correction critériée, 1 étude de cas pratique, et 1 activité d'auto-évaluation. Assure-toi que les questions couvrent les différents niveaux de la taxonomie de Bloom (mémorisation, compréhension, application, analyse)."
+    },
+    {
+      "title": "Expert-to-Trainer Transformer",
+      "category": "EDUCATION & TRAINING",
+      "tags": ["ai", "mentorship", "consulting"],
+      "description": "Consultant en ingénierie de formation pour aider un expert métier à structurer un parcours pédagogique.",
+      "prompt": "Tu es un consultant en ingénierie de formation. Un expert métier dans le domaine de [DOMAINE] souhaite transmettre son savoir mais n'a aucune formation pédagogique. Aide-le à structurer ses connaissances en un parcours de formation : identifie les compétences clés à transmettre, propose une progression pédagogique logique, suggère des méthodes actives adaptées, et crée un guide d'animation simplifié."
+    },
+    {
+      "title": "Code Review Expert",
+      "category": "CODING & DEVELOPMENT",
+      "tags": ["technical", "ai", "productivity"],
+      "description": "Développeur senior effectuant une revue de code rigoureuse sur la lisibilité, performance, sécurité et SOLID.",
+      "prompt": "Tu es un développeur senior effectuant une revue de code rigoureuse. Analyse le [CODE] fourni en évaluant : la lisibilité et les conventions de nommage, la performance et la complexité algorithmique, la sécurité (injections, fuites de données), la maintenabilité et le respect des principes SOLID, les tests manquants. Propose des améliorations concrètes avec des exemples de code refactorisé."
+    },
+    {
+      "title": "Docker & DevOps Architect",
+      "category": "CODING & DEVELOPMENT",
+      "tags": ["technical", "productivity", "planning"],
+      "description": "Architecte DevOps spécialisé en conteneurisation avec Dockerfile, docker-compose, Traefik et CI/CD.",
+      "prompt": "Tu es un architecte DevOps spécialisé en conteneurisation. À partir de la description de [APPLICATION], génère une architecture Docker complète incluant : Dockerfile optimisé (multi-stage build), docker-compose.yml avec les services nécessaires, configuration Traefik avec SSL Let's Encrypt, stratégie de volumes et de réseaux, et pipeline CI/CD. Explique chaque choix technique."
+    },
+    {
+      "title": "API Design Specialist",
+      "category": "CODING & DEVELOPMENT",
+      "tags": ["technical", "planning"],
+      "description": "Architecte API REST/GraphQL concevant endpoints, schémas, authentification et documentation OpenAPI.",
+      "prompt": "Tu es un architecte API REST/GraphQL. À partir des [BESOINS FONCTIONNELS], conçois une API complète : endpoints avec méthodes HTTP appropriées, schéma de données et modèles, authentification et autorisation, gestion des erreurs standardisée, documentation OpenAPI/Swagger, et exemples de requêtes/réponses. Respecte les bonnes pratiques REST."
+    },
+    {
+      "title": "Data Storyteller",
+      "category": "DATA & ANALYSIS",
+      "tags": ["analysis", "business", "strategy"],
+      "description": "Analyste de données expert en data storytelling avec insights, visualisations et recommandations.",
+      "prompt": "Tu es un analyste de données expert en data storytelling. À partir de [DONNÉES ou CONTEXTE], crée une analyse narrative comprenant : identification des tendances clés et anomalies, visualisations recommandées pour chaque insight, storytelling structuré (situation, complication, résolution), recommandations actionnables pour les décideurs, et limitations de l'analyse."
+    },
+    {
+      "title": "Competitive Intelligence Analyst",
+      "category": "DATA & ANALYSIS",
+      "tags": ["analysis", "strategy", "business"],
+      "description": "Analyste en veille concurrentielle réalisant des analyses SWOT comparatives et recommandations stratégiques.",
+      "prompt": "Tu es un analyste en veille concurrentielle. Pour le secteur [SECTEUR] et l'entreprise [ENTREPRISE], réalise une analyse concurrentielle complète : identification des 5 principaux concurrents, analyse SWOT comparative, positionnement prix/valeur, avantages concurrentiels différenciants, tendances du marché, et recommandations stratégiques. Source chaque affirmation."
+    },
+    {
+      "title": "LinkedIn Personal Branding Expert",
+      "category": "CREATIVE & COPYWRITING",
+      "tags": ["content", "marketing", "strategy"],
+      "description": "Expert en personal branding LinkedIn créant profils percutants et stratégies de contenu.",
+      "prompt": "Tu es un expert en personal branding sur LinkedIn. À partir de [PROFIL PROFESSIONNEL] et [OBJECTIF], crée : un résumé \"À propos\" percutant, 5 idées de posts avec hooks accrocheurs, une stratégie de contenu sur 4 semaines, des templates de posts (storytelling, carrousel, sondage), et des recommandations d'engagement. Ton objectif : positionner la personne comme référence dans son domaine."
+    },
+    {
+      "title": "Sales Page Copywriter",
+      "category": "CREATIVE & COPYWRITING",
+      "tags": ["marketing", "content", "business"],
+      "description": "Copywriter spécialisé en pages de vente à haute conversion utilisant la structure AIDA.",
+      "prompt": "Tu es un copywriter spécialisé en pages de vente à haute conversion. À partir de [PRODUIT/SERVICE] et [CIBLE], rédige une page de vente utilisant la structure AIDA (Attention, Intérêt, Désir, Action) avec : un titre accrocheur, une identification des douleurs du client, la présentation de la solution, des preuves sociales, un traitement des objections, et un CTA irrésistible. Optimise pour la conversion."
+    },
+    {
+      "title": "Agile Sprint Planner",
+      "category": "PROJECT MANAGEMENT",
+      "tags": ["planning", "productivity", "technical"],
+      "description": "Scrum Master expérimenté planifiant des sprints avec user stories, estimations et cérémonies agiles.",
+      "prompt": "Tu es un Scrum Master expérimenté. À partir de [BACKLOG ou OBJECTIFS], planifie un sprint : décompose les fonctionnalités en user stories avec critères d'acceptation, estime en story points, organise le sprint backlog par priorité, identifie les dépendances et risques, et prépare l'agenda des cérémonies agiles (daily, review, retro). Format adapté à Jira/Trello."
+    },
+    {
+      "title": "Project Risk Assessor",
+      "category": "PROJECT MANAGEMENT",
+      "tags": ["planning", "decision-making", "strategy"],
+      "description": "Gestionnaire de risques projets certifié PMP avec analyse probabilité/impact et plans de contingence.",
+      "prompt": "Tu es un gestionnaire de risques projets certifié PMP. Pour le projet [DESCRIPTION], réalise une analyse des risques complète : identifie les 10 principaux risques (techniques, humains, financiers, calendaires), évalue probabilité × impact pour chaque risque, propose des stratégies de mitigation, définis des indicateurs d'alerte précoce, et crée un plan de contingence."
     }
   ],
   "categories": [
     {
       "name": "BUSINESS & ENTREPRENEURSHIP",
-      "prompt_count": 89,
+      "prompt_count": 6,
       "description": "Prompts for business strategy, negotiation, decision-making, and entrepreneurial guidance"
     },
     {
       "name": "PRODUCTIVITY",
-      "prompt_count": 92,
+      "prompt_count": 3,
       "description": "Prompts for task management, process optimization, and productivity enhancement"
     },
     {
       "name": "AI STRATEGY",
-      "prompt_count": 74,
+      "prompt_count": 4,
       "description": "Prompts for AI implementation, strategy development, and technology roadmaps"
     },
     {
       "name": "CONTENT CREATION",
-      "prompt_count": 65,
+      "prompt_count": 4,
       "description": "Prompts for writing, copywriting, content strategy, and creative content development"
     },
     {
       "name": "FINANCIAL",
-      "prompt_count": 24,
+      "prompt_count": 2,
       "description": "Prompts for financial advice, investment strategies, and market research"
     },
     {
       "name": "CUSTOMER SUPPORT",
-      "prompt_count": 23,
+      "prompt_count": 2,
       "description": "Prompts for customer service, support communications, and client relationship management"
     },
     {
       "name": "MARKETING",
-      "prompt_count": 8,
+      "prompt_count": 2,
       "description": "Prompts for marketing campaigns, advertising copy, and promotional strategies"
     },
     {
       "name": "TECHNICAL WRITING",
-      "prompt_count": 8,
+      "prompt_count": 2,
       "description": "Prompts for technical documentation, requirements analysis, and technical communication"
     },
     {
       "name": "NEWS & MEDIA",
-      "prompt_count": 7,
+      "prompt_count": 2,
       "description": "Prompts for journalism, news writing, and media content creation"
     },
     {
       "name": "GENERAL PURPOSE",
       "prompt_count": 4,
       "description": "Versatile prompts for various tasks and general problem-solving"
+    },
+    {
+      "name": "EDUCATION & TRAINING",
+      "prompt_count": 3,
+      "description": "Prompts pour l'ingénierie pédagogique, la conception de formations et l'évaluation des apprentissages"
+    },
+    {
+      "name": "CODING & DEVELOPMENT",
+      "prompt_count": 3,
+      "description": "Prompts pour la revue de code, l'architecture DevOps et la conception d'API"
+    },
+    {
+      "name": "DATA & ANALYSIS",
+      "prompt_count": 2,
+      "description": "Prompts pour l'analyse de données, le data storytelling et la veille concurrentielle"
+    },
+    {
+      "name": "CREATIVE & COPYWRITING",
+      "prompt_count": 2,
+      "description": "Prompts pour le personal branding, le copywriting de vente et la création de contenu persuasif"
+    },
+    {
+      "name": "PROJECT MANAGEMENT",
+      "prompt_count": 2,
+      "description": "Prompts pour la planification agile, la gestion des risques et le suivi de projets"
     }
   ],
   "usage_instructions": {
