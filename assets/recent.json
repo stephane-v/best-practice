@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Docker Compose Security Validator",
+    "description": "Analyze a docker-compose file for security issues with a transparent score and fix suggestions.",
+    "url": "TOOLS/docker-compose-validator.html",
+    "date": "2026-05-21",
+    "fileType": "Interactive App",
+    "i18nTitle": "card.dockervalidator.t",
+    "i18nDesc": "card.dockervalidator.d",
+    "i18nType": "ft.app"
+  },
+  {
+    "title": "LLM Prompt Injection Tester",
+    "description": "Analyze a system prompt or user input for prompt injection risk, fully offline in the browser.",
+    "url": "TOOLS/prompt-injection-tester.html",
+    "date": "2026-05-21",
+    "fileType": "Interactive App",
+    "i18nTitle": "card.injection.t",
+    "i18nDesc": "card.injection.d",
+    "i18nType": "ft.app"
+  },
+  {
+    "title": "RAG Cost Estimator",
+    "description": "Estimate the monthly cost of a RAG system and compare an EU sovereign setup with US cloud.",
+    "url": "TOOLS/rag-cost-estimator.html",
+    "date": "2026-05-21",
+    "fileType": "Interactive App",
+    "i18nTitle": "card.ragcost.t",
+    "i18nDesc": "card.ragcost.d",
+    "i18nType": "ft.app"
+  }
+]

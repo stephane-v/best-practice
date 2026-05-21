@@ -1,0 +1,177 @@
+[
+  {
+    "title": "Marketing Process Tracker",
+    "description": "Interactive app to track marketing progress with checklists and export/import.",
+    "url": "MARKETING-STRATEGY/marketing-tracker.html",
+    "tags": ["marketing", "tool", "interactive"],
+    "type": "tool"
+  },
+  {
+    "title": "Buyer Persona Builder",
+    "description": "Create detailed buyer personas with demographics, goals and behaviors.",
+    "url": "MARKETING-STRATEGY/persona-builder.html",
+    "tags": ["marketing", "tool", "personas"],
+    "type": "tool"
+  },
+  {
+    "title": "Ishikawa Diagram Editor",
+    "description": "Build fishbone cause and effect diagrams with the 6M method.",
+    "url": "MARKETING-STRATEGY/ishikawa-editor.html",
+    "tags": ["marketing", "tool", "analysis"],
+    "type": "tool"
+  },
+  {
+    "title": "Color Wheel",
+    "description": "Explore color harmonies and HEX, RGB and HSL values.",
+    "url": "MARKETING-STRATEGY/color-wheel.html",
+    "tags": ["marketing", "tool", "design"],
+    "type": "tool"
+  },
+  {
+    "title": "Docker Compose Security Validator",
+    "description": "Analyze a docker-compose file for security issues, fully client-side.",
+    "url": "TOOLS/docker-compose-validator.html",
+    "tags": ["docker", "security", "tool"],
+    "type": "tool"
+  },
+  {
+    "title": "LLM Prompt Injection Tester",
+    "description": "Analyze a prompt for injection risk fully offline in the browser.",
+    "url": "TOOLS/prompt-injection-tester.html",
+    "tags": ["security", "llm", "tool", "prompt injection"],
+    "type": "tool"
+  },
+  {
+    "title": "RAG Cost Estimator",
+    "description": "Estimate the monthly cost of a RAG system and compare EU sovereign with US cloud.",
+    "url": "TOOLS/rag-cost-estimator.html",
+    "tags": ["llm", "rag", "tool", "cost"],
+    "type": "tool"
+  },
+  {
+    "title": "Customer Acquisition Strategies",
+    "description": "SEO, content, paid ads, social, email and partnership strategies.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/customer-acquisition-strategies.md",
+    "tags": ["marketing", "seo", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Conversion Optimization Guide",
+    "description": "Landing pages, A/B testing, email conversion and checkout optimization.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/conversion-optimization-guide.md",
+    "tags": ["marketing", "cro", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Sales Process Best Practices",
+    "description": "Lead qualification, discovery, objection handling and pipeline management.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/sales-process-best-practices.md",
+    "tags": ["marketing", "sales", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "System Health Assessment Guide",
+    "description": "Framework covering the Five Pillars of System Health and maturity models.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md",
+    "tags": ["consulting", "governance", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Docker Security Guide",
+    "description": "Security tools, escape techniques, best practices and incident response.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER.md",
+    "tags": ["docker", "security", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Docker vs Podman Comparison",
+    "description": "Security, performance, architecture and Kubernetes integration compared.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/DOCKER-VS-PODMAN.md",
+    "tags": ["docker", "podman", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Docker Security Audit Script",
+    "description": "Automated audit of running containers and Docker daemon settings.",
+    "url": "SECURITY-DOCKER/docker-security-audit.sh",
+    "tags": ["docker", "security", "script"],
+    "type": "script"
+  },
+  {
+    "title": "Docker Secure Run Helper",
+    "description": "Launch containers with hardening, dropped capabilities and resource limits.",
+    "url": "SECURITY-DOCKER/docker-secure-run.sh",
+    "tags": ["docker", "security", "script"],
+    "type": "script"
+  },
+  {
+    "title": "Docker Tools Documentation",
+    "description": "Quick start and CI/CD integration for the Docker security scripts.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER/README.md",
+    "tags": ["docker", "documentation"],
+    "type": "guide"
+  },
+  {
+    "title": "Sovereign LLM Infrastructure Guide",
+    "description": "Building a sovereign LLM stack in the EU: gateway, models, vector store and TCO.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SOVEREIGN-LLM-INFRASTRUCTURE/sovereign-llm-infrastructure-guide.md",
+    "tags": ["llm", "sovereignty", "rag", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "LLM Security Best Practices",
+    "description": "Defense in depth for LLM APIs: prompt injection filtering and validation.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/llm-security-best-practices.md",
+    "tags": ["security", "llm", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Security Consulting Guide",
+    "description": "Framework for evaluating organizational security posture and cyber health.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md",
+    "tags": ["security", "consulting", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Incident Response Plan Template",
+    "description": "Ready to use template for incident response procedures and recovery.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/incident-response-plan-template.md",
+    "tags": ["security", "templates", "incident response"],
+    "type": "template"
+  },
+  {
+    "title": "Risk Assessment Template",
+    "description": "Identify, analyze and prioritize security risks systematically.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/risk-assessment-template.md",
+    "tags": ["security", "templates", "risk"],
+    "type": "template"
+  },
+  {
+    "title": "Security Assessment Checklist",
+    "description": "Technical, operational and management security controls checklist.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/security-assessment-checklist.md",
+    "tags": ["security", "templates", "checklist"],
+    "type": "template"
+  },
+  {
+    "title": "Vendor Security Questionnaire",
+    "description": "Template to evaluate third party vendor security during due diligence.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/vendor-security-questionnaire.md",
+    "tags": ["security", "templates", "vendor"],
+    "type": "template"
+  },
+  {
+    "title": "Enterprise Mobile Security Guide",
+    "description": "Securing mobile devices with MDM guidelines and BYOD strategies.",
+    "url": "reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/enterprise-mobile-security-guide.md",
+    "tags": ["security", "mobile", "guide"],
+    "type": "guide"
+  },
+  {
+    "title": "Stack and Convictions",
+    "description": "The technical stack and engineering convictions behind this site.",
+    "url": "stack.html",
+    "tags": ["stack", "sovereignty", "llm"],
+    "type": "page"
+  }
+]

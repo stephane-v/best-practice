@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best Practice Repository</title>
+    <meta name="description" content="Open source guides and interactive tools for IT consulting, marketing strategy and security best practices.">
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="assets/i18n.js"></script>
+    <script defer src="assets/search.js"></script>
+    <script defer src="assets/header.js"></script>
+    <script defer src="assets/footer.js"></script>
     <style>
         :root {
             --bg-primary: #f8fafc;
@@ -56,41 +71,10 @@
             padding: 20px;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            box-shadow: var(--card-shadow);
-        }
-
-        .theme-toggle:hover {
-            box-shadow: var(--card-shadow-hover);
-        }
-
-        .theme-toggle svg {
-            width: 18px;
-            height: 18px;
-        }
-
         /* Header */
         header {
             text-align: center;
-            padding: 60px 20px;
-            margin-bottom: 40px;
+            padding: 56px 20px 40px;
         }
 
         .header-badge {
@@ -123,7 +107,7 @@
             margin-bottom: 16px;
         }
 
-        header p {
+        header p.tagline {
             color: var(--text-secondary);
             font-size: 1.1rem;
             max-width: 600px;
@@ -166,6 +150,53 @@
             margin-top: 4px;
         }
 
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 4px;
+        }
+
+        .filter-chip {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--accent-1);
+            color: var(--text-primary);
+        }
+
+        .filter-chip.active {
+            background: var(--gradient-primary);
+            color: #fff;
+            border-color: transparent;
+        }
+
         /* Section */
         .section {
             background: var(--bg-secondary);
@@ -175,12 +206,17 @@
             box-shadow: var(--card-shadow);
         }
 
+        .section.is-hidden {
+            display: none;
+        }
+
         .section-header {
             padding: 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
         }
 
         .section-header h2 {
@@ -210,6 +246,7 @@
             border-radius: 100px;
             font-size: 0.8rem;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .section-content {
@@ -235,11 +272,15 @@
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 24px;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
+        }
+
+        .resource-card.is-hidden {
+            display: none;
         }
 
         .resource-card:hover {
@@ -266,18 +307,54 @@
             flex-grow: 1;
         }
 
-        .resource-card .file-type {
+        .card-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .file-type {
             display: inline-block;
             background: var(--bg-tertiary);
             color: var(--text-secondary);
             padding: 6px 12px;
             border-radius: 100px;
             font-size: 0.75rem;
-            margin-top: 16px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 500;
-            width: fit-content;
+        }
+
+        .reading-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .reading-time svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .lang-marker {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--accent-2);
+            border: 1px solid var(--accent-2);
+            border-radius: 4px;
+            padding: 1px 5px;
+        }
+
+        .updated-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         /* Highlight Card */
@@ -301,39 +378,6 @@
             border-radius: 6px;
             font-size: 0.7rem;
             font-weight: 500;
-        }
-
-        /* Feature List */
-        .feature-list {
-            list-style: none;
-            margin-top: 12px;
-        }
-
-        .feature-list li {
-            padding: 12px 0;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .feature-list li:last-child {
-            border-bottom: none;
-        }
-
-        .feature-list .check {
-            width: 22px;
-            height: 22px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.7rem;
-            flex-shrink: 0;
         }
 
         /* Footer */
@@ -361,10 +405,21 @@
             margin-top: 12px;
         }
 
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             header {
-                padding: 40px 16px;
+                padding: 32px 16px;
             }
 
             .stats {
@@ -382,319 +437,498 @@
             .resource-grid {
                 grid-template-columns: 1fr;
             }
-
-            .theme-toggle span {
-                display: none;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-        </svg>
-        <span>Theme</span>
-    </button>
+    <bp-header current="home"></bp-header>
 
     <div class="container">
         <header>
             <div class="header-badge">
                 <span class="dot"></span>
-                Open Source Resources
+                <span data-i18n="hero.badge">Open Source Resources</span>
             </div>
-            <h1>Best Practice Repository</h1>
-            <p>A comprehensive collection of resources for IT system health consulting, marketing strategy, and security best practices.</p>
+            <h1 data-i18n="hero.title">Best Practice Repository</h1>
+            <p class="tagline" data-i18n="hero.subtitle">A comprehensive collection of guides and interactive tools for IT system health consulting, marketing strategy, and security best practices.</p>
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-number">6</div>
-                    <div class="stat-label">Security Templates</div>
+                    <div class="stat-number">8</div>
+                    <div class="stat-label" data-i18n="stat.tools">Interactive Tools</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">4</div>
-                    <div class="stat-label">Interactive Tools</div>
+                    <div class="stat-number">15</div>
+                    <div class="stat-label" data-i18n="stat.guides">Guides &amp; Docs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label" data-i18n="stat.security">Security Templates</div>
                 </div>
             </div>
         </header>
 
-        <!-- Marketing Strategy Section -->
+        <!-- Topic filter -->
+        <div class="filter-bar" id="filter-bar">
+            <span class="filter-label" data-i18n="filter.label">Filter by topic</span>
+            <button class="filter-chip active" data-filter="all" data-i18n="filter.all">All</button>
+            <button class="filter-chip" data-filter="marketing" data-i18n="filter.marketing">Marketing</button>
+            <button class="filter-chip" data-filter="security" data-i18n="filter.security">Security</button>
+            <button class="filter-chip" data-filter="docker" data-i18n="filter.docker">Docker</button>
+            <button class="filter-chip" data-filter="llm" data-i18n="filter.llm">LLM</button>
+            <button class="filter-chip" data-filter="templates" data-i18n="filter.templates">Templates</button>
+            <button class="filter-chip" data-filter="consulting" data-i18n="filter.consulting">Consulting</button>
+            <button class="filter-chip" data-filter="mobile" data-i18n="filter.mobile">Mobile</button>
+        </div>
+
+        <!-- Recently Updated -->
         <section class="section">
             <div class="section-header">
-                <h2><span class="icon">&#128200;</span> Marketing Strategy</h2>
-                <span class="section-count">7 resources</span>
+                <h2><span class="icon">&#9889;</span> <span data-i18n="recent.title">Recently Updated</span></h2>
             </div>
             <div class="section-content">
-                <p class="section-description">
-                    Comprehensive marketing best practices covering the complete customer journey from acquisition through conversion to sales.
-                    Includes interactive tools to manage your marketing campaigns.
-                </p>
+                <p class="section-description" data-i18n="recent.desc">The latest additions and updates to this repository.</p>
+                <div class="resource-grid" id="recent-grid"></div>
+            </div>
+        </section>
+
+        <!-- Interactive Tools -->
+        <section class="section filterable" id="tools">
+            <div class="section-header">
+                <h2><span class="icon">&#128295;</span> <span data-i18n="sec.tools.title">Interactive Tools</span></h2>
+                <span class="section-count"><span class="count-num">7</span> <span data-i18n="common.resources">resources</span></span>
+            </div>
+            <div class="section-content">
+                <p class="section-description" data-i18n="sec.tools.desc">Self-contained web applications that run entirely in your browser. No backend, no tracking, your data stays local.</p>
                 <div class="resource-grid">
-                    <a href="MARKETING-STRATEGY/marketing-tracker.html" class="resource-card highlight-card">
-                        <h3>Marketing Process Tracker</h3>
-                        <p>Interactive web app to track your marketing progress. Features checklist for all stages, notes, progress indicators, and export/import functionality.</p>
+                    <a href="MARKETING-STRATEGY/marketing-tracker.html" class="resource-card highlight-card" data-tags="marketing">
+                        <h3 data-i18n="card.tracker.t">Marketing Process Tracker</h3>
+                        <p data-i18n="card.tracker.d">Interactive web app to track your marketing progress. Features checklists for all stages, notes, progress indicators, and export/import functionality.</p>
                         <div class="tag-list">
                             <span class="tag">Interactive</span>
                             <span class="tag">Progress Tracking</span>
                             <span class="tag">Export/Import</span>
                         </div>
-                        <span class="file-type">Interactive App</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
                     </a>
-                    <a href="MARKETING-STRATEGY/persona-builder.html" class="resource-card highlight-card">
-                        <h3>Buyer Persona Builder</h3>
-                        <p>Create and manage detailed buyer personas with demographics, goals, challenges, and behaviors. Supports English and French.</p>
+                    <a href="MARKETING-STRATEGY/persona-builder.html" class="resource-card highlight-card" data-tags="marketing">
+                        <h3 data-i18n="card.persona.t">Buyer Persona Builder</h3>
+                        <p data-i18n="card.persona.d">Create and manage detailed buyer personas with demographics, goals, challenges, and behaviors. Supports English and French.</p>
                         <div class="tag-list">
                             <span class="tag">Personas</span>
                             <span class="tag">EN/FR</span>
                             <span class="tag">Export/Import</span>
                         </div>
-                        <span class="file-type">Interactive App</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
                     </a>
-                    <a href="MARKETING-STRATEGY/ishikawa-editor.html" class="resource-card highlight-card">
-                        <h3>Ishikawa Diagram Editor</h3>
-                        <p>Create and edit fishbone diagrams for root cause analysis using the 6M method. Export to PNG and JSON formats.</p>
+                    <a href="MARKETING-STRATEGY/ishikawa-editor.html" class="resource-card highlight-card" data-tags="marketing">
+                        <h3 data-i18n="card.ishikawa.t">Ishikawa Diagram Editor</h3>
+                        <p data-i18n="card.ishikawa.d">Create and edit fishbone diagrams for root cause analysis using the 6M method. Export to PNG and JSON formats.</p>
                         <div class="tag-list">
                             <span class="tag">Cause-Effect</span>
                             <span class="tag">6M Method</span>
                             <span class="tag">Export PNG/JSON</span>
                         </div>
-                        <span class="file-type">Interactive App</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
                     </a>
-                    <a href="MARKETING-STRATEGY/color-wheel.html" class="resource-card highlight-card">
-                        <h3>Color Wheel</h3>
-                        <p>Interactive color wheel to explore and select colors. Features color harmonies, HEX/RGB/HSL values, and saved color palette.</p>
+                    <a href="MARKETING-STRATEGY/color-wheel.html" class="resource-card highlight-card" data-tags="marketing">
+                        <h3 data-i18n="card.colorwheel.t">Color Wheel</h3>
+                        <p data-i18n="card.colorwheel.d">Interactive color wheel to explore and select colors. Features color harmonies, HEX/RGB/HSL values, and a saved color palette.</p>
                         <div class="tag-list">
                             <span class="tag">Colors</span>
                             <span class="tag">Harmonies</span>
                             <span class="tag">HEX/RGB/HSL</span>
                         </div>
-                        <span class="file-type">Interactive App</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/customer-acquisition-strategies.md" class="resource-card">
-                        <h3>Customer Acquisition Strategies</h3>
-                        <p>Complete guide to SEO, content marketing, paid advertising, social media, email marketing, and partnership strategies.</p>
+                    <a href="TOOLS/docker-compose-validator.html" class="resource-card highlight-card" data-tags="docker security">
+                        <h3 data-i18n="card.dockervalidator.t">Docker Compose Security Validator</h3>
+                        <p data-i18n="card.dockervalidator.d">Paste a docker-compose file and get a security score with issues sorted by severity and suggested fixes.</p>
+                        <div class="tag-list">
+                            <span class="tag">Docker</span>
+                            <span class="tag">Security</span>
+                            <span class="tag">YAML</span>
+                        </div>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
+                    </a>
+                    <a href="TOOLS/prompt-injection-tester.html" class="resource-card highlight-card" data-tags="security llm">
+                        <h3 data-i18n="card.injection.t">LLM Prompt Injection Tester</h3>
+                        <p data-i18n="card.injection.d">Analyze a system prompt or user input for prompt injection risk. Runs fully offline in the browser with a transparent scoring model.</p>
+                        <div class="tag-list">
+                            <span class="tag">Prompt Injection</span>
+                            <span class="tag">Offline</span>
+                            <span class="tag">Security</span>
+                        </div>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
+                    </a>
+                    <a href="TOOLS/rag-cost-estimator.html" class="resource-card highlight-card" data-tags="llm">
+                        <h3 data-i18n="card.ragcost.t">RAG Cost Estimator</h3>
+                        <p data-i18n="card.ragcost.d">Estimate the monthly cost of a RAG system and compare an EU sovereign setup with US cloud providers.</p>
+                        <div class="tag-list">
+                            <span class="tag">RAG</span>
+                            <span class="tag">LLM</span>
+                            <span class="tag">Cost</span>
+                        </div>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.app">Interactive App</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marketing Strategy Guides -->
+        <section class="section filterable" id="guides">
+            <div class="section-header">
+                <h2><span class="icon">&#128200;</span> <span data-i18n="sec.marketing.title">Marketing Strategy</span></h2>
+                <span class="section-count"><span class="count-num">3</span> <span data-i18n="common.resources">resources</span></span>
+            </div>
+            <div class="section-content">
+                <p class="section-description" data-i18n="sec.marketing.desc">Marketing best practices covering the complete customer journey from acquisition through conversion to sales.</p>
+                <div class="resource-grid">
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/customer-acquisition-strategies.md" class="resource-card" data-tags="marketing">
+                        <h3 data-i18n="card.acquisition.t">Customer Acquisition Strategies</h3>
+                        <p data-i18n="card.acquisition.d">Complete guide to SEO, content marketing, paid advertising, social media, email marketing, and partnership strategies.</p>
                         <div class="tag-list">
                             <span class="tag">SEO</span>
                             <span class="tag">Content</span>
                             <span class="tag">Paid Ads</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 9 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/conversion-optimization-guide.md" class="resource-card">
-                        <h3>Conversion Optimization Guide</h3>
-                        <p>Landing page optimization, A/B testing frameworks, email conversion, checkout optimization, and psychological principles.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/conversion-optimization-guide.md" class="resource-card" data-tags="marketing">
+                        <h3 data-i18n="card.conversion.t">Conversion Optimization Guide</h3>
+                        <p data-i18n="card.conversion.d">Landing page optimization, A/B testing frameworks, email conversion, checkout optimization, and psychological principles.</p>
                         <div class="tag-list">
                             <span class="tag">Landing Pages</span>
                             <span class="tag">A/B Testing</span>
                             <span class="tag">CRO</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 11 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/sales-process-best-practices.md" class="resource-card">
-                        <h3>Sales Process Best Practices</h3>
-                        <p>Lead qualification, prospecting, discovery calls, presentations, objection handling, closing techniques, and pipeline management.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/MARKETING-STRATEGY/sales-process-best-practices.md" class="resource-card" data-tags="marketing">
+                        <h3 data-i18n="card.sales.t">Sales Process Best Practices</h3>
+                        <p data-i18n="card.sales.d">Lead qualification, prospecting, discovery calls, presentations, objection handling, closing techniques, and pipeline management.</p>
                         <div class="tag-list">
                             <span class="tag">Sales</span>
                             <span class="tag">Closing</span>
                             <span class="tag">Pipeline</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 16 min</span>
+                        </div>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- IT System Health Section -->
-        <section class="section">
+        <!-- IT System Health -->
+        <section class="section filterable">
             <div class="section-header">
-                <h2><span class="icon">&#128200;</span> IT System Health Consulting</h2>
-                <span class="section-count">1 resource</span>
+                <h2><span class="icon">&#128202;</span> <span data-i18n="sec.ithealth.title">IT System Health Consulting</span></h2>
+                <span class="section-count"><span class="count-num">1</span> <span data-i18n="common.resource">resource</span></span>
             </div>
             <div class="section-content">
-                <p class="section-description">
-                    Strategic frameworks and assessment tools for evaluating organizational IT system health.
-                    Designed for management consultants, business analysts, and organizational advisors.
-                </p>
+                <p class="section-description" data-i18n="sec.ithealth.desc">Strategic frameworks and assessment tools for evaluating organizational IT system health.</p>
                 <div class="resource-grid">
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card">
-                        <h3>System Health Assessment Guide</h3>
-                        <p>Comprehensive framework covering the Five Pillars of System Health, maturity models, governance, risk management, and improvement roadmaps.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card" data-tags="consulting">
+                        <h3 data-i18n="card.syshealth.t">System Health Assessment Guide</h3>
+                        <p data-i18n="card.syshealth.d">Comprehensive framework covering the Five Pillars of System Health, maturity models, governance, risk management, and improvement roadmaps.</p>
                         <div class="tag-list">
                             <span class="tag">Strategic Alignment</span>
                             <span class="tag">Governance</span>
                             <span class="tag">Risk Management</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 38 min</span>
+                        </div>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Docker Security Section -->
-        <section class="section">
+        <!-- Docker Security -->
+        <section class="section filterable">
             <div class="section-header">
-                <h2><span class="icon">&#128274;</span> Docker Security</h2>
-                <span class="section-count">5 resources</span>
+                <h2><span class="icon">&#128274;</span> <span data-i18n="sec.docker.title">Docker Security</span></h2>
+                <span class="section-count"><span class="count-num">5</span> <span data-i18n="common.resources">resources</span></span>
             </div>
             <div class="section-content">
-                <p class="section-description">
-                    Enterprise-grade Docker security resources including comprehensive guides and automated tools
-                    for container security auditing and secure deployment practices.
-                </p>
+                <p class="section-description" data-i18n="sec.docker.desc">Docker security resources including comprehensive guides and automated tools for container auditing and secure deployment.</p>
                 <div class="resource-grid">
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER.md" class="resource-card">
-                        <h3>Docker Security Guide</h3>
-                        <p>Complete guide covering security tools, common escape techniques (educational), best practices, anti-patterns, detection, and incident response.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER.md" class="resource-card" data-tags="docker security">
+                        <h3 data-i18n="card.dockersec.t">Docker Security Guide</h3>
+                        <p data-i18n="card.dockersec.d">Complete guide covering security tools, common escape techniques (educational), best practices, anti-patterns, detection, and incident response.</p>
                         <div class="tag-list">
                             <span class="tag">Best Practices</span>
                             <span class="tag">Detection</span>
                             <span class="tag">Incident Response</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 17 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/DOCKER-VS-PODMAN.md" class="resource-card highlight-card">
-                        <h3>Docker vs Podman Comparison</h3>
-                        <p>Comprehensive comparison covering security, performance, architecture, enterprise features, and Kubernetes integration with migration guide.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/DOCKER-VS-PODMAN.md" class="resource-card highlight-card" data-tags="docker">
+                        <h3 data-i18n="card.dockerpodman.t">Docker vs Podman Comparison</h3>
+                        <p data-i18n="card.dockerpodman.d">Comprehensive comparison covering security, performance, architecture, enterprise features, and Kubernetes integration with a migration guide.</p>
                         <div class="tag-list">
                             <span class="tag">Security</span>
                             <span class="tag">Performance</span>
                             <span class="tag">Migration</span>
                         </div>
-                        <span class="file-type">Comparison</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.comparison">Comparison</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 17 min</span>
+                        </div>
                     </a>
-                    <a href="SECURITY-DOCKER/docker-security-audit.sh" class="resource-card">
-                        <h3>Security Audit Script</h3>
-                        <p>Automated tool that audits running containers for security misconfigurations, checks Docker daemon settings, and provides remediation guidance.</p>
+                    <a href="SECURITY-DOCKER/docker-security-audit.sh" class="resource-card" data-tags="docker security">
+                        <h3 data-i18n="card.audit.t">Security Audit Script</h3>
+                        <p data-i18n="card.audit.d">Automated tool that audits running containers for security misconfigurations, checks Docker daemon settings, and provides remediation guidance.</p>
                         <div class="tag-list">
                             <span class="tag">Automation</span>
                             <span class="tag">Audit</span>
                             <span class="tag">Remediation</span>
                         </div>
-                        <span class="file-type">Bash Script</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.script">Bash Script</span>
+                        </div>
                     </a>
-                    <a href="SECURITY-DOCKER/docker-secure-run.sh" class="resource-card">
-                        <h3>Secure Run Helper</h3>
-                        <p>Helper script for launching containers with security hardening including non-root users, dropped capabilities, resource limits, and security profiles.</p>
+                    <a href="SECURITY-DOCKER/docker-secure-run.sh" class="resource-card" data-tags="docker security">
+                        <h3 data-i18n="card.securerun.t">Secure Run Helper</h3>
+                        <p data-i18n="card.securerun.d">Helper script for launching containers with security hardening including non-root users, dropped capabilities, resource limits, and security profiles.</p>
                         <div class="tag-list">
                             <span class="tag">Hardening</span>
                             <span class="tag">Resource Limits</span>
                             <span class="tag">AppArmor</span>
                         </div>
-                        <span class="file-type">Bash Script</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.script">Bash Script</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER/README.md" class="resource-card">
-                        <h3>Tools Documentation</h3>
-                        <p>Quick start guide, usage examples, and CI/CD integration instructions for the Docker security automation scripts.</p>
-                        <span class="file-type">Readme</span>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER/README.md" class="resource-card" data-tags="docker">
+                        <h3 data-i18n="card.dockertools.t">Tools Documentation</h3>
+                        <p data-i18n="card.dockertools.d">Quick start guide, usage examples, and CI/CD integration instructions for the Docker security automation scripts.</p>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.readme">Readme</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 3 min</span>
+                        </div>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Security & Cyber Health Section -->
-        <section class="section">
+        <!-- Security & Cyber Health -->
+        <section class="section filterable">
             <div class="section-header">
-                <h2><span class="icon">&#128737;</span> Security & Cyber Health</h2>
-                <span class="section-count">7 resources</span>
+                <h2><span class="icon">&#128737;</span> <span data-i18n="sec.security.title">Security &amp; Cyber Health</span></h2>
+                <span class="section-count"><span class="count-num">7</span> <span data-i18n="common.resources">resources</span></span>
             </div>
             <div class="section-content">
-                <p class="section-description">
-                    Advanced templates and checklists for organizational security assessment, incident response planning,
-                    risk management, vendor security evaluation, and LLM API security.
-                </p>
+                <p class="section-description" data-i18n="sec.security.desc">Templates and checklists for organizational security assessment, incident response planning, risk management, vendor evaluation, and LLM API security.</p>
                 <div class="resource-grid">
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/llm-security-best-practices.md" class="resource-card highlight-card">
-                        <h3>LLM Security Best Practices</h3>
-                        <p>Defense-in-depth guide for securing LLM APIs: prompt injection filtering, input/output validation, secure prompt architecture, and security monitoring.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/llm-security-best-practices.md" class="resource-card highlight-card" data-tags="security llm">
+                        <h3 data-i18n="card.llmsec.t">LLM Security Best Practices</h3>
+                        <p data-i18n="card.llmsec.d">Defense-in-depth guide for securing LLM APIs: prompt injection filtering, input/output validation, secure prompt architecture, and security monitoring.</p>
                         <div class="tag-list">
                             <span class="tag">Prompt Injection</span>
                             <span class="tag">LLM API</span>
                             <span class="tag">Output Validation</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 19 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card">
-                        <h3>Security Consulting Guide</h3>
-                        <p>Comprehensive framework for evaluating organizational security posture and cyber health. Strategic guidance for consultants.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL.md" class="resource-card" data-tags="security consulting">
+                        <h3 data-i18n="card.secconsult.t">Security Consulting Guide</h3>
+                        <p data-i18n="card.secconsult.d">Comprehensive framework for evaluating organizational security posture and cyber health. Strategic guidance for consultants.</p>
                         <div class="tag-list">
                             <span class="tag">Assessment</span>
                             <span class="tag">Strategy</span>
                             <span class="tag">Consulting</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 32 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/incident-response-plan-template.md" class="resource-card">
-                        <h3>Incident Response Plan Template</h3>
-                        <p>Ready-to-use template for creating comprehensive incident response procedures including workflows and recovery processes.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/incident-response-plan-template.md" class="resource-card" data-tags="security templates">
+                        <h3 data-i18n="card.incident.t">Incident Response Plan Template</h3>
+                        <p data-i18n="card.incident.d">Ready-to-use template for creating comprehensive incident response procedures including workflows and recovery processes.</p>
                         <div class="tag-list">
                             <span class="tag">Template</span>
                             <span class="tag">Incident Response</span>
                         </div>
-                        <span class="file-type">Template</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.template">Template</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 24 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/risk-assessment-template.md" class="resource-card">
-                        <h3>Risk Assessment Template</h3>
-                        <p>Framework for identifying, analyzing, and prioritizing security risks. Evaluate risk exposure systematically.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/risk-assessment-template.md" class="resource-card" data-tags="security templates">
+                        <h3 data-i18n="card.risk.t">Risk Assessment Template</h3>
+                        <p data-i18n="card.risk.d">Framework for identifying, analyzing, and prioritizing security risks. Evaluate risk exposure systematically.</p>
                         <div class="tag-list">
                             <span class="tag">Template</span>
                             <span class="tag">Risk Management</span>
                         </div>
-                        <span class="file-type">Template</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.template">Template</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 14 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/security-assessment-checklist.md" class="resource-card">
-                        <h3>Security Assessment Checklist</h3>
-                        <p>Detailed checklist covering technical, operational, and management security controls for comprehensive assessments.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/security-assessment-checklist.md" class="resource-card" data-tags="security templates">
+                        <h3 data-i18n="card.checklist.t">Security Assessment Checklist</h3>
+                        <p data-i18n="card.checklist.d">Detailed checklist covering technical, operational, and management security controls for comprehensive assessments.</p>
                         <div class="tag-list">
                             <span class="tag">Checklist</span>
                             <span class="tag">Controls</span>
                         </div>
-                        <span class="file-type">Checklist</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.checklist">Checklist</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 21 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/vendor-security-questionnaire.md" class="resource-card">
-                        <h3>Vendor Security Questionnaire</h3>
-                        <p>Template questionnaire for evaluating third-party vendor security practices during due diligence and procurement.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/vendor-security-questionnaire.md" class="resource-card" data-tags="security templates">
+                        <h3 data-i18n="card.vendor.t">Vendor Security Questionnaire</h3>
+                        <p data-i18n="card.vendor.d">Template questionnaire for evaluating third-party vendor security practices during due diligence and procurement.</p>
                         <div class="tag-list">
                             <span class="tag">Template</span>
                             <span class="tag">Vendor Management</span>
                         </div>
-                        <span class="file-type">Questionnaire</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.questionnaire">Questionnaire</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 17 min</span>
+                        </div>
                     </a>
-                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/enterprise-mobile-security-guide.md" class="resource-card highlight-card">
-                        <h3>Enterprise Mobile Security Guide</h3>
-                        <p>Comprehensive framework for securing mobile devices. Includes MDM guidelines, BYOD strategies, and user awareness training.</p>
+                    <a href="reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/enterprise-mobile-security-guide.md" class="resource-card highlight-card" data-tags="security mobile">
+                        <h3 data-i18n="card.mobile.t">Enterprise Mobile Security Guide</h3>
+                        <p data-i18n="card.mobile.d">Comprehensive framework for securing mobile devices. Includes MDM guidelines, BYOD strategies, and user awareness training.</p>
                         <div class="tag-list">
                             <span class="tag">Mobile Security</span>
                             <span class="tag">MDM</span>
                             <span class="tag">BYOD</span>
                         </div>
-                        <span class="file-type">Guide</span>
+                        <div class="card-meta">
+                            <span class="file-type" data-i18n="ft.guide">Guide</span>
+                            <span class="reading-time" aria-label="reading time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg> 36 min</span>
+                        </div>
                     </a>
                 </div>
             </div>
         </section>
 
-        <footer>
-            <p>Built with care for the developer community</p>
-            <div class="footer-links">
-                <a href="https://github.com/stephane-v/best-practice" target="_blank">GitHub</a>
-            </div>
-        </footer>
+        <p class="no-results" id="no-results" data-i18n="filter.none">No resources match the selected topics.</p>
     </div>
 
-    <script>
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
+    <bp-footer></bp-footer>
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
+    <script>
+        (function () {
+            var grid = document.getElementById('recent-grid');
+            if (!grid) return;
+            var clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>';
+            fetch('assets/recent.json').then(function (r) {
+                return r.ok ? r.json() : [];
+            }).then(function (items) {
+                grid.innerHTML = items.map(function (it) {
+                    return '<a href="' + it.url + '" class="resource-card highlight-card">' +
+                        '<h3 data-i18n="' + it.i18nTitle + '">' + it.title + '</h3>' +
+                        '<p data-i18n="' + it.i18nDesc + '">' + it.description + '</p>' +
+                        '<div class="card-meta">' +
+                        '<span class="file-type" data-i18n="' + it.i18nType + '">' + it.fileType + '</span>' +
+                        '<span class="updated-date">' + it.date + '</span>' +
+                        '</div></a>';
+                }).join('');
+                if (window.BPI18n && window.BPI18n.ready) window.BPI18n.apply(grid);
+            }).catch(function () {
+                grid.innerHTML = '';
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var chips = Array.prototype.slice.call(document.querySelectorAll('.filter-chip'));
+            var cards = Array.prototype.slice.call(document.querySelectorAll('.resource-card[data-tags]'));
+            var sections = Array.prototype.slice.call(document.querySelectorAll('.section.filterable'));
+            var noResults = document.getElementById('no-results');
+
+            function readUrl() {
+                var p = new URLSearchParams(window.location.search).get('tags');
+                if (!p) return [];
+                return p.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+            }
+
+            function writeUrl(active) {
+                var url = window.location.pathname;
+                if (active.length) url += '?tags=' + active.join(',');
+                history.replaceState(null, '', url + window.location.hash);
+            }
+
+            function apply(active) {
+                var anyVisible = false;
+                cards.forEach(function (card) {
+                    var tags = (card.getAttribute('data-tags') || '').toLowerCase().split(/\s+/);
+                    var show = !active.length || active.some(function (a) {
+                        return tags.indexOf(a) !== -1;
+                    });
+                    card.classList.toggle('is-hidden', !show);
+                    if (show) anyVisible = true;
+                });
+                sections.forEach(function (sec) {
+                    var visible = sec.querySelectorAll('.resource-card[data-tags]:not(.is-hidden)').length;
+                    sec.classList.toggle('is-hidden', visible === 0);
+                });
+                noResults.classList.toggle('show', !anyVisible);
+
+                chips.forEach(function (chip) {
+                    var f = chip.getAttribute('data-filter');
+                    if (f === 'all') {
+                        chip.classList.toggle('active', active.length === 0);
+                    } else {
+                        chip.classList.toggle('active', active.indexOf(f) !== -1);
+                    }
+                });
+            }
+
+            var current = readUrl();
+            apply(current);
+
+            chips.forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    var f = chip.getAttribute('data-filter');
+                    if (f === 'all') {
+                        current = [];
+                    } else {
+                        var i = current.indexOf(f);
+                        if (i === -1) current.push(f);
+                        else current.splice(i, 1);
+                    }
+                    writeUrl(current);
+                    apply(current);
+                });
+            });
+        })();
     </script>
 </body>
 </html>

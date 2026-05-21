@@ -7,6 +7,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        window.BP_BASE = '../';
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <script defer src="../assets/i18n.js"></script>
+    <script defer src="../assets/header.js"></script>
+    <script defer src="../assets/footer.js"></script>
     <style>
         :root {
             --bg-primary: #f8fafc;
@@ -675,6 +689,7 @@
     </style>
 </head>
 <body>
+    <bp-header variant="slim" base="../" current="tools"></bp-header>
     <div class="container">
         <!-- Top Bar -->
         <div class="top-bar">
@@ -1423,7 +1438,7 @@
 
     <script>
         const STORAGE_KEY = 'marketing-tracker-data';
-        const THEME_KEY = 'marketing-tracker-theme';
+        const THEME_KEY = 'theme';
 
         // Theme toggle
         function toggleTheme() {
@@ -1693,5 +1708,6 @@
             });
         });
     </script>
+    <bp-footer base="../"></bp-footer>
 </body>
 </html>
