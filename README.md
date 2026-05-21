@@ -20,7 +20,6 @@
 ### Outils Interactifs
 
 - **Lecteur Markdown** — Visualisez et naviguez dans la documentation
-- **Prompt Library** — Bibliothèque de 26+ prompts IA organisés par catégories
 - **Persona Builder** — Créez des personas marketing détaillés
 - **Marketing Tracker** — Suivez vos métriques d'acquisition et de conversion
 - **Ishikawa Editor** — Créez des diagrammes causes-effets (fishbone) avec la méthode 6M
@@ -42,8 +41,7 @@ best-practice/
 ├── SECURITY-DOCKER.md
 ├── MARKETING-STRATEGY/           # Guides et outils marketing
 ├── SECURITY-AND_CYBER-.../       # Ressources cybersécurité
-├── SECURITY-DOCKER/              # Scripts de sécurité Docker
-└── PROMPT/                       # Bibliothèque de prompts IA
+└── SECURITY-DOCKER/              # Scripts de sécurité Docker
 ```
 
 ## Technologies Utilisées
