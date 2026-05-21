@@ -147,7 +147,7 @@
     var searchHtml = slim ? '' :
       '<div class="bp-search">' +
         '<input type="search" class="bp-search-input" placeholder="Search resources" ' +
-        'data-i18n-placeholder="search.placeholder" aria-label="Search">' +
+        'data-i18n-attr="placeholder:search.placeholder" aria-label="Search">' +
         '<div class="bp-results" role="listbox"></div>' +
       '</div>';
 

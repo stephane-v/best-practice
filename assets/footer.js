@@ -53,8 +53,7 @@
     this.innerHTML =
       '<div class="bp-ft">' +
         '<div class="bp-ft-inner">' +
-          '<span data-i18n="footer.copyright">' + year +
-            ' Stephane Vellement. Built with care.</span>' +
+          '<span>© ' + year + ' Stephane Vellement</span>' +
           '<span class="bp-ft-sep">|</span>' +
           '<a href="https://github.com/stephane-v/best-practice" ' +
             'target="_blank" rel="noopener">GitHub</a>' +
