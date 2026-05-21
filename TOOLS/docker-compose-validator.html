@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Compose Security Validator - Best Practice</title>
+    <meta name="description" content="Analyze a docker-compose file for security issues, client-side in your browser.">
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            --sev-critical: #ef4444;
+            --sev-high: #f97316;
+            --sev-medium: #eab308;
+            --sev-low: #3b82f6;
+            --sev-info: #64748b;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .tool-header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tool-header-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 20px; flex-wrap: wrap;
+        }
+        .tool-brand {
+            font-weight: 700; font-size: 1.05rem; text-decoration: none;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tool-header nav { display: flex; gap: 4px; }
+        .tool-header nav a {
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; padding: 6px 10px;
+            border-radius: 8px;
+        }
+        .tool-header nav a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+        .spacer { flex: 1; }
+        .ctl {
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 7px 11px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            font-family: inherit;
+        }
+        .ctl:hover { background: var(--border-color); color: var(--text-primary); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+        .page-title {
+            font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .page-sub { color: var(--text-secondary); margin-bottom: 24px; max-width: 720px; }
+        .card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 22px; margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        label.field-label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%; min-height: 260px; resize: vertical;
+            padding: 14px; border: 1px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem; line-height: 1.6;
+        }
+        textarea:focus {
+            outline: none; border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .examples { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+        .example-btn {
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 100px;
+            padding: 6px 14px; font-size: 0.8rem; font-weight: 500;
+            cursor: pointer; font-family: inherit;
+        }
+        .example-btn:hover { border-color: var(--accent-1); color: var(--text-primary); }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+        .btn {
+            border: none; border-radius: 10px; padding: 11px 20px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-primary { background: var(--gradient-primary); color: #fff; }
+        .btn-primary:hover { box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        .btn-secondary {
+            background: var(--bg-tertiary); color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover { background: var(--border-color); color: var(--text-primary); }
+        .score-wrap {
+            display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+        }
+        .score-ring {
+            width: 120px; height: 120px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; flex-shrink: 0;
+        }
+        .score-ring .num { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+        .score-ring .max { font-size: 0.75rem; color: var(--text-muted); }
+        .score-info h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .score-info p { color: var(--text-secondary); font-size: 0.9rem; }
+        .sev-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .sev-pill {
+            font-size: 0.75rem; font-weight: 600; padding: 4px 10px;
+            border-radius: 100px; color: #fff;
+        }
+        .issue {
+            border: 1px solid var(--border-color); border-left-width: 4px;
+            border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+            background: var(--bg-primary);
+        }
+        .issue-head {
+            display: flex; align-items: center; gap: 10px;
+            flex-wrap: wrap; margin-bottom: 6px;
+        }
+        .issue-sev {
+            font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 3px 8px; border-radius: 5px;
+            color: #fff;
+        }
+        .issue-title { font-weight: 600; font-size: 0.95rem; }
+        .issue-service {
+            font-size: 0.72rem; color: var(--text-muted);
+            font-family: monospace; background: var(--bg-tertiary);
+            padding: 2px 7px; border-radius: 5px;
+        }
+        .issue-detail { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 8px; }
+        .issue-line, .issue-fix {
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 0.8rem;
+            background: var(--bg-tertiary); border-radius: 7px;
+            padding: 8px 10px; white-space: pre-wrap; word-break: break-word;
+        }
+        .issue-line { border-left: 3px solid var(--sev-high); margin-bottom: 6px; }
+        .issue-fix { border-left: 3px solid var(--success); color: var(--text-secondary); }
+        .issue-fix-label, .issue-line-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 3px; letter-spacing: 0.5px;
+        }
+        .empty-msg { color: var(--text-muted); text-align: center; padding: 30px; }
+        .ok-msg {
+            text-align: center; padding: 24px; color: var(--success);
+            font-weight: 600;
+        }
+        .doc-link {
+            display: inline-block; margin-top: 14px;
+            color: var(--accent-1); text-decoration: none; font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .doc-link:hover { text-decoration: underline; }
+        .note {
+            font-size: 0.8rem; color: var(--text-muted);
+            margin-top: 16px; padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+        footer {
+            text-align: center; padding: 28px 20px;
+            color: var(--text-muted); font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+        footer a { color: var(--accent-1); text-decoration: none; }
+        #results { display: none; }
+        @media (max-width: 600px) {
+            .score-ring { width: 96px; height: 96px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="tool-header">
+        <div class="tool-header-inner">
+            <a href="../index.html" class="tool-brand">Best Practice</a>
+            <nav>
+                <a href="../index.html#tools" data-i18n="nav.tools">Tools</a>
+                <a href="../stack.html" data-i18n="nav.stack">Stack</a>
+            </nav>
+            <span class="spacer"></span>
+            <button class="ctl" id="lang-btn" type="button" aria-label="Language">FR</button>
+            <button class="ctl" id="theme-btn" type="button" aria-label="Theme">☾</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title" data-i18n="title">Docker Compose Security Validator</h1>
+        <p class="page-sub" data-i18n="subtitle">Paste a docker-compose file and get a security score with issues sorted by severity. The analysis runs entirely in your browser, nothing is uploaded.</p>
+
+        <div class="card">
+            <label class="field-label" for="yaml-input" data-i18n="inputLabel">docker-compose.yml</label>
+            <textarea id="yaml-input" spellcheck="false" aria-label="docker-compose content" data-i18n-attr="placeholder:inputPlaceholder" placeholder="Paste your docker-compose.yml here"></textarea>
+            <div class="examples" id="examples"></div>
+            <div class="btn-row">
+                <button class="btn btn-primary" id="analyze-btn" data-i18n="analyze">Analyze</button>
+                <button class="btn btn-secondary" id="clear-btn" data-i18n="clear">Clear</button>
+            </div>
+        </div>
+
+        <div class="card" id="results">
+            <div class="score-wrap">
+                <div class="score-ring" id="score-ring">
+                    <span class="num" id="score-num">0</span>
+                    <span class="max">/ 100</span>
+                </div>
+                <div class="score-info">
+                    <h3 id="score-verdict"></h3>
+                    <p id="score-detail"></p>
+                    <div class="sev-summary" id="sev-summary"></div>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-secondary" id="copy-btn" data-i18n="copyReport">Copy report</button>
+                <button class="btn btn-secondary" id="download-btn" data-i18n="downloadReport">Download report</button>
+            </div>
+            <div id="issues-list" style="margin-top:18px"></div>
+            <a class="doc-link" href="../reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-DOCKER.md" data-i18n="guideLink">Read the full Docker security guide</a>
+            <p class="note" data-i18n="note">This tool checks common misconfigurations. It is a helper, not a substitute for a full security review. YAML parsing uses js-yaml loaded from a CDN.</p>
+        </div>
+    </div>
+
+    <footer>
+        <span data-i18n="footerText">Built with care.</span>
+        <a href="https://github.com/stephane-v/best-practice" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var I18N = {
+            en: {
+                'nav.tools': 'Tools', 'nav.stack': 'Stack',
+                'title': 'Docker Compose Security Validator',
+                'subtitle': 'Paste a docker-compose file and get a security score with issues sorted by severity. The analysis runs entirely in your browser, nothing is uploaded.',
+                'inputLabel': 'docker-compose.yml',
+                'inputPlaceholder': 'Paste your docker-compose.yml here',
+                'analyze': 'Analyze', 'clear': 'Clear',
+                'copyReport': 'Copy report', 'downloadReport': 'Download report',
+                'guideLink': 'Read the full Docker security guide',
+                'note': 'This tool checks common misconfigurations. It is a helper, not a substitute for a full security review. YAML parsing uses js-yaml loaded from a CDN.',
+                'footerText': 'Built with care.',
+                'ex.vulnerable': 'Vulnerable stack', 'ex.average': 'Average stack',
+                'ex.hardened': 'Hardened stack', 'ex.traefik': 'Traefik + app',
+                'verdict.good': 'Solid configuration',
+                'verdict.fair': 'Needs hardening',
+                'verdict.poor': 'High risk configuration',
+                'scoreDetail': 'services analyzed, issues found',
+                'noIssues': 'No issues detected. This configuration follows the checked best practices.',
+                'errEmpty': 'Please paste a docker-compose file first.',
+                'errParse': 'The YAML could not be parsed: ',
+                'errServices': 'No services block found. Provide a valid docker-compose file.',
+                'errYaml': 'The js-yaml library could not be loaded. Check your connection.',
+                'copied': 'Copied',
+                'lineLabel': 'Offending line', 'fixLabel': 'Suggested fix'
+            },
+            fr: {
+                'nav.tools': 'Outils', 'nav.stack': 'Stack',
+                'title': 'Validateur de sécurité Docker Compose',
+                'subtitle': 'Collez un fichier docker-compose et obtenez un score de sécurité avec les problèmes triés par sévérité. L’analyse se fait entièrement dans votre navigateur, rien n’est envoyé.',
+                'inputLabel': 'docker-compose.yml',
+                'inputPlaceholder': 'Collez votre docker-compose.yml ici',
+                'analyze': 'Analyser', 'clear': 'Effacer',
+                'copyReport': 'Copier le rapport', 'downloadReport': 'Télécharger le rapport',
+                'guideLink': 'Lire le guide complet de sécurité Docker',
+                'note': 'Cet outil vérifie les mauvaises configurations courantes. C’est une aide, pas un substitut à une revue de sécurité complète. Le parsing YAML utilise js-yaml chargé depuis un CDN.',
+                'footerText': 'Conçu avec soin.',
+                'ex.vulnerable': 'Stack vulnérable', 'ex.average': 'Stack moyenne',
+                'ex.hardened': 'Stack durcie', 'ex.traefik': 'Traefik + app',
+                'verdict.good': 'Configuration solide',
+                'verdict.fair': 'À durcir',
+                'verdict.poor': 'Configuration à haut risque',
+                'scoreDetail': 'services analysés, problèmes trouvés',
+                'noIssues': 'Aucun problème détecté. Cette configuration respecte les bonnes pratiques vérifiées.',
+                'errEmpty': 'Collez d’abord un fichier docker-compose.',
+                'errParse': 'Le YAML n’a pas pu être analysé : ',
+                'errServices': 'Aucun bloc services trouvé. Fournissez un fichier docker-compose valide.',
+                'errYaml': 'La bibliothèque js-yaml n’a pas pu être chargée. Vérifiez votre connexion.',
+                'copied': 'Copié',
+                'lineLabel': 'Ligne concernée', 'fixLabel': 'Correctif suggéré'
+            }
+        };
+
+        var lang = 'fr';
+        try {
+            var sl = localStorage.getItem('bp-lang');
+            if (sl === 'en' || sl === 'fr') lang = sl;
+            else if ((navigator.language || '').toLowerCase().indexOf('en') === 0) lang = 'en';
+        } catch (e) {}
+
+        function t(key) { return (I18N[lang] && I18N[lang][key]) || (I18N.en[key]) || key; }
+
+        function applyLang() {
+            document.documentElement.setAttribute('lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var k = el.getAttribute('data-i18n');
+                if (I18N[lang][k] != null) el.textContent = I18N[lang][k];
+            });
+            document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+                el.getAttribute('data-i18n-attr').split(';').forEach(function (p) {
+                    var b = p.split(':');
+                    if (b.length === 2 && I18N[lang][b[1].trim()] != null) {
+                        el.setAttribute(b[0].trim(), I18N[lang][b[1].trim()]);
+                    }
+                });
+            });
+            document.getElementById('lang-btn').textContent = lang === 'fr' ? 'EN' : 'FR';
+            renderExamples();
+        }
+
+        document.getElementById('lang-btn').addEventListener('click', function () {
+            lang = lang === 'fr' ? 'en' : 'fr';
+            try { localStorage.setItem('bp-lang', lang); } catch (e) {}
+            applyLang();
+            if (lastResult) renderResult(lastResult);
+        });
+
+        document.getElementById('theme-btn').addEventListener('click', function () {
+            var cur = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            this.textContent = next === 'dark' ? '☀' : '☾';
+        });
+        document.getElementById('theme-btn').textContent =
+            (document.documentElement.getAttribute('data-theme') === 'dark') ? '☀' : '☾';
+
+        /* Severity model */
+        var SEV = {
+            critical: { weight: 25, rank: 0, color: 'var(--sev-critical)', en: 'Critical', fr: 'Critique' },
+            high:     { weight: 12, rank: 1, color: 'var(--sev-high)',     en: 'High',     fr: 'Élevée' },
+            medium:   { weight: 6,  rank: 2, color: 'var(--sev-medium)',   en: 'Medium',   fr: 'Moyenne' },
+            low:      { weight: 2,  rank: 3, color: 'var(--sev-low)',      en: 'Low',      fr: 'Faible' },
+            info:     { weight: 0,  rank: 4, color: 'var(--sev-info)',     en: 'Info',     fr: 'Info' }
+        };
+        var DANGEROUS_CAPS = ['SYS_ADMIN', 'NET_ADMIN', 'SYS_PTRACE', 'SYS_MODULE',
+            'SYS_RAWIO', 'DAC_READ_SEARCH', 'SYS_BOOT', 'SYS_TIME', 'NET_RAW', 'SYS_CHROOT'];
+        var SYS_PATHS = /^\/(etc|var|usr|boot|root|sys|proc|dev|bin|lib)(\/|$)|^\/$/;
+
+        function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function lineOf(lines, regex, start) {
+            for (var i = (start || 0); i < lines.length; i++) {
+                if (regex.test(lines[i])) return { num: i + 1, text: lines[i].trim() };
+            }
+            return null;
+        }
+
+        function envEntries(env) {
+            var out = [];
+            if (Array.isArray(env)) {
+                env.forEach(function (e) {
+                    var s = String(e), idx = s.indexOf('=');
+                    if (idx > -1) out.push([s.slice(0, idx).trim(), s.slice(idx + 1)]);
+                    else out.push([s.trim(), '']);
+                });
+            } else if (env && typeof env === 'object') {
+                Object.keys(env).forEach(function (k) {
+                    out.push([k, env[k] == null ? '' : String(env[k])]);
+                });
+            }
+            return out;
+        }
+
+        function volStrings(vols) {
+            var out = [];
+            if (Array.isArray(vols)) {
+                vols.forEach(function (v) {
+                    if (typeof v === 'string') out.push(v);
+                    else if (v && v.source) {
+                        out.push(v.source + ':' + (v.target || '') + (v.read_only ? ':ro' : ''));
+                    }
+                });
+            }
+            return out;
+        }
+
+        /* Analysis: 14 checks */
+        function analyze(text) {
+            if (typeof jsyaml === 'undefined') return { error: t('errYaml') };
+            var doc;
+            try { doc = jsyaml.load(text); }
+            catch (e) { return { error: t('errParse') + (e.reason || e.message) }; }
+            if (!doc || typeof doc !== 'object' || !doc.services || typeof doc.services !== 'object') {
+                return { error: t('errServices') };
+            }
+            var lines = text.split(/\r?\n/);
+            var issues = [];
+            var names = Object.keys(doc.services);
+
+            names.forEach(function (name) {
+                var svc = doc.services[name] || {};
+                var svcLine = lineOf(lines, new RegExp('^\\s{2}' + escRe(name) + '\\s*:'));
+                var startIdx = svcLine ? svcLine.num : 0;
+
+                function add(sev, titleEn, titleFr, detEn, detFr, fix, lineHit) {
+                    issues.push({
+                        sev: sev, service: name,
+                        title: { en: titleEn, fr: titleFr },
+                        detail: { en: detEn, fr: detFr },
+                        fix: fix, line: lineHit || svcLine
+                    });
+                }
+
+                if (svc.privileged === true) {
+                    add('critical', 'Privileged mode enabled', 'Mode privilégié activé',
+                        'A privileged container has almost all host capabilities and can take over the host.',
+                        'Un conteneur privilégié dispose de presque toutes les capabilities de l’hôte et peut compromettre la machine.',
+                        'Remove privileged: true and add only the capabilities you really need.',
+                        lineOf(lines, /privileged\s*:\s*true/, startIdx - 1));
+                }
+                if (svc.network_mode === 'host') {
+                    add('high', 'Host network mode', 'Mode réseau host',
+                        'network_mode: host removes network isolation between the container and the host.',
+                        'network_mode: host supprime l’isolation réseau entre le conteneur et l’hôte.',
+                        'Use a dedicated bridge network and publish only the ports you need.',
+                        lineOf(lines, /network_mode\s*:\s*["']?host/, startIdx - 1));
+                }
+                if (svc.user === 'root' || svc.user === '0' || svc.user === 0 || svc.user === '0:0') {
+                    add('medium', 'Container runs as root', 'Conteneur exécuté en root',
+                        'Running as root widens the impact of a container escape.',
+                        'Exécuter en root augmente l’impact d’une évasion de conteneur.',
+                        'Set user: "1000:1000" or a dedicated non-root UID and GID.',
+                        lineOf(lines, /user\s*:/, startIdx - 1));
+                }
+
+                var vols = volStrings(svc.volumes);
+                var sockHit = false, sysHit = false;
+                vols.forEach(function (v) {
+                    var parts = v.split(':');
+                    var host = parts[0];
+                    var mode = parts.length > 2 ? parts[parts.length - 1] : 'rw';
+                    if (v.indexOf('/var/run/docker.sock') !== -1 && !sockHit) {
+                        sockHit = true;
+                        add('critical', 'Docker socket mounted', 'Socket Docker monté',
+                            'Mounting /var/run/docker.sock gives the container full control of the Docker daemon, equivalent to root on the host.',
+                            'Monter /var/run/docker.sock donne au conteneur le contrôle total du démon Docker, équivalent à root sur l’hôte.',
+                            'Remove the docker.sock mount. If a proxy is required, use a restricted socket proxy.',
+                            lineOf(lines, /docker\.sock/, startIdx - 1));
+                    } else if (host && host.charAt(0) === '/' && SYS_PATHS.test(host) && !sysHit) {
+                        sysHit = true;
+                        var ro = mode === 'ro';
+                        add(ro ? 'low' : 'critical',
+                            'System path mounted', 'Chemin système monté',
+                            'A host system path (' + host + ') is mounted into the container' + (ro ? ' read only.' : ' with write access.'),
+                            'Un chemin système de l’hôte (' + host + ') est monté dans le conteneur' + (ro ? ' en lecture seule.' : ' avec accès en écriture.'),
+                            'Mount only the specific files you need, read only, or use a named volume.',
+                            lineOf(lines, new RegExp(escRe(host)), startIdx - 1));
+                    }
+                });
+
+                var capAdd = Array.isArray(svc.cap_add) ? svc.cap_add.map(function (c) { return String(c).toUpperCase(); }) : [];
+                var badCaps = capAdd.filter(function (c) { return DANGEROUS_CAPS.indexOf(c) !== -1; });
+                if (badCaps.length) {
+                    add('high', 'Dangerous capabilities added', 'Capabilities dangereuses ajoutées',
+                        'The service adds capabilities that can be abused to escape the container: ' + badCaps.join(', ') + '.',
+                        'Le service ajoute des capabilities exploitables pour s’évader du conteneur : ' + badCaps.join(', ') + '.',
+                        'Drop these capabilities. Add back only the minimal set the application needs.',
+                        lineOf(lines, /cap_add\s*:/, startIdx - 1));
+                }
+
+                var capDrop = Array.isArray(svc.cap_drop) ? svc.cap_drop.map(function (c) { return String(c).toUpperCase(); }) : [];
+                if (capDrop.indexOf('ALL') === -1 && svc.privileged !== true) {
+                    add('medium', 'Capabilities not dropped', 'Capabilities non retirées',
+                        'The service keeps the default Linux capabilities instead of dropping them all.',
+                        'Le service conserve les capabilities Linux par défaut au lieu de toutes les retirer.',
+                        'Add cap_drop: [ALL] then cap_add only what is required.');
+                }
+
+                if (svc.read_only !== true) {
+                    add('medium', 'Filesystem is writable', 'Système de fichiers en écriture',
+                        'The container root filesystem is writable, which helps an attacker persist.',
+                        'Le système de fichiers racine du conteneur est en écriture, ce qui aide un attaquant à persister.',
+                        'Add read_only: true and mount a tmpfs for paths that need to be writable.');
+                }
+
+                var env = envEntries(svc.environment);
+                var secretHit = false;
+                env.forEach(function (pair) {
+                    var key = pair[0], val = pair[1];
+                    if (secretHit) return;
+                    if (/(PASSWORD|PASSWD|SECRET|TOKEN|API_?KEY|PRIVATE_?KEY|_KEY$)/i.test(key) &&
+                        val && !/^\$\{?/.test(String(val).trim()) && String(val).trim() !== '') {
+                        secretHit = true;
+                        add('high', 'Secret in plain text', 'Secret en clair',
+                            'The environment variable ' + key + ' holds a secret value directly in the compose file.',
+                            'La variable d’environnement ' + key + ' contient un secret directement dans le fichier compose.',
+                            'Move secrets to a .env file ignored by git, or to Docker secrets, and reference them with ${' + key + '}.',
+                            lineOf(lines, new RegExp(escRe(key)), startIdx - 1));
+                    }
+                });
+
+                var ports = Array.isArray(svc.ports) ? svc.ports : [];
+                var exposedHit = false;
+                ports.forEach(function (p) {
+                    if (exposedHit) return;
+                    var ps = typeof p === 'string' ? p : (p && p.published ? String((p.host_ip || '') + ':' + p.published) : '');
+                    if (ps && ps.indexOf('127.0.0.1') === -1 && ps.indexOf('::1') === -1 && /\d/.test(ps)) {
+                        exposedHit = true;
+                        add('low', 'Port published on all interfaces', 'Port publié sur toutes les interfaces',
+                            'A port is published without binding to 127.0.0.1, so it is reachable from any network interface.',
+                            'Un port est publié sans liaison à 127.0.0.1, il est donc joignable depuis n’importe quelle interface.',
+                            'For services that are not public, bind to 127.0.0.1, for example "127.0.0.1:8080:80".',
+                            lineOf(lines, /ports\s*:/, startIdx - 1));
+                    }
+                });
+
+                if (svc.image) {
+                    var img = String(svc.image);
+                    var colon = img.lastIndexOf(':');
+                    var slash = img.lastIndexOf('/');
+                    var hasTag = colon > slash && colon !== -1;
+                    if (!hasTag || /:latest$/.test(img)) {
+                        add('high', 'Unpinned image tag', 'Tag d’image non figé',
+                            'The image ' + img + ' uses latest or no tag, so the deployed version is not reproducible.',
+                            'L’image ' + img + ' utilise latest ou aucun tag, la version déployée n’est donc pas reproductible.',
+                            'Pin an explicit version tag, and ideally a digest, for example image:1.4.2.',
+                            lineOf(lines, /image\s*:/, startIdx - 1));
+                    }
+                } else if (!svc.build) {
+                    add('high', 'No image or build defined', 'Aucune image ni build défini',
+                        'The service has neither an image nor a build section.',
+                        'Le service n’a ni image ni section build.',
+                        'Define an image with a pinned tag or a build context.');
+                }
+
+                if (!svc.restart && !(svc.deploy && svc.deploy.restart_policy)) {
+                    add('low', 'No restart policy', 'Pas de politique de redémarrage',
+                        'Without a restart policy the service will not come back after a crash or reboot.',
+                        'Sans politique de redémarrage, le service ne repart pas après un crash ou un redémarrage.',
+                        'Add restart: unless-stopped or a deploy.restart_policy.');
+                }
+                if (!svc.healthcheck) {
+                    add('low', 'No healthcheck', 'Pas de healthcheck',
+                        'Without a healthcheck the orchestrator cannot tell whether the service is actually ready.',
+                        'Sans healthcheck, l’orchestrateur ne peut pas savoir si le service est réellement prêt.',
+                        'Add a healthcheck block with a lightweight test command.');
+                }
+                var hasMem = svc.mem_limit || (svc.deploy && svc.deploy.resources &&
+                    svc.deploy.resources.limits && svc.deploy.resources.limits.memory);
+                var hasCpu = svc.cpus || (svc.deploy && svc.deploy.resources &&
+                    svc.deploy.resources.limits && svc.deploy.resources.limits.cpus);
+                if (!hasMem && !hasCpu) {
+                    add('low', 'No resource limits', 'Pas de limites de ressources',
+                        'The service has no memory or CPU limit, so one container can starve the others.',
+                        'Le service n’a aucune limite mémoire ou CPU, un conteneur peut donc affamer les autres.',
+                        'Set mem_limit and cpus, or deploy.resources.limits.');
+                }
+            });
+
+            var score = 100;
+            issues.forEach(function (i) { score -= SEV[i.sev].weight; });
+            if (score < 0) score = 0;
+            issues.sort(function (a, b) { return SEV[a.sev].rank - SEV[b.sev].rank; });
+            return { score: score, issues: issues, services: names };
+        }
+
+        /* Rendering */
+        var lastResult = null;
+        var lastText = '';
+
+        function verdictKey(score) {
+            if (score >= 80) return 'verdict.good';
+            if (score >= 50) return 'verdict.fair';
+            return 'verdict.poor';
+        }
+        function scoreColor(score) {
+            if (score >= 80) return 'var(--success)';
+            if (score >= 50) return 'var(--sev-medium)';
+            return 'var(--sev-critical)';
+        }
+        function esc(s) {
+            return String(s).replace(/[&<>"]/g, function (c) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+            });
+        }
+
+        function renderResult(res) {
+            lastResult = res;
+            var box = document.getElementById('results');
+            if (res.error) {
+                box.style.display = 'block';
+                document.getElementById('score-ring').style.display = 'none';
+                document.getElementById('sev-summary').innerHTML = '';
+                document.getElementById('score-verdict').textContent = '';
+                document.getElementById('score-detail').textContent = '';
+                document.getElementById('issues-list').innerHTML =
+                    '<div class="empty-msg">' + esc(res.error) + '</div>';
+                return;
+            }
+            document.getElementById('score-ring').style.display = 'flex';
+            box.style.display = 'block';
+
+            var ring = document.getElementById('score-ring');
+            var col = scoreColor(res.score);
+            ring.style.background = 'conic-gradient(' + col + ' ' + (res.score * 3.6) +
+                'deg, var(--bg-tertiary) 0deg)';
+            ring.style.boxShadow = 'inset 0 0 0 12px var(--bg-secondary)';
+            document.getElementById('score-num').textContent = res.score;
+            document.getElementById('score-num').style.color = col;
+            document.getElementById('score-verdict').textContent = t(verdictKey(res.score));
+            document.getElementById('score-detail').textContent =
+                res.services.length + ' / ' + res.issues.length + ' ' + t('scoreDetail');
+
+            var counts = {};
+            res.issues.forEach(function (i) { counts[i.sev] = (counts[i.sev] || 0) + 1; });
+            document.getElementById('sev-summary').innerHTML = Object.keys(SEV)
+                .filter(function (s) { return counts[s]; })
+                .map(function (s) {
+                    return '<span class="sev-pill" style="background:' + SEV[s].color + '">' +
+                        counts[s] + ' ' + SEV[s][lang] + '</span>';
+                }).join('');
+
+            var list = document.getElementById('issues-list');
+            if (!res.issues.length) {
+                list.innerHTML = '<div class="ok-msg">' + esc(t('noIssues')) + '</div>';
+                return;
+            }
+            list.innerHTML = res.issues.map(function (i) {
+                var lineHtml = '';
+                if (i.line) {
+                    lineHtml = '<div class="issue-line-label">' + esc(t('lineLabel')) +
+                        ' (' + i.line.num + ')</div><div class="issue-line">' +
+                        esc(i.line.text) + '</div>';
+                }
+                return '<div class="issue" style="border-left-color:' + SEV[i.sev].color + '">' +
+                    '<div class="issue-head">' +
+                    '<span class="issue-sev" style="background:' + SEV[i.sev].color + '">' +
+                    SEV[i.sev][lang] + '</span>' +
+                    '<span class="issue-title">' + esc(i.title[lang]) + '</span>' +
+                    '<span class="issue-service">' + esc(i.service) + '</span>' +
+                    '</div>' +
+                    '<div class="issue-detail">' + esc(i.detail[lang]) + '</div>' +
+                    lineHtml +
+                    '<div class="issue-fix-label">' + esc(t('fixLabel')) + '</div>' +
+                    '<div class="issue-fix">' + esc(i.fix) + '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function buildReport(res) {
+            var lines = ['# Docker Compose Security Report', ''];
+            lines.push('Score: ' + res.score + ' / 100');
+            lines.push('Verdict: ' + t(verdictKey(res.score)));
+            lines.push('Services: ' + res.services.join(', '));
+            lines.push('Issues: ' + res.issues.length);
+            lines.push('');
+            var order = ['critical', 'high', 'medium', 'low', 'info'];
+            order.forEach(function (sev) {
+                var group = res.issues.filter(function (i) { return i.sev === sev; });
+                if (!group.length) return;
+                lines.push('## ' + SEV[sev].en + ' (' + group.length + ')');
+                lines.push('');
+                group.forEach(function (i) {
+                    lines.push('- [' + i.service + '] ' + i.title.en);
+                    lines.push('  - ' + i.detail.en);
+                    if (i.line) lines.push('  - Line ' + i.line.num + ': ' + i.line.text);
+                    lines.push('  - Fix: ' + i.fix);
+                });
+                lines.push('');
+            });
+            lines.push('Generated by the Best Practice Docker Compose Security Validator.');
+            return lines.join('\n');
+        }
+
+        /* Examples */
+        var EXAMPLES = {
+            vulnerable: 'version: "3.8"\nservices:\n  app:\n    image: myapp:latest\n    privileged: true\n    network_mode: host\n    user: root\n    volumes:\n      - /var/run/docker.sock:/var/run/docker.sock\n      - /etc:/host-etc\n    environment:\n      - DB_PASSWORD=supersecret123\n      - API_TOKEN=abcd1234efgh\n    cap_add:\n      - SYS_ADMIN\n    ports:\n      - "0.0.0.0:8080:8080"\n',
+            average: 'version: "3.8"\nservices:\n  web:\n    image: nginx:1.25\n    ports:\n      - "8080:80"\n    environment:\n      - APP_ENV=production\n    restart: unless-stopped\n  db:\n    image: postgres:16\n    environment:\n      - POSTGRES_PASSWORD=changeme\n    volumes:\n      - db-data:/var/lib/postgresql/data\nvolumes:\n  db-data:\n',
+            hardened: 'version: "3.8"\nservices:\n  api:\n    image: ghcr.io/example/api:1.4.2\n    read_only: true\n    user: "1000:1000"\n    cap_drop:\n      - ALL\n    security_opt:\n      - no-new-privileges:true\n    mem_limit: 512m\n    cpus: 0.5\n    restart: unless-stopped\n    healthcheck:\n      test: ["CMD", "wget", "-q", "http://127.0.0.1:3000/health"]\n      interval: 30s\n    ports:\n      - "127.0.0.1:3000:3000"\n    environment:\n      - DB_PASSWORD=${DB_PASSWORD}\n',
+            traefik: 'version: "3.8"\nservices:\n  traefik:\n    image: traefik:v3.1\n    restart: unless-stopped\n    cap_drop:\n      - ALL\n    read_only: true\n    mem_limit: 128m\n    cpus: 0.25\n    ports:\n      - "127.0.0.1:80:80"\n    volumes:\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n    healthcheck:\n      test: ["CMD", "traefik", "healthcheck"]\n  app:\n    image: ghcr.io/example/app:2.0.1\n    read_only: true\n    user: "1000:1000"\n    cap_drop:\n      - ALL\n    mem_limit: 256m\n    cpus: 0.5\n    restart: unless-stopped\n    healthcheck:\n      test: ["CMD", "wget", "-q", "http://127.0.0.1:8000/api/health"]\n    labels:\n      - "traefik.enable=true"\n'
+        };
+
+        function renderExamples() {
+            var keys = ['vulnerable', 'average', 'hardened', 'traefik'];
+            document.getElementById('examples').innerHTML = keys.map(function (k) {
+                return '<button class="example-btn" data-ex="' + k + '">' +
+                    esc(t('ex.' + k)) + '</button>';
+            }).join('');
+            document.querySelectorAll('.example-btn').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    document.getElementById('yaml-input').value = EXAMPLES[b.getAttribute('data-ex')];
+                });
+            });
+        }
+
+        document.getElementById('analyze-btn').addEventListener('click', function () {
+            var text = document.getElementById('yaml-input').value;
+            if (!text.trim()) {
+                renderResult({ error: t('errEmpty') });
+                return;
+            }
+            lastText = text;
+            renderResult(analyze(text));
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', function () {
+            document.getElementById('yaml-input').value = '';
+            document.getElementById('results').style.display = 'none';
+            lastResult = null;
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', function () {
+            if (!lastResult || lastResult.error) return;
+            var self = this;
+            navigator.clipboard.writeText(buildReport(lastResult)).then(function () {
+                var old = self.textContent;
+                self.textContent = t('copied');
+                setTimeout(function () { self.textContent = old; }, 1500);
+            });
+        });
+
+        document.getElementById('download-btn').addEventListener('click', function () {
+            if (!lastResult || lastResult.error) return;
+            var blob = new Blob([buildReport(lastResult)], { type: 'text/markdown' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'docker-compose-security-report.md';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+
+        applyLang();
+    })();
+    </script>
+</body>
+</html>
