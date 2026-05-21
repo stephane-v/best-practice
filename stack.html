@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack &amp; Convictions - Best Practice</title>
+    <meta name="description" content="The technical stack, engineering convictions and flagship projects behind the Best Practice repository.">
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="assets/i18n.js"></script>
+    <script defer src="assets/search.js"></script>
+    <script defer src="assets/header.js"></script>
+    <script defer src="assets/footer.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        header.hero { text-align: center; padding: 48px 20px 32px; }
+
+        header.hero h1 {
+            font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 14px;
+        }
+
+        header.hero p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            padding: 28px;
+        }
+
+        .section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section .lead { color: var(--text-secondary); margin-bottom: 20px; }
+
+        .section p { color: var(--text-secondary); }
+
+        .section p + p { margin-top: 12px; }
+
+        .icon-box {
+            width: 36px; height: 36px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--gradient-primary);
+            border-radius: 9px;
+            font-size: 1.1rem;
+        }
+
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .stack-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .stack-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--accent-1);
+            margin-bottom: 12px;
+        }
+
+        .chip-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .chip {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 5px 11px;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .conviction {
+            border-left: 3px solid var(--accent-1);
+            padding: 4px 0 4px 18px;
+            margin-bottom: 18px;
+        }
+
+        .conviction:last-child { margin-bottom: 0; }
+
+        .conviction h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .project-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .project-card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .section { padding: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <bp-header current="stack"></bp-header>
+
+    <div class="container">
+        <header class="hero">
+            <h1 data-i18n="stack.hero.title">Stack &amp; Convictions</h1>
+            <p data-i18n="stack.hero.subtitle">The technical stack, engineering convictions and flagship projects behind this repository.</p>
+        </header>
+
+        <section class="section" id="about">
+            <h2><span class="icon-box">&#128100;</span> <span data-i18n="stack.about.title">About</span></h2>
+            <p data-i18n="stack.about.p1">I am Stephane Vellement, a full-stack developer with more than 25 years of experience. I run an EURL based in the Pays de la Loire region of France. My work focuses on digital sovereignty, sovereign LLM deployments, agentic RAG, and container infrastructure with Docker and Traefik.</p>
+            <p data-i18n="stack.about.p2">I help teams move sensitive workloads off US hyperscalers without losing delivery speed. This repository collects the guides, checklists and tools I use and refine on real projects.</p>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon-box">&#128295;</span> <span data-i18n="stack.stack.title">Current Stack</span></h2>
+            <p class="lead" data-i18n="stack.stack.desc">The tools I run in production today, grouped by layer.</p>
+            <div class="stack-grid">
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.infra">Infrastructure</h3>
+                    <div class="chip-list">
+                        <span class="chip">Hetzner CAX21 ARM</span>
+                        <span class="chip">OVH Gravelines S3</span>
+                        <span class="chip">Traefik</span>
+                        <span class="chip">Docker Compose</span>
+                        <span class="chip">Gitea</span>
+                        <span class="chip">Woodpecker CI</span>
+                        <span class="chip">CrowdSec</span>
+                        <span class="chip">Authentik</span>
+                    </div>
+                </div>
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.llm">LLM</h3>
+                    <div class="chip-list">
+                        <span class="chip">LiteLLM</span>
+                        <span class="chip">Mistral API EU</span>
+                        <span class="chip">Ollama</span>
+                        <span class="chip">Devstral</span>
+                        <span class="chip">Qwen3</span>
+                        <span class="chip">Speaches on Koyeb</span>
+                    </div>
+                </div>
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.rag">Vector &amp; RAG</h3>
+                    <div class="chip-list">
+                        <span class="chip">Qdrant</span>
+                        <span class="chip">LangGraph</span>
+                    </div>
+                </div>
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.security">Security</h3>
+                    <div class="chip-list">
+                        <span class="chip">CrowdSec</span>
+                        <span class="chip">Authentik SSO/2FA</span>
+                        <span class="chip">AdGuard Home</span>
+                    </div>
+                </div>
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.frontend">Frontend</h3>
+                    <div class="chip-list">
+                        <span class="chip">Next.js</span>
+                        <span class="chip">Astro</span>
+                        <span class="chip">TipTap</span>
+                    </div>
+                </div>
+                <div class="stack-card">
+                    <h3 data-i18n="stack.cat.backend">Backend</h3>
+                    <div class="chip-list">
+                        <span class="chip">FastAPI</span>
+                        <span class="chip">Python</span>
+                        <span class="chip">Celery</span>
+                        <span class="chip">PostgreSQL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon-box">&#129504;</span> <span data-i18n="stack.conv.title">Engineering Convictions</span></h2>
+            <p class="lead" data-i18n="stack.conv.desc">A few principles that guide the technical choices on client work.</p>
+            <div class="conviction">
+                <h3 data-i18n="stack.conv.1.t">Digital sovereignty in professional and sensitive contexts</h3>
+                <p data-i18n="stack.conv.1.b">When a client handles regulated or public sector data, that data stays inside infrastructure we control. Sovereignty is a requirement here, not a marketing word.</p>
+            </div>
+            <div class="conviction">
+                <h3 data-i18n="stack.conv.2.t">Self-hosted by default for GDPR or public clients</h3>
+                <p data-i18n="stack.conv.2.b">For projects under GDPR, or with public sector clients, self-hosted is the default choice. A managed third-party service is an exception that has to be justified.</p>
+            </div>
+            <div class="conviction">
+                <h3 data-i18n="stack.conv.3.t">LLM in the EU rather than US hyperscalers for client data</h3>
+                <p data-i18n="stack.conv.3.b">Client data goes to models hosted in the EU (Mistral, or Ollama on our own servers). US hyperscaler APIs are avoided for anything that carries client information.</p>
+            </div>
+            <div class="conviction">
+                <h3 data-i18n="stack.conv.4.t">Pragmatism for personal use</h3>
+                <p data-i18n="stack.conv.4.b">On personal projects I stay pragmatic. The rules above exist to protect client data, they are not a dogma applied to everything.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon-box">&#128640;</span> <span data-i18n="stack.proj.title">Flagship Projects</span></h2>
+            <p class="lead" data-i18n="stack.proj.desc">A short look at the projects that drive these practices.</p>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>Andragia</h3>
+                    <p data-i18n="stack.proj.andragia.d">A B2B SaaS platform that helps subject matter experts become adult trainers. An agentic AI engine structures their knowledge into teachable content.</p>
+                </div>
+                <div class="project-card">
+                    <h3>RepoAudit</h3>
+                    <p data-i18n="stack.proj.repoaudit.d">A freemium Git repository audit. It reviews a codebase and reports on quality, security and maintainability signals.</p>
+                </div>
+                <div class="project-card">
+                    <h3>HubMind</h3>
+                    <p data-i18n="stack.proj.hubmind.d">A collaborative second brain for teams. Several users build and share one connected knowledge base.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <bp-footer></bp-footer>
+</body>
+</html>
