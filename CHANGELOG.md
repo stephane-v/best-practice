@@ -42,4 +42,4 @@ Major refresh of the navigation, internationalization and interactive tools.
 
 ### Removed
 
-- The legacy AI Prompt Library section and the `PROMPT/` directory.
+- The legacy AI Prompt Library section and its directory.
