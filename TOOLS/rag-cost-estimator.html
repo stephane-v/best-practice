@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Cost Estimator - Best Practice</title>
+    <meta name="description" content="Estimate the monthly cost of a RAG system and compare EU sovereign with US cloud.">
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #10b981;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+        }
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .tool-header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tool-header-inner {
+            max-width: 1000px; margin: 0 auto;
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 20px; flex-wrap: wrap;
+        }
+        .tool-brand {
+            font-weight: 700; font-size: 1.05rem; text-decoration: none;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tool-header nav { display: flex; gap: 4px; }
+        .tool-header nav a {
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; padding: 6px 10px; border-radius: 8px;
+        }
+        .tool-header nav a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+        .spacer { flex: 1; }
+        .ctl {
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 7px 11px; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            font-family: inherit;
+        }
+        .ctl:hover { background: var(--border-color); color: var(--text-primary); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+        .page-title {
+            font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .page-sub { color: var(--text-secondary); margin-bottom: 24px; max-width: 720px; }
+        .card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 22px; margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        h2.card-title { font-size: 1.05rem; margin-bottom: 14px; }
+        .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .example-btn {
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            color: var(--text-secondary); border-radius: 100px;
+            padding: 6px 14px; font-size: 0.8rem; font-weight: 500;
+            cursor: pointer; font-family: inherit;
+        }
+        .example-btn:hover { border-color: var(--accent-1); color: var(--text-primary); }
+        .form-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+        .field label {
+            display: block; font-size: 0.78rem; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 5px;
+        }
+        .field input, .field select {
+            width: 100%; padding: 9px 11px;
+            border: 1px solid var(--border-color); border-radius: 9px;
+            background: var(--bg-tertiary); color: var(--text-primary);
+            font-size: 0.88rem; font-family: inherit;
+        }
+        .field input:focus, .field select:focus {
+            outline: none; border-color: var(--accent-1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .hyp-toggle {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 16px; font-size: 0.85rem; color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .hyp-panel { display: none; margin-top: 14px; }
+        .hyp-panel.open { display: block; }
+        .hyp-note { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+        .btn {
+            border: none; border-radius: 10px; padding: 11px 20px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit;
+        }
+        .btn-primary { background: var(--gradient-primary); color: #fff; }
+        .btn-primary:hover { box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        .btn-secondary {
+            background: var(--bg-tertiary); color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover { background: var(--border-color); color: var(--text-primary); }
+        .total-line {
+            display: flex; align-items: baseline; gap: 10px;
+            flex-wrap: wrap; margin-bottom: 6px;
+        }
+        .total-line .big {
+            font-size: 2.4rem; font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .total-line .unit { color: var(--text-muted); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td {
+            text-align: left; padding: 9px 10px;
+            border-bottom: 1px solid var(--border-color); font-size: 0.88rem;
+        }
+        th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .kpi-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px; margin-top: 14px;
+        }
+        .kpi {
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 11px; padding: 14px;
+        }
+        .kpi .v { font-size: 1.3rem; font-weight: 700; }
+        .kpi .k { font-size: 0.76rem; color: var(--text-muted); }
+        .cmp-eu { color: var(--success); font-weight: 600; }
+        .cmp-us { color: var(--accent-2); font-weight: 600; }
+        .doc-link {
+            display: inline-block; margin-top: 14px;
+            color: var(--accent-1); text-decoration: none; font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .doc-link:hover { text-decoration: underline; }
+        .note {
+            font-size: 0.8rem; color: var(--text-muted);
+            margin-top: 16px; padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+        footer {
+            text-align: center; padding: 28px 20px;
+            color: var(--text-muted); font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+        footer a { color: var(--accent-1); text-decoration: none; }
+        #results { display: none; }
+        @media print {
+            .tool-header, footer, .examples, .btn-row, .hyp-toggle,
+            #input-card .form-grid, .doc-link { display: none; }
+            body { background: #fff; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+    <header class="tool-header">
+        <div class="tool-header-inner">
+            <a href="../index.html" class="tool-brand">Best Practice</a>
+            <nav>
+                <a href="../index.html#tools" data-i18n="nav.tools">Tools</a>
+                <a href="../stack.html" data-i18n="nav.stack">Stack</a>
+            </nav>
+            <span class="spacer"></span>
+            <button class="ctl" id="lang-btn" type="button" aria-label="Language">FR</button>
+            <button class="ctl" id="theme-btn" type="button" aria-label="Theme">☾</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title" data-i18n="title">RAG Cost Estimator</h1>
+        <p class="page-sub" data-i18n="subtitle">Estimate the monthly cost of a retrieval augmented generation system and compare an EU sovereign setup with a US cloud setup. All calculations run in your browser.</p>
+
+        <div class="card" id="input-card">
+            <h2 class="card-title" data-i18n="scenariosTitle">Quick scenarios</h2>
+            <div class="examples" id="examples"></div>
+            <div class="form-grid" id="form-grid"></div>
+
+            <label class="hyp-toggle">
+                <input type="checkbox" id="hyp-check"> <span data-i18n="hypToggle">Show and override assumptions</span>
+            </label>
+            <div class="hyp-panel" id="hyp-panel">
+                <p class="hyp-note" data-i18n="hypNote">Indicative prices in EUR, around November 2026. Verify against current provider pricing before any decision.</p>
+                <div class="form-grid" id="hyp-grid"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" id="calc-btn" data-i18n="calculate">Calculate</button>
+                <button class="btn btn-secondary" id="print-btn" data-i18n="exportPdf">Export to PDF</button>
+            </div>
+        </div>
+
+        <div class="card" id="results">
+            <h2 class="card-title" data-i18n="resultTitle">Estimated monthly cost</h2>
+            <div class="total-line">
+                <span class="big" id="total-num">0</span>
+                <span class="unit" data-i18n="perMonth">per month</span>
+            </div>
+            <table>
+                <thead>
+                    <tr><th data-i18n="costItem">Cost item</th><th class="num" data-i18n="amount">Amount (EUR)</th></tr>
+                </thead>
+                <tbody id="breakdown-body"></tbody>
+            </table>
+
+            <div class="kpi-grid" id="kpi-grid"></div>
+
+            <h2 class="card-title" style="margin-top:24px" data-i18n="cmpTitle">EU sovereign vs US cloud</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-i18n="cmpSetup">Setup</th>
+                        <th class="num" data-i18n="cmpMonthly">Monthly (EUR)</th>
+                        <th class="num" data-i18n="cmpCarbon">CO2 (kg/month)</th>
+                    </tr>
+                </thead>
+                <tbody id="cmp-body"></tbody>
+            </table>
+            <p class="hyp-note" id="cmp-note" style="margin-top:10px"></p>
+
+            <a class="doc-link" href="../reader-md.html?file=https://raw.githubusercontent.com/stephane-v/best-practice/main/SECURITY-AND_CYBER-HEALTHY-INFORMATION-SYSTEM-CONSULTANT-LEVEL/llm-security-best-practices.md" data-i18n="guideLink">Read the LLM security guide</a>
+            <p class="note" data-i18n="note">This estimator uses simplified token math and indicative prices. Treat the result as an order of magnitude, not a quote.</p>
+        </div>
+    </div>
+
+    <footer>
+        <span data-i18n="footerText">Built with care.</span>
+        <a href="https://github.com/stephane-v/best-practice" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var I18N = {
+            en: {
+                'nav.tools': 'Tools', 'nav.stack': 'Stack',
+                'title': 'RAG Cost Estimator',
+                'subtitle': 'Estimate the monthly cost of a retrieval augmented generation system and compare an EU sovereign setup with a US cloud setup. All calculations run in your browser.',
+                'scenariosTitle': 'Quick scenarios',
+                'hypToggle': 'Show and override assumptions',
+                'hypNote': 'Indicative prices in EUR, around November 2026. Verify against current provider pricing before any decision.',
+                'calculate': 'Calculate', 'exportPdf': 'Export to PDF',
+                'resultTitle': 'Estimated monthly cost',
+                'perMonth': 'per month',
+                'costItem': 'Cost item', 'amount': 'Amount (EUR)',
+                'cmpTitle': 'EU sovereign vs US cloud',
+                'cmpSetup': 'Setup', 'cmpMonthly': 'Monthly (EUR)', 'cmpCarbon': 'CO2 (kg/month)',
+                'guideLink': 'Read the LLM security guide',
+                'note': 'This estimator uses simplified token math and indicative prices. Treat the result as an order of magnitude, not a quote.',
+                'footerText': 'Built with care.',
+                'ex.small': 'Small team (10 users)',
+                'ex.smb': 'SMB (100 users)',
+                'ex.mid': 'Mid-market (1000 users)',
+                'f.users': 'Monthly active users',
+                'f.questions': 'Questions per user per month',
+                'f.docWords': 'Average document size (words)',
+                'f.docCount': 'Documents in the corpus',
+                'f.chunk': 'Chunk size (tokens)',
+                'f.overlap': 'Chunk overlap (tokens)',
+                'f.topk': 'Top-K chunks per query',
+                'f.embed': 'Embedding model',
+                'f.gen': 'Generation model',
+                'f.store': 'Vector store hosting',
+                'h.tokensPerWord': 'Tokens per word',
+                'h.queryTokens': 'Tokens per user query',
+                'h.promptOverhead': 'Prompt overhead tokens',
+                'h.answerTokens': 'Answer length (tokens)',
+                'h.churn': 'Monthly corpus change (%)',
+                'h.gpuVps': 'Self-hosted GPU VPS (EUR/month)',
+                'h.indexOverhead': 'Vector index storage multiplier',
+                'h.kwhGen': 'kWh per 1M generation tokens',
+                'h.kwhEmbed': 'kWh per 1M embedding tokens',
+                'r.initial': 'Initial indexing (one-time)',
+                'r.embed': 'Monthly embeddings (reindex + queries)',
+                'r.gen': 'Generation',
+                'r.storage': 'Vector storage',
+                'r.infra': 'Self-hosted infrastructure',
+                'k.perQuery': 'Cost per query',
+                'k.perUser': 'Cost per user / month',
+                'k.queries': 'Queries / month',
+                'k.carbon': 'CO2 / month',
+                'cmp.eu': 'EU sovereign (Mistral + Qdrant on OVH)',
+                'cmp.us': 'US cloud (OpenAI + Claude + Pinecone)',
+                'cmpNote': 'Same workload priced on two reference stacks. The EU sovereign stack keeps data inside the EU.',
+                'unit.kg': 'kg'
+            },
+            fr: {
+                'nav.tools': 'Outils', 'nav.stack': 'Stack',
+                'title': 'Estimateur de coût RAG',
+                'subtitle': 'Estimez le coût mensuel d’un système de génération augmentée par récupération et comparez une architecture souveraine européenne avec une architecture cloud américaine. Tous les calculs se font dans votre navigateur.',
+                'scenariosTitle': 'Scénarios rapides',
+                'hypToggle': 'Afficher et modifier les hypothèses',
+                'hypNote': 'Prix indicatifs en EUR, autour de novembre 2026. À vérifier auprès des tarifs actuels des fournisseurs avant toute décision.',
+                'calculate': 'Calculer', 'exportPdf': 'Exporter en PDF',
+                'resultTitle': 'Coût mensuel estimé',
+                'perMonth': 'par mois',
+                'costItem': 'Poste de coût', 'amount': 'Montant (EUR)',
+                'cmpTitle': 'Souverain EU contre cloud US',
+                'cmpSetup': 'Architecture', 'cmpMonthly': 'Mensuel (EUR)', 'cmpCarbon': 'CO2 (kg/mois)',
+                'guideLink': 'Lire le guide de sécurité LLM',
+                'note': 'Cet estimateur utilise un calcul de tokens simplifié et des prix indicatifs. Le résultat est un ordre de grandeur, pas un devis.',
+                'footerText': 'Conçu avec soin.',
+                'ex.small': 'Petite équipe (10 utilisateurs)',
+                'ex.smb': 'PME (100 utilisateurs)',
+                'ex.mid': 'Mid-market (1000 utilisateurs)',
+                'f.users': 'Utilisateurs actifs mensuels',
+                'f.questions': 'Questions par utilisateur par mois',
+                'f.docWords': 'Taille moyenne d’un document (mots)',
+                'f.docCount': 'Documents dans le corpus',
+                'f.chunk': 'Taille de chunk (tokens)',
+                'f.overlap': 'Recouvrement de chunk (tokens)',
+                'f.topk': 'Top-K chunks par requête',
+                'f.embed': 'Modèle d’embedding',
+                'f.gen': 'Modèle de génération',
+                'f.store': 'Hébergement du vector store',
+                'h.tokensPerWord': 'Tokens par mot',
+                'h.queryTokens': 'Tokens par requête utilisateur',
+                'h.promptOverhead': 'Tokens de surcharge de prompt',
+                'h.answerTokens': 'Longueur de réponse (tokens)',
+                'h.churn': 'Évolution mensuelle du corpus (%)',
+                'h.gpuVps': 'VPS GPU self-hosted (EUR/mois)',
+                'h.indexOverhead': 'Multiplicateur de stockage de l’index',
+                'h.kwhGen': 'kWh pour 1M tokens de génération',
+                'h.kwhEmbed': 'kWh pour 1M tokens d’embedding',
+                'r.initial': 'Indexation initiale (ponctuel)',
+                'r.embed': 'Embeddings mensuels (réindexation + requêtes)',
+                'r.gen': 'Génération',
+                'r.storage': 'Stockage vectoriel',
+                'r.infra': 'Infrastructure self-hosted',
+                'k.perQuery': 'Coût par requête',
+                'k.perUser': 'Coût par utilisateur / mois',
+                'k.queries': 'Requêtes / mois',
+                'k.carbon': 'CO2 / mois',
+                'cmp.eu': 'Souverain EU (Mistral + Qdrant sur OVH)',
+                'cmp.us': 'Cloud US (OpenAI + Claude + Pinecone)',
+                'cmpNote': 'La même charge tarifée sur deux stacks de référence. La stack souveraine EU garde les données en Europe.',
+                'unit.kg': 'kg'
+            }
+        };
+
+        var lang = 'fr';
+        try {
+            var sl = localStorage.getItem('bp-lang');
+            if (sl === 'en' || sl === 'fr') lang = sl;
+            else if ((navigator.language || '').toLowerCase().indexOf('en') === 0) lang = 'en';
+        } catch (e) {}
+        function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key; }
+
+        /* Pricing presets, indicative EUR, around November 2026 */
+        var EMBED = {
+            openai: { label: 'OpenAI text-embedding-3-small', perM: 0.019, dim: 1536, region: 'us', self: false },
+            mistral: { label: 'Mistral Embed (EU API)', perM: 0.009, dim: 1024, region: 'eu', self: false },
+            bge: { label: 'BGE-M3 on Ollama (self-hosted)', perM: 0, dim: 1024, region: 'eu', self: true }
+        };
+        var GEN = {
+            mistralLarge: { label: 'Mistral Large (EU API)', inM: 1.8, outM: 5.4, region: 'eu', self: false },
+            claudeSonnet: { label: 'Claude Sonnet', inM: 2.7, outM: 13.5, region: 'us', self: false },
+            qwen3: { label: 'Qwen3 on Ollama (self-hosted)', inM: 0, outM: 0, region: 'eu', self: true }
+        };
+        var STORE = {
+            qdrantCloud: { label: 'Qdrant Cloud', perGB: 0.30, base: 0, region: 'eu', self: false },
+            qdrantSelf: { label: 'Qdrant self-hosted (OVH Gravelines)', perGB: 0, base: 14, region: 'eu', self: true },
+            pinecone: { label: 'Pinecone', perGB: 0.33, base: 0, region: 'us', self: false }
+        };
+
+        var HYP = {
+            tokensPerWord: 1.33,
+            queryTokens: 20,
+            promptOverhead: 400,
+            answerTokens: 350,
+            churn: 10,
+            gpuVps: 220,
+            indexOverhead: 2.0,
+            kwhGen: 0.45,
+            kwhEmbed: 0.04
+        };
+        var GRID = { eu: 0.25, us: 0.37 };
+
+        var FIELDS = [
+            { id: 'users', key: 'f.users', def: 100 },
+            { id: 'questions', key: 'f.questions', def: 60 },
+            { id: 'docWords', key: 'f.docWords', def: 1500 },
+            { id: 'docCount', key: 'f.docCount', def: 3000 },
+            { id: 'chunk', key: 'f.chunk', def: 512 },
+            { id: 'overlap', key: 'f.overlap', def: 64 },
+            { id: 'topk', key: 'f.topk', def: 5 }
+        ];
+        var SCENARIOS = {
+            small: { users: 10, questions: 40, docWords: 1200, docCount: 500, chunk: 512, overlap: 64, topk: 5 },
+            smb: { users: 100, questions: 60, docWords: 1500, docCount: 3000, chunk: 512, overlap: 64, topk: 5 },
+            mid: { users: 1000, questions: 80, docWords: 1500, docCount: 20000, chunk: 512, overlap: 64, topk: 6 }
+        };
+
+        function num(id) { return parseFloat(document.getElementById('in-' + id).value) || 0; }
+
+        function buildForm() {
+            document.getElementById('form-grid').innerHTML =
+                FIELDS.map(function (f) {
+                    return '<div class="field"><label for="in-' + f.id + '" data-i18n="' + f.key + '">' +
+                        t(f.key) + '</label><input type="number" min="0" id="in-' + f.id +
+                        '" value="' + f.def + '"></div>';
+                }).join('') +
+                '<div class="field"><label for="in-embed" data-i18n="f.embed">' + t('f.embed') +
+                '</label><select id="in-embed">' + selectOpts(EMBED) + '</select></div>' +
+                '<div class="field"><label for="in-gen" data-i18n="f.gen">' + t('f.gen') +
+                '</label><select id="in-gen">' + selectOpts(GEN) + '</select></div>' +
+                '<div class="field"><label for="in-store" data-i18n="f.store">' + t('f.store') +
+                '</label><select id="in-store">' + selectOpts(STORE) + '</select></div>';
+            document.getElementById('in-gen').value = 'mistralLarge';
+            document.getElementById('in-embed').value = 'mistral';
+            document.getElementById('in-store').value = 'qdrantSelf';
+        }
+        function selectOpts(obj) {
+            return Object.keys(obj).map(function (k) {
+                return '<option value="' + k + '">' + obj[k].label + '</option>';
+            }).join('');
+        }
+
+        var HYP_FIELDS = [
+            'tokensPerWord', 'queryTokens', 'promptOverhead', 'answerTokens',
+            'churn', 'gpuVps', 'indexOverhead', 'kwhGen', 'kwhEmbed'
+        ];
+        function buildHyp() {
+            document.getElementById('hyp-grid').innerHTML = HYP_FIELDS.map(function (h) {
+                return '<div class="field"><label for="hyp-' + h + '" data-i18n="h.' + h + '">' +
+                    t('h.' + h) + '</label><input type="number" step="any" min="0" id="hyp-' + h +
+                    '" value="' + HYP[h] + '"></div>';
+            }).join('');
+        }
+        function readHyp() {
+            HYP_FIELDS.forEach(function (h) {
+                var el = document.getElementById('hyp-' + h);
+                if (el && el.value !== '') HYP[h] = parseFloat(el.value);
+            });
+        }
+
+        function compute(cfg) {
+            var emb = EMBED[cfg.embed], gen = GEN[cfg.gen], st = STORE[cfg.store];
+            var corpusTokens = cfg.docCount * cfg.docWords * HYP.tokensPerWord;
+            var effChunk = Math.max(1, cfg.chunk - cfg.overlap);
+            var totalChunks = Math.ceil(corpusTokens / effChunk);
+            var embedInitialTokens = totalChunks * cfg.chunk;
+            var embedReindexTokens = embedInitialTokens * (HYP.churn / 100);
+            var queries = cfg.users * cfg.questions;
+            var queryEmbedTokens = queries * HYP.queryTokens;
+            var genInputTokens = queries * (cfg.topk * cfg.chunk + HYP.promptOverhead + HYP.queryTokens);
+            var genOutputTokens = queries * HYP.answerTokens;
+
+            var initialCost = embedInitialTokens * emb.perM / 1e6;
+            var embedMonthly = (embedReindexTokens + queryEmbedTokens) * emb.perM / 1e6;
+            var genCost = (genInputTokens * gen.inM + genOutputTokens * gen.outM) / 1e6;
+            var storageGB = totalChunks * emb.dim * 4 * HYP.indexOverhead / 1e9;
+            var storageCost = st.base + storageGB * st.perGB;
+            var infraCost = (emb.self || gen.self) ? HYP.gpuVps : 0;
+            var monthly = embedMonthly + genCost + storageCost + infraCost;
+
+            var genKwh = (genInputTokens + genOutputTokens) / 1e6 * HYP.kwhGen;
+            var embedKwh = (embedReindexTokens + queryEmbedTokens) / 1e6 * HYP.kwhEmbed;
+            var co2 = genKwh * GRID[gen.region] + embedKwh * GRID[emb.region];
+
+            return {
+                monthly: monthly, initialCost: initialCost, embedMonthly: embedMonthly,
+                genCost: genCost, storageCost: storageCost, infraCost: infraCost,
+                queries: queries, perQuery: queries ? monthly / queries : 0,
+                perUser: cfg.users ? monthly / cfg.users : 0,
+                co2: co2, storageGB: storageGB, totalChunks: totalChunks
+            };
+        }
+
+        function eur(n) {
+            if (n === 0) return '0.00';
+            if (Math.abs(n) < 1) return n.toFixed(4);
+            return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function render() {
+            readHyp();
+            var cfg = {
+                users: num('users'), questions: num('questions'),
+                docWords: num('docWords'), docCount: num('docCount'),
+                chunk: num('chunk'), overlap: num('overlap'), topk: num('topk'),
+                embed: document.getElementById('in-embed').value,
+                gen: document.getElementById('in-gen').value,
+                store: document.getElementById('in-store').value
+            };
+            var r = compute(cfg);
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('total-num').textContent = eur(r.monthly) + ' EUR';
+
+            var rows = [
+                ['r.initial', r.initialCost],
+                ['r.embed', r.embedMonthly],
+                ['r.gen', r.genCost],
+                ['r.storage', r.storageCost],
+                ['r.infra', r.infraCost]
+            ];
+            document.getElementById('breakdown-body').innerHTML = rows.map(function (row) {
+                return '<tr><td>' + t(row[0]) + '</td><td class="num">' + eur(row[1]) + '</td></tr>';
+            }).join('');
+
+            document.getElementById('kpi-grid').innerHTML =
+                kpi(eur(r.perQuery) + ' EUR', t('k.perQuery')) +
+                kpi(eur(r.perUser) + ' EUR', t('k.perUser')) +
+                kpi(Math.round(r.queries).toLocaleString('en-US'), t('k.queries')) +
+                kpi(r.co2.toFixed(1) + ' ' + t('unit.kg'), t('k.carbon'));
+
+            var euCfg = { users: cfg.users, questions: cfg.questions, docWords: cfg.docWords,
+                docCount: cfg.docCount, chunk: cfg.chunk, overlap: cfg.overlap, topk: cfg.topk,
+                embed: 'mistral', gen: 'mistralLarge', store: 'qdrantSelf' };
+            var usCfg = { users: cfg.users, questions: cfg.questions, docWords: cfg.docWords,
+                docCount: cfg.docCount, chunk: cfg.chunk, overlap: cfg.overlap, topk: cfg.topk,
+                embed: 'openai', gen: 'claudeSonnet', store: 'pinecone' };
+            var euR = compute(euCfg), usR = compute(usCfg);
+            document.getElementById('cmp-body').innerHTML =
+                '<tr><td class="cmp-eu">' + t('cmp.eu') + '</td><td class="num">' +
+                eur(euR.monthly) + '</td><td class="num">' + euR.co2.toFixed(1) + '</td></tr>' +
+                '<tr><td class="cmp-us">' + t('cmp.us') + '</td><td class="num">' +
+                eur(usR.monthly) + '</td><td class="num">' + usR.co2.toFixed(1) + '</td></tr>';
+            document.getElementById('cmp-note').textContent = t('cmpNote');
+        }
+
+        function kpi(v, k) {
+            return '<div class="kpi"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>';
+        }
+
+        function applyLang() {
+            document.documentElement.setAttribute('lang', lang);
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var k = el.getAttribute('data-i18n');
+                if (I18N[lang][k] != null) el.textContent = I18N[lang][k];
+            });
+            document.getElementById('lang-btn').textContent = lang === 'fr' ? 'EN' : 'FR';
+            renderExamples();
+        }
+
+        function renderExamples() {
+            var keys = ['small', 'smb', 'mid'];
+            document.getElementById('examples').innerHTML = keys.map(function (k) {
+                return '<button class="example-btn" data-sc="' + k + '">' + t('ex.' + k) + '</button>';
+            }).join('');
+            document.querySelectorAll('.example-btn').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var sc = SCENARIOS[b.getAttribute('data-sc')];
+                    Object.keys(sc).forEach(function (id) {
+                        var el = document.getElementById('in-' + id);
+                        if (el) el.value = sc[id];
+                    });
+                    render();
+                });
+            });
+        }
+
+        document.getElementById('lang-btn').addEventListener('click', function () {
+            lang = lang === 'fr' ? 'en' : 'fr';
+            try { localStorage.setItem('bp-lang', lang); } catch (e) {}
+            applyLang();
+            if (document.getElementById('results').style.display === 'block') render();
+        });
+        document.getElementById('theme-btn').addEventListener('click', function () {
+            var cur = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            this.textContent = next === 'dark' ? '☀' : '☾';
+        });
+        document.getElementById('theme-btn').textContent =
+            (document.documentElement.getAttribute('data-theme') === 'dark') ? '☀' : '☾';
+
+        document.getElementById('hyp-check').addEventListener('change', function () {
+            document.getElementById('hyp-panel').classList.toggle('open', this.checked);
+        });
+        document.getElementById('calc-btn').addEventListener('click', function () {
+            render();
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        document.getElementById('print-btn').addEventListener('click', function () {
+            if (document.getElementById('results').style.display !== 'block') render();
+            window.print();
+        });
+
+        buildForm();
+        buildHyp();
+        applyLang();
+    })();
+    </script>
+</body>
+</html>

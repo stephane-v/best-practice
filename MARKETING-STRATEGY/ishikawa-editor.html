@@ -8,6 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        window.BP_BASE = '../';
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <script defer src="../assets/i18n.js"></script>
+    <script defer src="../assets/header.js"></script>
+    <script defer src="../assets/footer.js"></script>
     <style>
         /* CSS Variables - Design System */
         :root {
@@ -583,6 +597,7 @@
     </style>
 </head>
 <body>
+    <bp-header variant="slim" base="../" current="tools"></bp-header>
     <header class="header">
         <div class="header-content">
             <div class="title-section">
@@ -713,7 +728,7 @@
     <script>
         // Constants
         const STORAGE_KEY = 'ishikawa_current';
-        const THEME_KEY = 'ishikawa-editor-theme';
+        const THEME_KEY = 'theme';
 
         const DEFAULT_CATEGORIES = [
             { id: 'maindoeuvre', name: "Main d'œuvre", color: '#3B82F6', position: 'top', causes: ['Compétences', 'Formation', 'Motivation'] },
@@ -1279,5 +1294,6 @@
             loadDiagram();
         });
     </script>
+    <bp-footer base="../"></bp-footer>
 </body>
 </html>

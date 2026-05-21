@@ -4,12 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Reader - Best Practice</title>
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'light' && t !== 'dark') {
+                t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script defer src="assets/i18n.js"></script>
+    <script defer src="assets/search.js"></script>
+    <script defer src="assets/header.js"></script>
+    <script defer src="assets/footer.js"></script>
     <style>
         :root {
             --bg-primary: #f8fafc;
@@ -594,9 +608,33 @@
 
         @media print {
             body { background: white; }
-            header, footer, .btn, .scroll-to-top { display: none; }
+            header, footer, bp-header, bp-footer, .btn, .scroll-to-top { display: none; }
             .content { box-shadow: none; padding: 0; border: none; }
         }
+
+        .lang-switch {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .lang-switch.visible { display: flex; }
+
+        .lang-switch a {
+            color: var(--accent-1);
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px 10px;
+        }
+
+        .lang-switch a:hover { background: var(--bg-tertiary); }
 
         @media (max-width: 768px) {
             .container { padding: 12px; }
@@ -611,6 +649,7 @@
     </style>
 </head>
 <body>
+    <bp-header current="reader"></bp-header>
     <div class="container">
         <header>
             <div class="header-top">
@@ -645,19 +684,20 @@
                     Source: <a href="#" id="source-link" target="_blank"></a>
                 </div>
             </div>
+
+            <div class="lang-switch" id="lang-switch">
+                <span data-i18n="reader.altlang">This document is also available in another language.</span>
+                <a href="#" id="lang-switch-link"></a>
+            </div>
         </header>
 
         <div class="content">
             <div id="markdown-content"></div>
         </div>
 
-        <footer>
-            <p>
-                <a href="index.html">Best Practice Repository</a> &bull;
-                View source on <a href="https://github.com/stephane-v/best-practice" target="_blank">GitHub</a>
-            </p>
-        </footer>
     </div>
+
+    <bp-footer></bp-footer>
 
     <button id="scroll-to-top" class="scroll-to-top" onclick="scrollToTop()" title="Back to top">
         <span>&#8593;</span>
@@ -810,6 +850,32 @@
             `;
         }
 
+        async function checkAltLanguage(rawUrl) {
+            const sw = document.getElementById('lang-switch');
+            sw.classList.remove('visible');
+            if (!rawUrl || !rawUrl.endsWith('.md')) return;
+            let altUrl, label;
+            if (rawUrl.endsWith('.en.md')) {
+                altUrl = rawUrl.slice(0, -6) + '.fr.md';
+                label = 'FR';
+            } else if (rawUrl.endsWith('.fr.md')) {
+                altUrl = rawUrl.slice(0, -6) + '.en.md';
+                label = 'EN';
+            } else {
+                altUrl = rawUrl.slice(0, -3) + '.en.md';
+                label = 'EN';
+            }
+            try {
+                const res = await fetch(altUrl, { method: 'HEAD' });
+                if (res.ok) {
+                    const link = document.getElementById('lang-switch-link');
+                    link.textContent = label;
+                    link.href = window.location.pathname + '?file=' + encodeURIComponent(altUrl);
+                    sw.classList.add('visible');
+                }
+            } catch (e) {}
+        }
+
         async function loadMarkdown(url) {
             if (!url) {
                 showWelcome();
@@ -869,6 +935,8 @@
                     table.parentNode.insertBefore(wrapper, table);
                     wrapper.appendChild(table);
                 });
+
+                checkAltLanguage(rawUrl);
 
             } catch (error) {
                 console.error('Error loading markdown:', error);
